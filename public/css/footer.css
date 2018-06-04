@@ -1,0 +1,24 @@
+.nvfooter {
+	font-size: 0.8em;
+	font-weight: normal;
+}
+
+#nvf1 li a {
+	color: white;
+}
+
+#nvf1 li a:hover {
+	color: rgb(255,51,51);
+}
+
+#nvul2 li{
+	display: block;
+}
+
+wrapper {
+   min-height:100vh;
+}
+
+.flex-fill {
+   flex:1 1 auto;
+}

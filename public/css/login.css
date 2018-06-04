@@ -1,0 +1,30 @@
+.card-header {
+				font-weight: bold;
+				font-size: 2em;
+				color: black;
+				text-align: center;
+			}
+
+.btn-img {
+display: block;
+cursor: pointer;
+background-color: white;
+border-radius: 5px;
+margin-top: 20px;
+}
+.btn-img .img-wrap {
+border-radius: 5px;
+}
+
+.btn-img img {
+border-radius: 5px;
+display: block;
+}
+
+.btn-img:hover .img-wrap {
+background-color: black;
+}
+
+.btn-img:hover img {
+opacity: 0.8;
+}

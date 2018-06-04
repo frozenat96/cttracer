@@ -1,0 +1,16 @@
+nav {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.menu1:hover>.dropdown-menu {
+  display: block;
+}
+
+#ul1 {
+}
+
+
+.dropdown-menu {
+	font-size: 0.8em;
+}

@@ -1,0 +1,31 @@
+html, body {
+	font-family: -apple-system, BlinkMacSystemFont, 'Avenir Next', Avenir, Helvetica, Arial, sans-serif !important;
+}
+
+.bx {
+	border: 1px solid red;
+}
+
+.jsfy {
+	text-align: justify;
+	text-justify: inter-word;
+}
+
+.bg1 {
+	background-color: rgb(254,190,190);
+}
+
+#login1 {
+	color: black;
+	font-size: 1.2em;
+}
+
+.bg2 {
+	background-color: rgb(249,116,116);
+}
+
+#c1 {
+	padding: 20px;
+	min-height: 80vh;
+	margin-top: 50px;
+}
