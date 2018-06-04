@@ -1,3 +1,8 @@
+<?php
+    if(session_id() == '' || !isset($_SESSION)) {
+    session_start();
+	}
+?>
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
     <head>
@@ -16,6 +21,7 @@
         <script src="{{asset('js/popper.min.js')}}"></script>
         <script src="{{asset('js/bootstrap.min.js')}}"></script>
         <script src="{{asset('js/bootstrap-submenu.js')}}"></script>
+        @yield('includes')
         <title>{{config('app.name','cttracer')}}</title>
         <style type="text/css">
             @yield('style')
@@ -26,13 +32,13 @@
         <wrapper class="d-flex flex-column">
                 <main class="flex-fill">
                     <div class="container" id="c1">
-                        <div class="row">
+                        
 
         
             @yield('content')
     
 
-                        </div>
+                        
                     </div>
                 </main>
         @include('inc.footer')        

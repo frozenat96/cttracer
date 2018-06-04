@@ -7,7 +7,9 @@
             </ul>
             <ul class="navbar-nav navbar-right">
                 <?php 
-                if($user = !Auth::user()) {
+                
+
+                if(!Auth::user()) {
               if(basename($_SERVER['PHP_SELF'])!="login") {
                 ?>
                      <li><a class="btn btn-primary" href="/login/google" id="login1"></span> LOGIN</a></li>
@@ -18,7 +20,7 @@
               </span>
               </div>
                     <li class="nav-item dropdown">
-                        <a class="nav-link" href="#" id="navbarDropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span><img style="width: 40px;border-radius: 100%;" src=""></span> </a>
+                        <a class="nav-link" href="#" id="navbarDropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span><img style="width: 40px;border-radius: 100%;" src="<?php echo $_SESSION['avatar']; ?>"></span> </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink0">
                         <a class="dropdown-item" href="/logout">Logout</a>
                     </div>

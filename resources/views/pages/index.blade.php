@@ -18,7 +18,13 @@
 @endsection
 
 @section('content')
+<div class="row">
 <div class="col-md-12" id="index_content1">
+        @if(session('status'))
+        <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
         <div class="row">
             <div class="col-md-12">
                 <center><h4>VISION</h4></center>
@@ -62,5 +68,6 @@
             </div>
         </div>
     </div>				
+</div>
 </div>
 @endsection

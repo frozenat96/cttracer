@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -8,6 +7,10 @@ use Socialite;
 use Auth;
 use App\User;
 use DB;
+
+if(session_id() == '' || !isset($_SESSION)) {
+    session_start();
+}
 
 class LoginController extends Controller
 {
@@ -63,7 +66,8 @@ class LoginController extends Controller
         $authuser = $this->findUser($user,$provider);
         if($authuser != false) {
             Auth::login($authuser,true);
-            return $user->getEmail();
+            $_SESSION['avatar'] = $user->getAvatar();
+            return redirect('/');
         } else {
             Auth::logout();
             return redirect('/login');
@@ -79,6 +83,7 @@ class LoginController extends Controller
 
     public function logout(Request $request) {
         Auth::logout();
+        unset($_SESSION['avatar']);
         return redirect('/login');
     }
 }
