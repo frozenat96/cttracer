@@ -10,9 +10,10 @@
                 
 
                 if(!Auth::user()) {
-              if(basename($_SERVER['PHP_SELF'])!="login") {
+                  
+              if(Route::currentRouteName()!="login") {
                 ?>
-                     <li><a class="btn btn-primary" href="/login/google" id="login1"></span> LOGIN</a></li>
+                     <li><a class="btn btn-primary" href="/login" id="login1"></span> LOGIN</a></li>
                 <?php } }
                 else { ?>
               <div style="font-style:italic;position: absolute;top:60px;right: 30px;">

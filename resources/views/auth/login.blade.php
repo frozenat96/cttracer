@@ -4,6 +4,11 @@
 @endsection
 
 @section('content')
+@if($errors->any())
+<div class="row justify-content-md-center">
+    <h4>{{$errors->first()}}</h4>
+</div>
+@endif
 <div class="row justify-content-md-center align-items-center">
         <div class="card col-md-6 bg2" id="c2">
             <div class="card-header bg-transparent border-dark">LOGIN</div>

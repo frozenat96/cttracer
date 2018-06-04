@@ -11,7 +11,10 @@
 |
 */
 
-Route::get('/', 'PagesController@index');
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/', 'PagesController@index');
+});
+
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
@@ -31,4 +34,4 @@ Route::get('/hello', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+

@@ -70,7 +70,7 @@ class LoginController extends Controller
             return redirect('/');
         } else {
             Auth::logout();
-            return redirect('/login');
+            return redirect('/login')->withErrors(['Unauthorized access. Please log in using a different account.']);
         }
     }
 
