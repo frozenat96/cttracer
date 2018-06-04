@@ -12,13 +12,9 @@
 */
 
 Route::get('/', 'PagesController@index');
-
-Route::get('/about',function(){
-    return view('pages.about');
-});
-
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
+Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 /*
 Route::get('/hello', function () {
     // return view('welcome');

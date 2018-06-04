@@ -7,8 +7,8 @@
             </ul>
             <ul class="navbar-nav navbar-right">
                 <?php 
-                if(!isset($_SESSION['access_token'])) {
-              if(basename($_SERVER['PHP_SELF'])!="login.php") {
+                if($user = !Auth::user()) {
+              if(basename($_SERVER['PHP_SELF'])!="login") {
                 ?>
                      <li><a class="btn btn-primary" href="/login/google" id="login1"></span> LOGIN</a></li>
                 <?php } }
@@ -18,9 +18,9 @@
               </span>
               </div>
                     <li class="nav-item dropdown">
-                        <a class="nav-link" href="#" id="navbarDropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span><img style="width: 40px;border-radius: 100%;" src="<?php echo $_SESSION['picture']; ?>"></span> </a>
+                        <a class="nav-link" href="#" id="navbarDropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span><img style="width: 40px;border-radius: 100%;" src=""></span> </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink0">
-                        <a class="dropdown-item" href="logout.php">Logout</a>
+                        <a class="dropdown-item" href="/logout">Logout</a>
                     </div>
                     </li>
     
@@ -92,7 +92,7 @@
         });
     
     
-      <?php if(!isset($_SESSION['access_token'])) {
+      <?php if($user = !Auth::user()) {
       ?>
     
        $(".dropdown-item").hide();

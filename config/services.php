@@ -36,9 +36,9 @@ return [
     ],
 
     'google' => [
-        'client_id' => env('GOOGLE_ID'),         // Your google Client ID
-        'client_secret' => env('GOOGLE_SECRET'), // Your google Client Secret
-        'redirect' => env('GOOGLE_URL'),
+        'client_id' => '904398193525-plv6rej2hjc3dmvkqf05h6rhnpk3pn45.apps.googleusercontent.com',         // Your google Client ID
+        'client_secret' => 'X8XxiwS9Dnff-wJTD6iRlbsa',
+        'redirect' => 'http://cttracer.com/login/google/callback'
     ],
 
 ];

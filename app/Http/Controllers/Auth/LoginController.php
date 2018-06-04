@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Socialite;
@@ -63,17 +63,22 @@ class LoginController extends Controller
         $authuser = $this->findUser($user,$provider);
         if($authuser != false) {
             Auth::login($authuser,true);
+            return $user->getEmail();
+        } else {
+            Auth::logout();
+            return redirect('/login');
         }
-        return $user->getEmail();
     }
 
     public function findUser($user,$provider)
     {
         //$authuser = DB::table('account')->where('AccEmail', $user->getEmail())->first();
         $authuser = User::where('AccEmail', $user->getEmail())->first();
-        if($authuser) {
-            return $authuser;
-        }
-        return false;
+        return $authuser;
+    }
+
+    public function logout(Request $request) {
+        Auth::logout();
+        return redirect('/login');
     }
 }
