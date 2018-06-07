@@ -37,16 +37,11 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::get('/my-project', [
-        'uses'=>'ProjController@myProject',
-    ]
-    );
-
-    Route::get('/project-search', [
-        'uses'=>'PagesController@projectSearch',
-    ]
-    );
-
+   
+    Route::resource('/my-project', 'MyProjController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+   
     Route::get('/schedule-settings', [
         'uses'=>'PagesController@scheduleSettings',
     ]

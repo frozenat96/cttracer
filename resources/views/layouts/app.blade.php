@@ -28,11 +28,13 @@
         </style>
     </head>
     <body>
+        
         @include('inc.navbar')
         <wrapper class="d-flex flex-column">
                 <main class="flex-fill">
                     <div class="container" id="c1">
-                        
+                            
+                                @include('inc.messages')
 
         
             @yield('content')
