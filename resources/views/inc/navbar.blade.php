@@ -47,14 +47,14 @@
               <div class="dropdown dropright dropdown-submenu menu1">
                 <a class="dropdown-item dropdown-toggle d1l1" href="#" data-toggle="dropdown" >Project Settings</a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="stage_settings.php">Stage Settings</a>
-                  <a class="dropdown-item" href="schedule_settings.php">Schedule Settings</a>
+                  <a class="dropdown-item" href="/stage-settings">Stage Settings</a>
+                  <a class="dropdown-item" href="/schedule-settings">Schedule Settings</a>
                 </div>
               </div>
               
-              <a class="dropdown-item d1l1" href="add_accounts.php">Add Accounts</a>
-              <a class="dropdown-item d1l1" href="add_groups_php">Add Groups</a>
-              <a class="dropdown-item d1l1" href="transfer_role.php">Transfer Role</a>
+              <a class="dropdown-item d1l1" href="/add-accounts">Add Accounts</a>
+              <a class="dropdown-item d1l1" href="/add-groups">Add Groups</a>
+              <a class="dropdown-item d1l1" href="/transfer-role">Transfer Role</a>
             </div>
           </li>
           <li class="nav-item dropdown menu1">
@@ -62,8 +62,8 @@
               Groups
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
-              <a class="dropdown-item" href="search_groups.php">Search Groups</a>
-              <a class="dropdown-item" href="advised_groups.php">Advised Groups</a>
+              <a class="dropdown-item" href="/search-groups">Search Groups</a>
+              <a class="dropdown-item" href="/advised-groups">Advised Groups</a>
             </div>
           </li>
           <li class="nav-item dropdown menu1">
@@ -71,8 +71,8 @@
               Schedule
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
-              <a class="dropdown-item" href="approve_schedules.php">Approve Schedules</a>
-              <a class="dropdown-item" href="schedule_settings.php">Schedule Settings</a>
+              <a class="dropdown-item" href="/approve-schedules">Approve Schedules</a>
+              <a class="dropdown-item" href="/schedule-settings">Schedule Settings</a>
             </div>
           </li>
         </ul>
@@ -82,8 +82,8 @@
               Projects
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink4">
-              <a class="dropdown-item" href="project_search.php">Project Search</a>
-              <a class="dropdown-item" href="my_project.php">My Project</a>
+              <a class="dropdown-item" href="/project-search">Project Search</a>
+              <a class="dropdown-item" href="/my-project">My Project</a>
             </div>
              </li>
          </ul>
