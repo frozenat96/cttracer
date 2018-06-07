@@ -21,7 +21,7 @@
               </span>
               </div>
                     <li class="nav-item dropdown">
-                        <a class="nav-link" href="#" id="navbarDropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span><img style="width: 40px;border-radius: 100%;" src="<?php echo $_SESSION['avatar']; ?>"></span> </a>
+                        <a class="nav-link" href="#" id="navbarDropdownMenuLink0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span><img style="width: 40px;border-radius: 100%;" src="<?php echo $_SESSION['user']['avatar']; ?>"></span> </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink0">
                         <a class="dropdown-item" href="/logout">Logout</a>
                     </div>

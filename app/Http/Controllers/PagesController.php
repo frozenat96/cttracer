@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
+use Auth;
+use App\models\Project;
+use App\models\AccountGroup;
+use DB;
 
 class PagesController extends Controller
 {
@@ -26,10 +31,6 @@ class PagesController extends Controller
 
     public function approveSchedules() {
         return view('pages.approve-schedules');
-    }
-
-    public function myProject() {
-        return view('pages.my-project');
     }
 
     public function projectSearch() {

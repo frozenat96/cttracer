@@ -66,7 +66,10 @@ class LoginController extends Controller
         $authuser = $this->findUser($user,$provider);
         if($authuser != false) {
             Auth::login($authuser,true);
-            $_SESSION['avatar'] = $user->getAvatar();
+            $_SESSION['user'] = [
+                'id' => $authuser,
+                'avatar' => $user->getAvatar(),
+            ];
             return redirect('/');
         } else {
             Auth::logout();
@@ -83,7 +86,7 @@ class LoginController extends Controller
 
     public function logout(Request $request) {
         Auth::logout();
-        unset($_SESSION['avatar']);
+        unset($_SESSION['user']);
         return redirect('/login');
     }
 }

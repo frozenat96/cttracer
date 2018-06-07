@@ -30,4 +30,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function group() {
+        return $this->belongsToMany('App\models\Group','account_group','accNo','grpNo');
+    }
 }

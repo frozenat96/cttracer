@@ -12,17 +12,60 @@
 */
 
 Route::group(['middleware' => ['auth']], function() {
-    Route::get('/', 'PagesController@index');
-    Route::get('/add-accounts', 'PagesController@addAccounts');
-    Route::get('/add-groups', 'PagesController@addGroups');
-    Route::get('/advised-groups', 'PagesController@advisedGroups');
-    Route::get('/approve-schedules', 'PagesController@approveSchedules');
-    Route::get('/my-project', 'PagesController@myProject');
-    Route::get('/project-search', 'PagesController@projectSearch');
-    Route::get('/schedule-settings', 'PagesController@scheduleSettings');
-    Route::get('/search-groups', 'PagesController@searchGroups');
-    Route::get('/stage-settings', 'PagesController@stageSettings');
-    Route::get('/transfer-role', 'PagesController@transferRole');
+    Route::get('/', [
+        'uses'=>'PagesController@index',
+    ]
+    );
+
+    Route::get('/add-accounts', [
+        'uses'=>'PagesController@addAccounts',
+    ]
+    );
+
+    Route::get('/add-groups', [
+        'uses'=>'PagesController@addGroups',
+    ]
+    );
+
+    Route::get('/advised-groups', [
+        'uses'=>'PagesController@advisedGroups',
+    ]
+    );
+
+    Route::get('/approve-schedules', [
+        'uses'=>'PagesController@approveSchedules',
+    ]
+    );
+
+    Route::get('/my-project', [
+        'uses'=>'ProjController@myProject',
+    ]
+    );
+
+    Route::get('/project-search', [
+        'uses'=>'PagesController@projectSearch',
+    ]
+    );
+
+    Route::get('/schedule-settings', [
+        'uses'=>'PagesController@scheduleSettings',
+    ]
+    );
+
+    Route::get('/search-groups', [
+        'uses'=>'PagesController@searchGroups',
+    ]
+    );
+
+    Route::get('/stage-settings', [
+        'uses'=>'PagesController@stageSettings',
+    ]
+    );
+
+    Route::get('/transfer-role', [
+        'uses'=>'PagesController@transferRole',
+    ]
+    );
 });
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
