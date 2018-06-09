@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [
@@ -41,7 +43,33 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/my-project', 'MyProjController')->parameters([
         'rol' => 'admin_user'
     ]);
-   
+
+    Route::resource('/project-search', 'ProjSearchController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/proj-search-results', function(){
+        $q = Input::get('q');
+        if($q != '') {
+            $data = DB::table('project')->where('project.projName','LIKE', '%'.$q.'%')
+            ->select('project.*')
+            ->paginate(1)
+            ->setpath('');
+        $data->appends(array(
+            'q' => Input::get('q')
+        ));
+            if(count($data)>0) {
+                return view('pages.project_search.index')->withData($data);
+            } else {
+                return view('pages.project_search.index')->withMessage("No results found");
+            }
+        }
+    });
+
+    Route::any('/project-search-r', [
+        'uses' => 'ProjSearchController@search'
+    ]);
+
     Route::get('/schedule-settings', [
         'uses'=>'PagesController@scheduleSettings',
     ]
@@ -61,6 +89,8 @@ Route::group(['middleware' => ['auth']], function() {
         'uses'=>'PagesController@transferRole',
     ]
     );
+    
+    Route::post('/searchProjects','ProjSearchController@search')->name('searchProj');
 });
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');

@@ -33,8 +33,8 @@ class PagesController extends Controller
         return view('pages.approve-schedules');
     }
 
-    public function projectSearch() {
-        return view('pages.project-search');
+    public function projectSearch($x = null) {
+        return view('pages.project_search.p-search-result')->with('data',$x);
     }
 
     public function scheduleSettings() {
@@ -53,4 +53,9 @@ class PagesController extends Controller
         return view('pages.transfer-role');
     }
 
+    public function getData(Request $request) {
+        $data=Project::where('projName','LIKE','%'.$request->search."%")->paginate(1);
+        $data = response()->json($data);
+        return redirect()->action('ProjSearchController@index')->with('data',$data)->send();
+    }
 }
