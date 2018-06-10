@@ -70,6 +70,10 @@ Route::group(['middleware' => ['auth']], function() {
         'uses' => 'ProjSearchController@search'
     ]);
 
+    Route::resource('/approve-projects', 'ProjAppController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
     Route::get('/schedule-settings', [
         'uses'=>'PagesController@scheduleSettings',
     ]

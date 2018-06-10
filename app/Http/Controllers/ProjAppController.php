@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use App\models\Project;
+use App\models\Project; 
 use Auth;
 
-class MyProjController extends Controller
+class ProjAppController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,27 +18,22 @@ class MyProjController extends Controller
     {
         $user_id = Auth::id(); 
 
-        $proj = Project::projectInfoByAccount($user_id);
-        //return dd($users);
-        $group = DB::table('account')
-            ->join('group', 'account.accGroupNo', '=', 'group.groupNo')
-            ->select('account.*')
-            ->where('group.groupNo','=',$proj[0]->groupNo)
-            ->get();
-
-        $pgroup = DB::table('panel_group')
-        ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
+        $proj = DB::table('panel_group')
         ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
+        ->join('project', 'group.groupProjNo', '=', 'project.projNo')
+        ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
+        ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
         ->join('project_approval', 'project_approval.projAppPGroupNo', '=', 'panel_group.panelGroupNo')
-        ->select('account.*','project_approval.*','panel_group.*')
-        ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
-        ->get();
-
-        $adviser = DB::table('account')
-        ->where('account.accNo','=',$proj[0]->groupAdviser)
-        ->get();
-        $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'pgroup'=>$pgroup];
-        return view('pages.my_project.index')->with('data', $data);
+        ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*')
+        ->where([
+            ['project.projPVerdictNo','=','7'],
+            ['panel_group.panelAccNo','=',$user_id]
+            ])
+        ->paginate(10);
+        
+        $data = ['proj'=>$proj];
+        
+        return view('pages.approve_projects.index')->with('data',$proj);
     }
 
     /**
@@ -81,8 +76,7 @@ class MyProjController extends Controller
      */
     public function edit($id)
     {
-        $proj = Project::find($id);
-        return view('pages.my_project.edit')->with('data', $proj);
+        //
     }
 
     /**
@@ -94,19 +88,7 @@ class MyProjController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'project_name' => 'required',
-        ]);
-
-        $proj = Project::find($id);
-        $proj->projName = $request->input('project_name');
-        $proj->save();
-        $request->session()->flash('alert-success', 'Project updated!');
-        //return view('/my-project/{id}/edit',['id'=>$id])->with('success','updated');
-        return redirect()->action(
-            'MyProjController@edit', ['id' => $id]
-        );
-    
+        //
     }
 
     /**
@@ -119,5 +101,4 @@ class MyProjController extends Controller
     {
         //
     }
-   
 }

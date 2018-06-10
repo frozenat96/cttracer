@@ -10,7 +10,7 @@
 @section('content')
 <div class="row" id="app">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <h4>PROJECT SEARCH</h4>
+        <h4>APPROVE PROJECTS</h4>
         <form action="/proj-search-results" method="POST" role="search">
             {{csrf_field()}}
             <div class="input-group">
@@ -22,7 +22,9 @@
                 </span>
             </div>
         </form>
-        @if(isset($data))
+        
+        @if(count($data) > 0)
+        
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -57,7 +59,3 @@
 @endsection
 
 @endsection
-
-
-
-

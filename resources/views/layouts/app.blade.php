@@ -36,7 +36,7 @@
         
         @include('inc.navbar')
         <wrapper class="d-flex flex-column" >
-                <main class="flex-fill">
+                <main class="flex-fill" id="app"> 
                     <div class="container" id="c1">
                             
                                 @include('inc.messages')
@@ -62,5 +62,5 @@ $.ajaxSetup({
     }
 });
 </script>
-<script src="{{asset('js/app.js')}}"></script>
+
 <script src="{{asset('js/bootstrap-submenu.js')}}"></script>
