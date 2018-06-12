@@ -1,13 +1,3 @@
-<?php 
-        if(Auth::user()) {
-         $notify = DB::table('account')
-                  ->join('notification','notification.ntAccNo','=','account.accNo')
-                  ->join('account_type','account_type.accTypeNo','=','account.accType')
-                  ->select('notification.*','account.*','account_type.*')
-                  ->where('account.accNo','=',Auth::id())
-                  ->get();
-        }
-?>
 <nav class="navbar navbar-expand-lg navbar-light" style="width: 100%;height: 100px;">
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
@@ -27,8 +17,7 @@
                 <?php } }
                 else { ?>
               <div style="font-style:italic;position: absolute;top:60px;right: 30px;">
-              <span style="font-size: 12px;">Logged in as @if(Auth::user()){{$notify[0]->accTypeDescription}} @endif
-                
+              <span style="font-size: 12px;">Logged in as @if(Auth::user()){{$user[0]->accTypeDescription}}@endif
               </span>
               </div>
                     <li class="nav-item dropdown">
@@ -64,26 +53,26 @@
                 </div>
               </div>
               
-              <a class="dropdown-item d1l1" href="/add-accounts">Add Accounts</a>
+              <a class="dropdown-item d1l1" href="/accounts">Add Accounts</a>
               <a class="dropdown-item d1l1" href="/add-groups">Add Groups</a>
               <a class="dropdown-item d1l1" href="/transfer-role">Transfer Role</a>
             </div>
           </li>
           <li class="nav-item dropdown menu1">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Groups @if(Auth::user() && $notify[0]->ntAdvGrpQty) <span class="badge badge-pill badge-success">{{$notify[0]->ntAdvGrpQty}}</span>@endif
+              Groups
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
               <a class="dropdown-item" href="/search-groups">Search Groups</a>
-              <a class="dropdown-item" href="/advised-groups">@if(Auth::user() && $notify[0]->ntAdvGrpQty) <span class="badge badge-pill badge-success">{{$notify[0]->ntAdvGrpQty}}</span>@endif Advised Groups</a>
+              <a class="dropdown-item" href="/advised-groups">Advised Groups</a>
             </div>
           </li>
           <li class="nav-item dropdown menu1">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Schedule @if(Auth::user() && $notify[0]->ntSchedQty) <span class="badge badge-pill badge-success">{{$notify[0]->ntSchedQty}}</span>@endif
+              Schedule
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
-              <a class="dropdown-item" href="/approve-schedules">@if(Auth::user() && $notify[0]->ntSchedQty) <span class="badge badge-pill badge-success">{{$notify[0]->ntSchedQty}}</span>@endif Approve Schedules</a>
+              <a class="dropdown-item" href="/approve-schedules">Approve Schedules</a>
               <a class="dropdown-item" href="/schedule-settings">Schedule Settings</a>
             </div>
           </li>
@@ -91,12 +80,12 @@
          <ul class="nav navbar-nav navbar-right">
              <li class="nav-item dropdown menu1">
                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                 Projects @if(Auth::user() && $notify[0]->ntProjQty) <span class="badge badge-pill badge-success">{{$notify[0]->ntProjQty}}</span>@endif
+                 Projects
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink4">
               <a class="dropdown-item" href="/project-search">Project Search</a>
               <a class="dropdown-item" href="/my-project">My Project</a>
-              <a class="dropdown-item" href="/approve-projects">Approve Projects @if(Auth::user() && $notify[0]->ntProjQty) <span class="badge badge-pill badge-success">{{$notify[0]->ntProjQty}}</span>@endif</a>
+              <a class="dropdown-item" href="/approve-projects">Approve Projects</a>
             </div>
              </li>
          </ul>

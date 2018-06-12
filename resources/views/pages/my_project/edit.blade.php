@@ -10,12 +10,12 @@
         <h4>MY PROJECT</h4>
         {{$data}}
         {!!Form::open(['action' => ['MyProjController@update',$data->projNo], 'method' => 'POST']) !!}
-            <div class="form-group">
-                {{Form::label('project_name','Project Name')}}
-                {{Form::text('project_name',$data->projName,['class'=>'form-control', 'placeholder'=>'Project Name'])}}
+        <div class="form-group">
+                <label for="project_name">Project Name</label>
+                <input name="project_name" type="text" class="form-control" id="given_name" placeholder="Project Name" required="yes" value="{{$data->projName}}">
             </div>
-            {{Form::hidden('_method','PUT')}}
-            {{Form::submit('Update',['class'=>'btn btn-primary'])}}
+            <input type="hidden" name="_method" value="PUT">
+            <input type="submit" class="btn btn-primary" value="Update">
         {!!Form::close() !!}
     </div>
 </div>

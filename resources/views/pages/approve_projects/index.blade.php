@@ -44,7 +44,7 @@
         </table>
         {!! $data->render() !!}
         @else
-        {{$message}}
+        <span>No results found</span>
         @endif
         <!--
         <project-search></project-search>

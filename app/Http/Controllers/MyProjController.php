@@ -95,7 +95,7 @@ class MyProjController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'project_name' => 'required',
+            'project_name' => 'required|max:150|unique:project,projName',
         ]);
 
         $proj = Project::find($id);

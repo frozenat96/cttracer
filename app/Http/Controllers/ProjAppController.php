@@ -26,9 +26,10 @@ class ProjAppController extends Controller
         ->join('project_approval', 'project_approval.projAppPGroupNo', '=', 'panel_group.panelGroupNo')
         ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*')
         ->where([
-            ['project.projPVerdictNo','=','7'],
+            ['group.groupStatus','=','Submitted For Panel Approval'],
             ['panel_group.panelAccNo','=',$user_id]
             ])
+        ->whereIn('panel_verdict.panelVerdictNo',[2,3])
         ->paginate(10);
         
         $data = ['proj'=>$proj];
@@ -36,6 +37,7 @@ class ProjAppController extends Controller
         return view('pages.approve_projects.index')->with('data',$proj);
     }
 
+    
     /**
      * Show the form for creating a new resource.
      *

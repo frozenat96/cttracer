@@ -3,57 +3,51 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
 use DB;
-use App\models\Project;
-use Auth;
 use Illuminate\Support\Facades\Input;
 
-class ProjSearchController extends Controller
+class AccountController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
-        $data = DB::table('project')
-        ->select('project.*')
-        ->paginate(1);
-        return view('pages.project_search.index')->withData($data);
+        $accounts = DB::table('account')
+        ->join('account_type','account_type.accTypeNo','=','account.accType')
+        ->select('account.*','account_type.*')
+        ->paginate(10); 
+        return view('pages.accounts.index')->with('data',$accounts);
     }
 
     public function search(Request $request)
     {
-        /*
-        if($request->search != '') {
-        $data=Project::where('projName','LIKE','%'.$request->search.'%')->paginate(1);
-        //return redirect()->action('ProjSearchController@index')->with('data',$data)->send();
-        $data->appends(array(
-            'search' => $request->search
-        )); 
-        } else {
-            $data=Project::paginate(1);
-        }
-        return response()->json($data); 
-        */
         $q = Input::get('q');
+      
         if($q != '') {
-            $data = DB::table('project')->where('project.projName','LIKE', '%'.$q.'%')
-            ->select('project.*')
-            ->paginate(1)
-            ->setpath('');
+            $data = DB::table('account')
+            ->join('account_type','account_type.accTypeNo','=','account.accType')
+            ->select('account.*','account_type.*')
+            ->where(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
+            ->orWhere('account_type.accTypeDescription','LIKE',"%".$q."%")
+            ->orWhere('account.accTitle','LIKE',"%".$q."%")
+            ->paginate(10);
+        } else {
+            $data = DB::table('account')
+            ->join('account_type','account_type.accTypeNo','=','account.accType')
+            ->select('account.*','account_type.*')
+            ->paginate(10);
+        }
         $data->appends(array(
             'q' => Input::get('q')
         ));
-            if(count($data)>0) {
-                return view('pages.project_search.index')->withData($data);
-            } else {
-                return view('pages.project_search.index')->withMessage("No results found");
-            }
-        }
+           
+        return view('pages.accounts.index')->withData($data);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -62,7 +56,7 @@ class ProjSearchController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.accounts.create');
     }
 
     /**
@@ -73,7 +67,14 @@ class ProjSearchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $firstname = ucwords($request->input('given_name'));
+        $middle_initial = ucwords($request->input('middle_initial')) . '.';
+        $lastname = ucwords($request->input('last_name'));
+        $this->validate($request, [
+            'given_name' => 'required|max:50',
+            'middle_initial' => 'required|max:2',
+            'last_name' => 'required|max:50',
+        ]);
     }
 
     /**
@@ -82,13 +83,9 @@ class ProjSearchController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id,$input)
+    public function show($id)
     {
-        switch($id) {
-            case 1:
-            case '1': $data=Project::where('projName','LIKE','%'.$input."%")->paginate(1);
-        }
-        return view('pages.project_search.index')->with('data', $id);
+        //
     }
 
     /**
@@ -122,12 +119,6 @@ class ProjSearchController extends Controller
      */
     public function destroy($id)
     {
-        /*
-           <ul>
-            <li v-for="n in pagination.total">{{ n }}>
-                <a v-on:click="fetchPaginateProjects(pagination.path+'?search='+search+'&page='+n)">{{n}}</a>
-            </li>
-        </ul>
-        */
+        //
     }
 }

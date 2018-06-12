@@ -19,8 +19,12 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::get('/add-accounts', [
-        'uses'=>'PagesController@addAccounts',
+    Route::resource('/accounts', 'AccountController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/acc-search-results', [
+        'uses'=>'AccountController@search'
     ]
     );
 
@@ -47,24 +51,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/project-search', 'ProjSearchController')->parameters([
         'rol' => 'admin_user'
     ]);
-
-    Route::any('/proj-search-results', function(){
-        $q = Input::get('q');
-        if($q != '') {
-            $data = DB::table('project')->where('project.projName','LIKE', '%'.$q.'%')
-            ->select('project.*')
-            ->paginate(1)
-            ->setpath('');
-        $data->appends(array(
-            'q' => Input::get('q')
-        ));
-            if(count($data)>0) {
-                return view('pages.project_search.index')->withData($data);
-            } else {
-                return view('pages.project_search.index')->withMessage("No results found");
-            }
-        }
-    });
+    
+    Route::any('/proj-search-results', [
+        'uses'=>'ProjSearchController@search'
+    ]
+    ); 
 
     Route::any('/project-search-r', [
         'uses' => 'ProjSearchController@search'

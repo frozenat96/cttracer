@@ -18,7 +18,7 @@
                 <span class="input-group-btn">
                     <button type="submit" class="btn btn-danger">
                         <span><i class="fas fa-search"></i></span>
-                    </button>
+                    </button> 
                 </span>
             </div>
         </form>
