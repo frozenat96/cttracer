@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use App\models\Project;
 use Auth;
+use Illuminate\Validation\Rule;
 
 class MyProjController extends Controller
 {
@@ -95,8 +96,11 @@ class MyProjController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'project_name' => 'required|max:150|unique:project,projName',
+            'project_name' => ['required','max:150','unique:project,projName'],
         ]);
+            /*'project_name' => ['required','max:150','unique:project,projName',
+            Rule::notIn(['sprinkles', 'cherries'])],*/
+        
 
         $proj = Project::find($id);
         $proj->projName = $request->input('project_name');

@@ -7,7 +7,7 @@ use App\User;
 use DB;
 use Illuminate\Support\Facades\Input;
 
-class AccountController extends Controller
+class StageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,9 @@ class AccountController extends Controller
      */
     public function index()
     {
-        $accounts = DB::table('account')
-        ->join('account_type','account_type.accTypeNo','=','account.accType')
-        ->select('account.*','account_type.*')
-        ->paginate(10); 
-        return view('pages.accounts.index')->with('data',$accounts);
+        $data = DB::table('stage')
+            ->paginate(10);
+        return view('pages.stages.index')->withData($data);    
     }
 
     public function search(Request $request)
@@ -28,26 +26,21 @@ class AccountController extends Controller
         $q = Input::get('q');
       
         if($q != '') {
-            $data = DB::table('account')
-            ->join('account_type','account_type.accTypeNo','=','account.accType')
-            ->select('account.*','account_type.*')
-            ->where(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
-            ->orWhere('account_type.accTypeDescription','LIKE',"%".$q."%")
-            ->orWhere('account.accTitle','LIKE',"%".$q."%")
+            $data = DB::table('stage')
+            ->select('stage.*')
+            ->where('stage.stageName', 'LIKE', "%".$q."%")
+            ->orWhere('stage.StageNo','LIKE', "%".$q."%")
             ->paginate(10);
         } else {
-            $data = DB::table('account')
-            ->join('account_type','account_type.accTypeNo','=','account.accType')
-            ->select('account.*','account_type.*')
+            $data = DB::table('stage')
             ->paginate(10);
         }
         $data->appends(array(
             'q' => Input::get('q')
         ));
            
-        return view('pages.accounts.index')->withData($data);
+        return view('pages.stages.index')->withData($data);
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -56,13 +49,14 @@ class AccountController extends Controller
      */
     public function create()
     {
-        $acc_type = DB::table('account_type')
-        ->get();
-        $group = DB::table('group')
-        ->select('group.*')
-        ->whereNotIn('group.groupStatus', ['Finished'])->get();
-        $data = ['acc_type' => $acc_type, 'group' => $group];
-        return view('pages.accounts.create')->with('data',$data);
+        $next = DB::table('stage')->max('stageNo');
+        if($next >= 1) {
+            $next = (int)$next + 1;
+        } else {
+            $next = 1;
+        }
+        $data = ['next'=> $next];
+        return view('pages.stages.create')->with('data',$data);
     }
 
     /**
@@ -73,14 +67,13 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        $firstname = ucwords($request->input('given_name'));
-        $middle_initial = ucwords($request->input('middle_initial')) . '.';
-        $lastname = ucwords($request->input('last_name'));
+        $validPanel = ["All","Custom"];
         $this->validate($request, [
-            'given_name' => 'required|max:50',
-            'middle_initial' => 'required|max:2',
-            'last_name' => 'required|max:50',
-
+            'stage_number' => ['required','unique:stage,stageNo'],
+            'stage_name' => ['required','max:50','unique:stage,stageName'],
+            'stage_defense_duration' => ['required','min:0'],
+            'stage_defense_duration' => ['required','min:0'],
+            'stage_panel' => ['required',Rule::In($validPanel)],
         ]);
     }
 

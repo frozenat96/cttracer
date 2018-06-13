@@ -75,8 +75,12 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::get('/stage-settings', [
-        'uses'=>'PagesController@stageSettings',
+    Route::resource('/stage-settings', 'StageController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/stage-search-results', [
+        'uses'=>'StageController@search'
     ]
     );
 

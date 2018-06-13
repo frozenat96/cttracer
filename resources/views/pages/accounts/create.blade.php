@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('includes')
+
+@endsection
+
 @section('style')
  
 @endsection
@@ -10,64 +14,73 @@ $account_types = DB::table('account_type')->get();
 ?>
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <h4>CREATE ACCOUNT</h4>
+        
         <div class="row justify-content-center">
-            <div class="col-md-9 bx">
+            <div class="col-md-9 bx2">
                 
                         <form method="post" action="{{action('AccountController@store')}}" accept-charset="UTF-8" role="create">
-                            {{csrf_field()}} 
+                                <fieldset>
+                                    <legend>CREATE ACCOUNT</legend>
+                            
+                                    {{csrf_field()}} 
                             <div class="form-row">
                                     <div class="form-group col-md-5">
                                       <label for="given_name">Given Name</label>
-                                      <input name="given_name" type="text" class="form-control" id="given_name" placeholder="Given Name" required="yes">
+                                      <input name="given_name" type="text" class="form-control" id="given_name" placeholder="Given Name" required="yes" autocomplete="given-name">
                                     </div>
                                     <div class="form-group col-md-2">
                                             <label for="middle_initial">Middle Initial</label>
-                                            <input name="middle_initial" type="text" class="form-control" id="middle_initial" placeholder="Middle Initial" maxlength="1" required="yes">
+                                            <input name="middle_initial" type="text" class="form-control" id="middle_initial" placeholder="Middle Initial" maxlength="1" required="yes" autocomplete="middle-initial">
                                           </div>
                                     <div class="form-group col-md-5">
                                       <label for="last_name">LastName</label>
-                                      <input name="last_name" type="text" class="form-control" id="last_name" placeholder="Last Name" required="yes">
+                                      <input name="last_name" type="text" class="form-control" id="last_name" placeholder="Last Name" required="yes" autocomplete="family-name">
                                     </div>
-                                  </div>
+                            </div>
                                   <div class="form-group">
-                                    <label for="inputEmail">Address</label>
-                                    <input type="email" class="form-control" id="inputEmail" placeholder="ccs@su.edu.ph">
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="inputAddress2">Address 2</label>
-                                    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="ccs@su.edu.ph" required="yes" autocomplete="email">
                                   </div>
                                   <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                      <label for="inputCity">City</label>
-                                      <input type="text" class="form-control" id="inputCity">
+                                    <div class="form-group col-md-2">
+                                        <label for="title">Title</label>
+                                          <select id="title" class="form-control" name="title" autocomplete="title">
+                                            <option value="">None</option>
+                                            <option value="Mr.">Mr.</option>
+                                            <option value="Ms.">Ms.</option>
+                                            <option value="Mrs.">Mrs.</option>
+                                            <option value="Prof.">Prof.</option>
+                                            <option value="Engr.">Engr.</option>
+                                            <option value="Dr.">Dr.</option>
+                                          </select>
+                                    <div class="msel"></div>
                                     </div>
                                     <div class="form-group col-md-4">
-                                      <label for="inputState">State</label>
-                                      <select id="inputState" class="form-control">
-                                        <option selected>Choose...</option>
-                                        <option>...</option>
+                                      <label for="role">Role</label>
+                                      <select id="role" class="form-control" name="role" autocomplete="role" onchange="groupAllow(this);" required="yes">
+                                        @foreach($data['acc_type'] as $acc)
+                                          <option value="{{$acc->accTypeNo}}">{{$acc->accTypeDescription}}</option>
+                                        @endforeach
                                       </select>
                                     </div>
-                                    <div class="form-group col-md-2">
-                                      <label for="inputZip">Zip</label>
-                                      <input type="text" class="form-control" id="inputZip">
-                                    </div>
+                          
+                                    <div class="form-group col-md-5" id="grp">
+                                        <label for="group">Group</label>
+                                        <select id="group" class="form-control" name="role" autocomplete="group" multiple="multiple">
+                                          @foreach($data['group'] as $grp)
+                                            <option value="{{$grp->groupNo}}">{{$grp->groupName}}</option>
+                                          @endforeach
+                                        </select>
+                                      </div>
+                   
                                   </div>
-                                  <div class="form-group">
-                                    <div class="form-check">
-                                      <input class="form-check-input" type="checkbox" id="gridCheck">
-                                      <label class="form-check-label" for="gridCheck">
-                                        Check me out
-                                      </label>
-                                    </div>
+                                
+                                  <div class="form-group text-right">
+                                      <button type="submit" class="btn btn-danger">
+                                          <span><i class="fas fa-plus"></i> Create Account</span>
+                                      </button>
                                   </div>
-                            <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-danger">
-                                        <span><i class="fas fa-search"></i></span>
-                                    </button>
-                                </span>
+                                </fieldset>
                         </form>
                 
             </div>
@@ -75,4 +88,24 @@ $account_types = DB::table('account_type')->get();
     
     </div>
 </div>
+@endsection
+@section('includes2')
+<script type="text/javascript">
+
+$(document).ready(function () {
+  groupAllow(0);
+  
+});
+function groupAllow(v) {
+		if(v.value==3) {
+      $('#grp').show();
+    } else {
+      $('#grp').hide();
+    }
+  }
+
+   $('#group').select2({allowClear:true,selectOnClose:true});
+   $('#title').select2({allowClear:true,selectOnClose:true});
+   $('#role').select2({allowClear:true,selectOnClose:true});
+</script>
 @endsection

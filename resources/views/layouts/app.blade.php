@@ -29,6 +29,8 @@
         <script src="{{asset('js/jquery.min.js')}}"></script>
         
         <script src="{{asset('js/knockout-3.4.2.js')}}"></script>   
+        <link rel="stylesheet" href="{{asset('css/search-select.min.css')}}">
+        <script src="{{asset('js/search-select.min.js')}}"></script>
         
         @yield('includes')
         <title>{{config('app.name','cttracer')}}</title>
