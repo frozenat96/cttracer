@@ -28,8 +28,12 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::get('/add-groups', [
-        'uses'=>'PagesController@addGroups',
+    Route::resource('/groups', 'GroupController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/group-search-results', [
+        'uses'=>'GroupController@search'
     ]
     );
 
@@ -57,13 +61,14 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     ); 
 
-    Route::any('/project-search-r', [
-        'uses' => 'ProjSearchController@search'
-    ]);
-
     Route::resource('/approve-projects', 'ProjAppController')->parameters([
         'rol' => 'admin_user'
     ]);
+
+    Route::any('/app-proj-search-results', [
+        'uses'=>'ProjAppController@search'
+    ]
+    ); 
 
     Route::get('/schedule-settings', [
         'uses'=>'PagesController@scheduleSettings',

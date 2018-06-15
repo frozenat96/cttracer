@@ -34,7 +34,7 @@
         </div>
         
     </nav>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: rgba(255,51,51,1);height: 100px;">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #F85353;height: 100px;">
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
@@ -54,7 +54,7 @@
               </div>
               
               <a class="dropdown-item d1l1" href="/accounts">Add Accounts</a>
-              <a class="dropdown-item d1l1" href="/add-groups">Add Groups</a>
+              <a class="dropdown-item d1l1" href="/groups">Add Groups</a>
               <a class="dropdown-item d1l1" href="/transfer-role">Transfer Role</a>
             </div>
           </li>
@@ -83,9 +83,9 @@
                  Projects
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink4">
-              <a class="dropdown-item" href="/project-search">Project Search</a>
+              <a class="dropdown-item" href="/proj-search-results">Project Search</a>
               <a class="dropdown-item" href="/my-project">My Project</a>
-              <a class="dropdown-item" href="/approve-projects">Approve Projects</a>
+              <a class="dropdown-item" href="/app-proj-search-results">Approve Projects</a>
             </div>
              </li>
          </ul>

@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\models\Group;
 use DB;
 use Illuminate\Support\Facades\Input;
 
-class AccountController extends Controller
+class GroupController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,37 +17,40 @@ class AccountController extends Controller
      */
     public function index()
     {
-        $accounts = DB::table('account')
-        ->join('account_type','account_type.accTypeNo','=','account.accType')
-        ->select('account.*','account_type.*')
+        $groups = DB::table('group')
+        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('account','group.groupAdviser','=','account.accNo')
+        ->select('group.*','project.*','account.*')
         ->paginate(10); 
-        return view('pages.accounts.index')->with('data',$accounts);
+        return view('pages.groups.index')->with('data',$groups);
     }
 
-    public function search(Request $request)
+    public function search()
     {
         $q = Input::get('q');
       
         if($q != '') {
-            $data = DB::table('account')
-            ->join('account_type','account_type.accTypeNo','=','account.accType')
-            ->select('account.*','account_type.*')
-            ->where(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
-            ->orWhere('account_type.accTypeDescription','LIKE',"%".$q."%")
+            $data = DB::table('group')
+            ->join('account','account.accNo','=','group.groupAdviser')
+            ->join('project','group.groupProjNo','=','project.projNo')
+            ->select('account.*','group.*','project.*')
+            ->where('group.groupName','LIKE', "%".$q."%")
+            ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
             ->paginate(10);
         } else {
-            $data = DB::table('account')
-            ->join('account_type','account_type.accTypeNo','=','account.accType')
-            ->select('account.*','account_type.*')
-            ->paginate(10);
+            $data = DB::table('group')
+            ->join('project','group.groupProjNo','=','project.projNo')
+            ->join('account','group.groupAdviser','=','account.accNo')
+            ->select('group.*','project.*','account.*')
+            ->paginate(10); 
         }
+
         $data->appends(array(
             'q' => Input::get('q')
         ));
            
-        return view('pages.accounts.index')->withData($data);
+        return view('pages.groups.index')->withData($data);
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -55,13 +59,16 @@ class AccountController extends Controller
      */
     public function create()
     {
-        $acc_type = DB::table('account_type')
+        $proj = DB::table('group')
+        ->join('project','group.groupProjNo','=','project.projNo')
+        ->select('group.*','project.*')
         ->get();
-        $group = DB::table('group')
-        ->select('group.*')
-        ->whereNotIn('group.groupStatus', ['Finished'])->get();
-        $data = ['acc_type' => $acc_type, 'group' => $group];
-        return view('pages.accounts.create')->with('data',$data);
+
+        $content_adviser = DB::table('account')
+        ->where('account.accType','=','2')
+        ->get();
+        $data = ['proj'=>$proj,'content_adviser'=>$content_adviser];
+        return view('pages.groups.create')->with('data',$data);
     }
 
     /**
@@ -72,15 +79,7 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        $firstname = ucwords($request->input('given_name'));
-        $middle_initial = ucwords($request->input('middle_initial')) . '.';
-        $lastname = ucwords($request->input('last_name'));
-        $this->validate($request, [
-            'given_name' => 'required|max:50',
-            'middle_initial' => 'required|max:2',
-            'last_name' => 'required|max:50',
-
-        ]);
+        //
     }
 
     /**

@@ -22,11 +22,10 @@
         <link rel="stylesheet" href="{{asset('css/footer.css')}}">
         <link rel="stylesheet" href="{{asset('css/default.css')}}">
         <link rel="stylesheet" href="{{asset('css/fontawesome/web-fonts-with-css/css/fontawesome-all.min.css')}}">
-
-        <script src="{{asset('js/jquery-3.3.1.slim.min.js')}}"></script>
+        
+        <script src="{{asset('js/jquery-3.3.1.min.js')}}"></script>
         <script src="{{asset('js/popper.min.js')}}"></script>
         <script src="{{asset('js/bootstrap.min.js')}}"></script>
-        <script src="{{asset('js/jquery.min.js')}}"></script>
         
         <script src="{{asset('js/knockout-3.4.2.js')}}"></script>   
         <link rel="stylesheet" href="{{asset('css/search-select.min.css')}}">
@@ -36,6 +35,10 @@
         <title>{{config('app.name','cttracer')}}</title>
         <style type="text/css">
             @yield('style')
+            #cont1 {
+                margin-top: 50px;
+                background-color: white;
+            }
         </style>
     </head>
     <body>
@@ -43,10 +46,7 @@
         @include('inc.navbar')
         <wrapper class="d-flex flex-column" >
                 <main class="flex-fill" id="app"> 
-                    <div class="container" id="c1">
-                            
-                                @include('inc.messages')
-
+                    <div class="container" id="cont1">
         
             @yield('content')
     
@@ -67,6 +67,7 @@ $.ajaxSetup({
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
-</script>
 
+
+</script>
 <script src="{{asset('js/bootstrap-submenu.js')}}"></script>

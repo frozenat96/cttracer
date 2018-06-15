@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use App\models\Project; 
 use Auth;
+use Illuminate\Support\Facades\Input;
 
 class ProjAppController extends Controller
 {
@@ -31,13 +32,43 @@ class ProjAppController extends Controller
             ])
         ->whereIn('panel_verdict.panelVerdictNo',[2,3])
         ->paginate(10);
-        
         $data = ['proj'=>$proj];
-        
         return view('pages.approve_projects.index')->with('data',$proj);
     }
 
     
+    public function search(Request $request)
+    {
+        $user_id = Auth::id(); 
+
+        $q = Input::get('q');
+        if($q != '') {
+            $data = DB::table('panel_group')
+            ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
+            ->join('project', 'group.groupProjNo', '=', 'project.projNo')
+            ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
+            ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
+            ->join('project_approval', 'project_approval.projAppPGroupNo', '=', 'panel_group.panelGroupNo')
+            ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*')
+            ->where('project.projName','LIKE', "%".$q."%")
+            ->where([
+                ['group.groupStatus','=','Submitted For Panel Approval'],
+                ['panel_group.panelAccNo','=',$user_id]
+                ])
+            ->whereIn('panel_verdict.panelVerdictNo',[2,3])
+            ->paginate(10)
+            ->setpath('');
+
+            $data->appends(array(
+                'q' => Input::get('q')
+            ));
+            return view('pages.approve_projects.index')->with('data',$data);
+        } else {
+            return redirect()->action('ProjAppController@index');
+        }
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

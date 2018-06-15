@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('includes')
-<script src="{{asset('js/data-search.vm.js')}}"></script>
+
 @endsection
 
 @section('style')
@@ -10,31 +10,48 @@
 @section('content')
 <div class="row" id="app">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <h4>PROJECT SEARCH</h4>
-        <form action="/proj-search-results" method="POST" role="search">
-            {{csrf_field()}}
-            <div class="input-group">
-                <input type="text" class="form-control" name="q" placeholder="Search Projects">
-                <span class="input-group-btn">
-                    <button type="submit" class="btn btn-danger">
-                        <span><i class="fas fa-search"></i></span>
-                    </button> 
-                </span>
+        <div class="jumbotron bg1">   
+        <h4><span class="alert bg2">PROJECT SEARCH</span></h4>
+        <br class="my-4">
+            <div class="row">
+            <div class="col-md-12">
+                <form method="post" action="/proj-search-results" accept-charset="UTF-8" role="search">
+                    {{csrf_field()}} 
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" placeholder="Search Projects"> 
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-danger">
+                                <span><i class="fas fa-search"></i> Search</span>
+                            </button>
+                        </span>  
+                    </div>
+                </form>
             </div>
-        </form>
+               
+            </div>
+        <hr class="my-4">
         @if(isset($data))
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th scope="col">Project No.</th>
                     <th scope="col">Project Name</th>
+                    <th scope="col">Project Document</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($data as $project)
+                @foreach($data as $proj)
                     <tr scope="row">
-                        <td>{{$project->projNo}}</td>
-                        <td>{{$project->projName}}</td>
+                        <td>
+                            <span tabindex="0" class="" data-toggle="popover" data-content="{{$proj->projName}}" data-placement="top">{{(substr($proj->projName, 0, 20) . '..')}}</span>
+                        </td>
+                        <td>
+                            <a href="{{($proj->projDocument)}}" target="_blank">
+                                <span class="badge badge-info"> 
+                                    <i class="fas fa-external-link-alt"></i>
+                                     Document Link
+                                </span>
+                            </a>     
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -47,17 +64,36 @@
         <!--
         <project-search></project-search>
         -->
+        </div>
     </div>
     
 </div>
+
 @section('paginator')
+    <!--
     <div class="container justify-align-center">
-    @include('inc.tableControls')
-    </div>
+    </div> 
+    -->
 @endsection
 
 @endsection
 
+@section('includes2')
+<script type="text/javascript">
 
+$(document).ready(function () {
+    $('.popover-dismiss').popover({
+  trigger: 'focus'
+});
+$(function () {
+  $('[data-toggle="popover"]').popover();
+})
+
+$('[data-toggle="popover"]').popover({ trigger: "hover" });
+});
+
+
+</script>
+@endsection
 
 

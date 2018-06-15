@@ -13,7 +13,19 @@ html, body {
 }
 
 .bg1 {
-	background-color: rgb(254,190,190);
+	background-color: #FFDABB;
+}
+
+.bg2 {
+	background-color: rgba(0, 0, 0,0.0433);
+}
+
+.bg3 {
+	background-color: rgba(255, 255, 255,0.7);
+}
+
+.bg4 {
+	background-color: beige;
 }
 
 #login1 {
@@ -21,9 +33,6 @@ html, body {
 	font-size: 1.2em;
 }
 
-.bg2 {
-	background-color: rgb(249,116,116);
-}
 
 #c1 {
 	padding: 20px;
@@ -198,5 +207,13 @@ html, body {
 	}
 	
 	.bx2 {
-		background-color: darksalmon;
+		background-color: #FFC694;
+	}
+	.bx3 {
+		background-color: coral;
+	}
+
+	.table thead th, .table td {
+		border-bottom-color: rgba(0,0,0,0.05);
+		border-top-color: rgba(0,0,0,0.0);
 	}

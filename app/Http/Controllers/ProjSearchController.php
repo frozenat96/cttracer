@@ -20,7 +20,8 @@ class ProjSearchController extends Controller
     {
         $data = DB::table('project')
         ->select('project.*')
-        ->paginate(1);
+        ->select('project.*')
+        ->paginate(10);
         return view('pages.project_search.index')->withData($data);
     }
 
@@ -40,19 +41,20 @@ class ProjSearchController extends Controller
         */
         $q = Input::get('q');
         if($q != '') {
-            $data = DB::table('project')->where('project.projName','LIKE', '%'.$q.'%')
+            $data = DB::table('project')
             ->select('project.*')
-            ->paginate(1)
+            ->where('project.projName','LIKE', "%".$q."%") 
+            ->paginate(10)
             ->setpath('');
+        } else {
+            return redirect()->action('ProjSearchController@index');
+        }
+
         $data->appends(array(
             'q' => Input::get('q')
         ));
-            if(count($data)>0) {
-                return view('pages.project_search.index')->withData($data);
-            } else {
-                return view('pages.project_search.index')->withMessage("No results found");
-            }
-        }
+        
+        return view('pages.project_search.index')->with('data',$data);
     }
 
     /**

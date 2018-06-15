@@ -10,19 +10,26 @@
 @section('content')
 <div class="row" id="app">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <h4>APPROVE PROJECTS</h4>
-        <form action="/proj-search-results" method="POST" role="search">
-            {{csrf_field()}}
-            <div class="input-group">
-                <input type="text" class="form-control" name="q" placeholder="Search Projects">
-                <span class="input-group-btn">
-                    <button type="submit" class="btn btn-danger">
-                        <span><i class="fas fa-search"></i></span>
-                    </button>
-                </span>
+        <div class="jumbotron bg1">
+        <h4><span class="alert bg2">APPROVE PROJECTS</span></h4>
+        <br class="my-4">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="/app-proj-search-results" method="POST" role="search">
+                    {{csrf_field()}}
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" placeholder="Search Projects">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-danger">
+                                <span><i class="fas fa-search"></i> Search</span>
+                            </button>
+                        </span>
+                    </div>
+                </form>
             </div>
-        </form>
-        
+        </div>
+
+        <hr class="my-4">
         @if(count($data) > 0)
         
         <table class="table table-striped table-hover">
@@ -52,10 +59,4 @@
     </div>
     
 </div>
-@section('paginator')
-    <div class="container justify-align-center">
-    @include('inc.tableControls')
-    </div>
-@endsection
-
 @endsection

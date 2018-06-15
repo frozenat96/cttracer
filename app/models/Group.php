@@ -19,5 +19,11 @@ class Group extends Eloquent
     public function account() {
         return $this->belongsToMany('App\User','account_group','grpNo','accNo');
     }
-
+        
+    public function initials($str) {
+        $ret = '';
+        foreach (explode(' ', $str) as $word)
+            $ret .= (strtoupper($word[0]) . '.');
+        return $ret;
+    }
 }

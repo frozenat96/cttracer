@@ -7,7 +7,9 @@
 @section('content')
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <h4>STAGE SETTINGS</h4>
+        <div class="jumbotron bg1">
+        <h4><span class="alert bg2">STAGE SETTINGS</span></h4>
+            <br class="my-4">
             <div class="row">
                 <div class="col-md-10">
             <form method="post" action="/stage-search-results" accept-charset="UTF-8" role="search">
@@ -27,6 +29,7 @@
                         <a href="/stage-settings/create" class="btn btn-primary"><span><i class="fas fa-plus"></i> Add</span></a>
                 </div>
             </div>
+            <hr class="my-4">
             @if(isset($data) && count($data))
             <table class="table table-striped table-hover table-sm">
                 <thead>
@@ -57,6 +60,7 @@
             @else
             <table class="table"><tr><td><span>No results found</span></td></tr></table>
             @endif
+        </div>
     </div>
 </div>
 @endsection

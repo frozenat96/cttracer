@@ -2,7 +2,7 @@
 
 @section('style')
     #index_content1 {
-        background-color: rgb(254,190,190);
+        background-color: #FFB372;
         padding: 20px;
     }
     #index_content1 p {
@@ -19,7 +19,12 @@
 
 @section('content')
 <div class="row">
-<div class="col-md-12" id="index_content1">
+        <div class="col-md-12">
+            <img src="{{asset('img/design/index-background/index-background.png')}}" class="img-fluid" alt="Responsive image">
+        </div>
+</div>
+<div class="row">
+<div class="col-md-12 jumbotron" id="index_content1">
         @if(session('status'))
         <div class="alert alert-success">
                 {{ session('status') }}
