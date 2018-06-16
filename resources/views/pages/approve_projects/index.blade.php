@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('includes')
-<script src="{{asset('js/data-search.vm.js')}}"></script>
-@endsection
-
 @section('style')
 @endsection
 
@@ -11,6 +7,7 @@
 <div class="row" id="app">
     <div class="col-md-12 justify-align-center" id="index_content1">
         <div class="jumbotron bg1">
+        @include('inc.messages')
         <h4><span class="alert bg2">APPROVE PROJECTS</span></h4>
         <br class="my-4">
         <div class="row">
@@ -20,7 +17,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" name="q" placeholder="Search Projects">
                         <span class="input-group-btn">
-                            <button type="submit" class="btn btn-danger">
+                            <button type="submit" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-search"></i> Search</span>
                             </button>
                         </span>

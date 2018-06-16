@@ -10,7 +10,8 @@
 @section('content')
 <div class="row" id="app">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <div class="jumbotron bg1">   
+        <div class="jumbotron bg1">
+        @include('inc.messages')
         <h4><span class="alert bg2">PROJECT SEARCH</span></h4>
         <br class="my-4">
             <div class="row">
@@ -20,7 +21,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" name="q" placeholder="Search Projects"> 
                         <span class="input-group-btn">
-                            <button type="submit" class="btn btn-danger">
+                            <button type="submit" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-search"></i> Search</span>
                             </button>
                         </span>  
@@ -30,7 +31,7 @@
                
             </div>
         <hr class="my-4">
-        @if(isset($data))
+        @if(isset($data) && count($data))
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -59,7 +60,7 @@
         </table>
         {!! $data->render() !!}
         @else
-        {{$message}}
+        <table class="table"><tr><td><span>No results found</span></td></tr></table>
         @endif
         <!--
         <project-search></project-search>
@@ -76,24 +77,6 @@
     -->
 @endsection
 
-@endsection
-
-@section('includes2')
-<script type="text/javascript">
-
-$(document).ready(function () {
-    $('.popover-dismiss').popover({
-  trigger: 'focus'
-});
-$(function () {
-  $('[data-toggle="popover"]').popover();
-})
-
-$('[data-toggle="popover"]').popover({ trigger: "hover" });
-});
-
-
-</script>
 @endsection
 
 

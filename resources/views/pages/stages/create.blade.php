@@ -55,12 +55,15 @@
                         </div>
                     </div>
 
-                            <div class="form-group text-right">
-                                <hr class="my-4">
-                                <button type="submit" class="btn btn-danger">
-                                    <span><i class="fas fa-plus"></i> Create Stage</span>
-                                </button>
-                            </div>
+                        <div class="form-group text-right">
+                            <hr class="my-4">
+                            <button type="reset" class="btn btn-info btn-lg">
+                            <span><i class="fas fa-recycle"></i> Reset Values</span>
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <span><i class="fas fa-plus"></i> Create Stage</span>
+                            </button>
+                        </div>
                     </fieldset>
                 </form>
             </div>

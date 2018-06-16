@@ -3,58 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
-use App\models\Project;
+use App\User;
 use Auth;
+use DB;
 use Illuminate\Support\Facades\Input;
 
-class ProjSearchController extends Controller
+class SchedSettingController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
-        $data = DB::table('project')
-        ->select('project.*')
-        ->select('project.*')
-        ->paginate(1);
-        return view('pages.project_search.index')->withData($data);
+        $user_id = Auth::id();
+        $datetime_settings = DB::table('datetime_setting')
+        ->join('account','account.accNo','=','datetime_setting.dtsAccNo')
+        ->select('datetime_setting.*','account.*')
+        ->where('account.accNo','=',$user_id)
+        ->paginate(10); 
+        return view('pages.schedule_settings.index')->with('data',$datetime_settings);
     }
 
-    public function search(Request $request)
+    public function search()
     {
-        /*
-        if($request->search != '') {
-        $data=Project::where('projName','LIKE','%'.$request->search.'%')->paginate(1);
-        //return redirect()->action('ProjSearchController@index')->with('data',$data)->send();
-        $data->appends(array(
-            'search' => $request->search
-        )); 
-        } else {
-            $data=Project::paginate(1);
-        }
-        return response()->json($data); 
-        */
         $q = Input::get('q');
+        $user_id = Auth::id();
+
         if($q != '') {
-            $data = DB::table('project')
-            ->select('project.*')
-            ->where('project.projName','LIKE', "%".$q."%") 
-            ->paginate(1)
-            ->setpath('');
+            $data = DB::table('datetime_setting')
+            ->join('account','account.accNo','=','datetime_setting.dtsAccNo')
+            ->select('datetime_setting.*','account.*')
+            ->where('account.accNo','=',$user_id)
+            ->where(function ($query) use ($q){
+                $query->where('datetime_setting.dtsDate','LIKE', "%".$q."%")
+                ->orWhere('datetime_setting.dtsStartTime','LIKE', "%".$q."%")
+                ->orWhere('datetime_setting.dtsEndTime','LIKE', "%".$q."%")
+                ->orWhere('datetime_setting.dtsGroupType','LIKE', "%".$q."%");
+            })
+            ->paginate(10);
         } else {
-            return redirect()->action('ProjSearchController@index');
+            return redirect()->action('SchedSettingController@index');
         }
 
         $data->appends(array(
             'q' => Input::get('q')
         ));
-        
-        return view('pages.project_search.index')->with('data',$data);
+           
+        return view('pages.schedule_settings.index')->withData($data);
     }
 
     /**
@@ -64,7 +61,7 @@ class ProjSearchController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.schedule_settings.create');
     }
 
     /**
@@ -84,13 +81,9 @@ class ProjSearchController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id,$input)
+    public function show($id)
     {
-        switch($id) {
-            case 1:
-            case '1': $data=Project::where('projName','LIKE','%'.$input."%")->paginate(1);
-        }
-        return view('pages.project_search.index')->with('data', $id);
+        //
     }
 
     /**
@@ -124,12 +117,6 @@ class ProjSearchController extends Controller
      */
     public function destroy($id)
     {
-        /*
-           <ul>
-            <li v-for="n in pagination.total">{{ n }}>
-                <a v-on:click="fetchPaginateProjects(pagination.path+'?search='+search+'&page='+n)">{{n}}</a>
-            </li>
-        </ul>
-        */
+        //
     }
 }

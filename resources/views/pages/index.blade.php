@@ -2,7 +2,7 @@
 
 @section('style')
     #index_content1 {
-        background-color: #FFB372;
+        background-color: #FFC694;
         padding: 20px;
     }
     #index_content1 p {

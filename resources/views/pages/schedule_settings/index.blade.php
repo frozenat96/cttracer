@@ -9,14 +9,14 @@
     <div class="col-md-12 justify-align-center" id="index_content1">
         <div class="jumbotron bg1">
         @include('inc.messages')
-        <h4><span class="alert bg2">STAGE SETTINGS</span></h4>
-            <br class="my-4">
+        <h4><span class="alert bg2">SCHEDULE SETTINGS</span></h4>
+        <br class="my-4">
             <div class="row">
                 <div class="col-md-10">
-            <form method="post" action="/stage-search-results" accept-charset="UTF-8" role="search">
+            <form method="post" action="/schedule-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Stages"> 
+                    <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
@@ -27,31 +27,34 @@
             </form>
                 </div>
                 <div class="col-md-1">
-                        <a href="/stage-settings/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new stage" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+                        <a href="/schedule-settings/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new schedule setting" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
                 </div>
             </div>
             <hr class="my-4">
             @if(isset($data) && count($data))
+            <?php 
+            $model = new App\models\Group;
+            ?>
             <table class="table table-striped table-hover table-sm">
                 <thead>
                     <tr>
-                        <th scope="col">Stage No.</th>
-                        <th scope="col">Stage Name</th>
-                        <th scope="col">Defense Duration</th>
-                        <th scope="col">Panel Members</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Starting Time</th>
+                        <th scope="col">Ending Time</th>
+                        <th scope="col">Group Type</th>
                         <th scope="col">Edit</th>
                         <th scope="col">Delete</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($data as $stage)
+                    @foreach($data as $dts)
                         <tr scope="row">
-                            <td>{{$stage->stageNo}}</td>
-                            <td>{{$stage->stageName}}</td>
-                            <td>{{$stage->stageDefDuration}} minutes</td>
-                            <td>{{$stage->stagePanel}}</td>
-                            <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit stage details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
-                            <td><a href="#" class="btn btn-danger" data-toggle="popover" data-content="Delete this stage" data-placement="top"><span><i class="fas fa-minus"></i> Delete</span></a></td>
+                            <td>{{$dts->dtsDate}}</td>
+                            <td>{{$dts->dtsStartTime}}</td>
+                            <td>{{$dts->dtsEndTime}}</td>
+                            <td>{{$dts->dtsGroupType}}</td>
+                            <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit schedule setting details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
+                            <td><a href="#" class="btn btn-danger" data-toggle="popover" data-content="Delete this setting" data-placement="top"><span><i class="fas fa-minus"></i> Delete</span></a></td>
                         </tr>
                     @endforeach
                 </tbody>

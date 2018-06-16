@@ -35,10 +35,7 @@ class AccountController extends Controller
             ->orWhere('account_type.accTypeDescription','LIKE',"%".$q."%")
             ->paginate(10);
         } else {
-            $data = DB::table('account')
-            ->join('account_type','account_type.accTypeNo','=','account.accType')
-            ->select('account.*','account_type.*')
-            ->paginate(10);
+            return redirect()->action('AccountController@index');
         }
         $data->appends(array(
             'q' => Input::get('q')
@@ -47,6 +44,9 @@ class AccountController extends Controller
         return view('pages.accounts.index')->withData($data);
     }
 
+    public function transfer(Request $request) {
+        return redirect()->action('PagesController@transferRole');
+    }
 
     /**
      * Show the form for creating a new resource.

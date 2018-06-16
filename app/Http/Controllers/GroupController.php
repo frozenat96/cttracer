@@ -36,13 +36,10 @@ class GroupController extends Controller
             ->select('account.*','group.*','project.*')
             ->where('group.groupName','LIKE', "%".$q."%")
             ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
+            ->orWhere('group.groupStatus','LIKE', "%".$q."%")
             ->paginate(10);
         } else {
-            $data = DB::table('group')
-            ->join('project','group.groupProjNo','=','project.projNo')
-            ->join('account','group.groupAdviser','=','account.accNo')
-            ->select('group.*','project.*','account.*')
-            ->paginate(10); 
+            return redirect()->action('GroupController@index');
         }
 
         $data->appends(array(

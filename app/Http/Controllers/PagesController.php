@@ -8,6 +8,7 @@ use Auth;
 use App\models\Project;
 use App\models\AccountGroup;
 use DB;
+use Illuminate\Support\Facades\Input;
 
 class PagesController extends Controller
 {
@@ -25,24 +26,44 @@ class PagesController extends Controller
         return view('pages.add-accounts');
     }
 
-    public function addGroups() {
+    public function addGroup() {
         return view('pages.add-groups');
-    }
-
-    public function approveSchedules() {
-        return view('pages.approve-schedules');
     }
 
     public function projectSearch($x = null) {
         return view('pages.project_search.p-search-result')->with('data',$x);
     }
 
-    public function scheduleSettings() {
-        return view('pages.schedule-settings');
+    public function searchGroupIndex() {
+        $groups = DB::table('group')
+        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('account','group.groupAdviser','=','account.accNo')
+        ->select('group.*','project.*','account.*')
+        ->paginate(10); 
+        return view('pages.search-groups')->with('data',$groups);
     }
 
-    public function searchGroups() {
-        return view('pages.search-groups');
+    public function searchGroup() {
+        $q = Input::get('q');
+      
+        if($q != '') {
+            $data = DB::table('group')
+            ->join('account','account.accNo','=','group.groupAdviser')
+            ->join('project','group.groupProjNo','=','project.projNo')
+            ->select('account.*','group.*','project.*')
+            ->where('group.groupName','LIKE', "%".$q."%")
+            ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
+            ->orWhere('group.groupStatus','LIKE', "%".$q."%")
+            ->paginate(10);
+        } else {
+            return redirect()->action('PagesController@searchGroupIndex');
+        }
+
+        $data->appends(array(
+            'q' => Input::get('q')
+        ));
+           
+        return view('pages.search-groups')->withData($data);
     }
 
     public function stageSettings() {
@@ -50,7 +71,10 @@ class PagesController extends Controller
     }
 
     public function transferRole() {
-        return view('pages.transfer-role');
+        $data = DB::table('account')
+        ->where('account.accType','=','2')
+        ->get();
+        return view('pages.transfer-role')->with('data',$data);
     }
 
     public function getData(Request $request) {
@@ -58,4 +82,43 @@ class PagesController extends Controller
         $data = response()->json($data);
         return redirect()->action('ProjSearchController@index')->with('data',$data)->send();
     }
+
+    public function advisedGroupsIndex() {
+        $user_id = Auth::id(); 
+        $groups = DB::table('group')
+        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('account','group.groupAdviser','=','account.accNo')
+        ->select('group.*','project.*','account.*')
+        ->where('account.accType','=','2')
+        ->where('group.groupAdviser','=',$user_id)
+        ->where('group.groupStatus','=', 'Submitted To Content Adviser')
+        ->paginate(10); 
+        return view('pages.advised-groups')->with('data',$groups);
+    }
+
+    public function advisedGroupsSearch() {
+        $q = Input::get('q');
+      
+        if($q != '') {
+            $data = DB::table('group')
+            ->join('account','account.accNo','=','group.groupAdviser')
+            ->join('project','group.groupProjNo','=','project.projNo')
+            ->select('account.*','group.*','project.*')
+            ->where('account.accType','=','2')
+            ->where('group.groupAdviser','=',$user_id)
+            ->where('group.groupStatus','=', 'Submitted To Content Adviser')
+            ->where('group.groupName','LIKE', "%".$q."%")
+            ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
+            ->paginate(10);
+        } else {
+            return redirect()->action('PagesController@advisedGroupsIndex');
+        }
+
+        $data->appends(array(
+            'q' => Input::get('q')
+        ));
+           
+        return view('pages.groups.index')->withData($data);
+    }
+
 }

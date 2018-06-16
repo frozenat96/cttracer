@@ -78,7 +78,10 @@ $account_types = DB::table('account_type')->get();
                         
                           <div class="form-group text-right">
                               <hr class="my-4">
-                              <button type="submit" class="btn btn-danger">
+                              <button type="reset" class="btn btn-info btn-lg">
+                                <span><i class="fas fa-recycle"></i> Reset Values</span>
+                              </button>
+                              <button type="submit" class="btn btn-success btn-lg">
                                   <span><i class="fas fa-plus"></i> Create Account</span>
                               </button>
                           </div>

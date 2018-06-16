@@ -31,61 +31,61 @@
                 }
                 ?>
             </ul>
-        </div>
+        </div> 
         
     </nav>
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #F85353;height: 100px;">
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-home"></i> Home <span class="sr-only"></span></a>
           </li>
           <li class="nav-item dropdown menu1">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" data-submenu aria-expanded="true" aria-haspopup="true">
-            Settings
+                <i class="fas fa-cogs"></i> Settings
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
               <div class="dropdown dropright dropdown-submenu menu1">
-                <a class="dropdown-item dropdown-toggle d1l1" href="#" data-toggle="dropdown" >Project Settings</a>
+                <a class="dropdown-item dropdown-toggle d1l1" href="#" data-toggle="dropdown" ><i class="fas fa-cog"></i> Project Settings</a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="/stage-settings">Stage Settings</a>
-                  <a class="dropdown-item" href="/schedule-settings">Schedule Settings</a>
+                  <a class="dropdown-item" href="/stage-settings"><i class="fas fa-list"></i> Stage Settings</a>
+                  <a class="dropdown-item" href="/schedule-settings"><i class="far fa-calendar-plus"></i> Schedule Settings</a>
                 </div>
               </div>
               
-              <a class="dropdown-item d1l1" href="/accounts">Add Accounts</a>
-              <a class="dropdown-item d1l1" href="/groups">Add Groups</a>
-              <a class="dropdown-item d1l1" href="/transfer-role">Transfer Role</a>
+              <a class="dropdown-item d1l1" href="/accounts"><i class="fas fa-user-cog"></i> Add Accounts</a>
+              <a class="dropdown-item d1l1" href="/groups"><i class="fas fa-users-cog"></i> Add Groups</a>
+              <a class="dropdown-item d1l1" href="/transfer-role-index"><i class="fas fa-exchange-alt"></i> Transfer Role</a>
             </div>
           </li>
           <li class="nav-item dropdown menu1">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Groups
+                <i class="fas fa-users"></i> Groups
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
-              <a class="dropdown-item" href="/search-groups">Search Groups</a>
-              <a class="dropdown-item" href="/advised-groups">Advised Groups</a>
+              <a class="dropdown-item" href="/search-groups"><i class="fas fa-search"></i> Search Groups</a>
+              <a class="dropdown-item" href="/advised-groups"><i class="fas fa-chalkboard-teacher"></i> Advised Groups</a>
             </div>
           </li>
           <li class="nav-item dropdown menu1">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Schedule
+                <i class="far fa-calendar-alt"></i> Schedule
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
-              <a class="dropdown-item" href="/approve-schedules">Approve Schedules</a>
-              <a class="dropdown-item" href="/schedule-settings">Schedule Settings</a>
+              <a class="dropdown-item" href="/approve-schedules"><i class="far fa-calendar-check"></i> Approve Schedules</a>
+              <a class="dropdown-item" href="/schedule-settings"><i class="far fa-calendar-plus"></i> Schedule Settings</a>
             </div>
           </li>
         </ul>
          <ul class="nav navbar-nav navbar-right">
              <li class="nav-item dropdown menu1">
                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                 Projects
+                    <i class="fas fa-project-diagram"></i> Projects
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink4">
-              <a class="dropdown-item" href="/proj-search-results">Project Search</a>
-              <a class="dropdown-item" href="/my-project">My Project</a>
-              <a class="dropdown-item" href="/app-proj-search-results">Approve Projects</a>
+              <a class="dropdown-item" href="/project-search"><i class="fas fa-archive"></i> Project Search</a>
+              <a class="dropdown-item" href="/my-project"><i class="far fa-object-group"></i> My Project</a>
+              <a class="dropdown-item" href="/approve-projects"><i class="fas fa-unlock-alt"></i> Approve Projects</a>
             </div>
              </li>
          </ul>

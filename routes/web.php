@@ -38,15 +38,23 @@ Route::group(['middleware' => ['auth']], function() {
     );
 
     Route::get('/advised-groups', [
-        'uses'=>'PagesController@advisedGroups',
+        'uses'=>'PagesController@advisedGroupsIndex',
     ]
     );
 
-    Route::get('/approve-schedules', [
-        'uses'=>'PagesController@approveSchedules',
+    Route::any('/advised-groups-search-results', [
+        'uses'=>'PagesController@advisedGroupsSearch'
     ]
-    );
+    ); 
 
+    Route::resource('/approve-schedules', 'SchedAppController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/approve-schedules-search-results', [
+        'uses'=>'SchedAppController@search'
+    ]
+    ); 
    
     Route::resource('/my-project', 'MyProjController')->parameters([
         'rol' => 'admin_user'
@@ -70,15 +78,24 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     ); 
 
-    Route::get('/schedule-settings', [
-        'uses'=>'PagesController@scheduleSettings',
+    Route::resource('/schedule-settings', 'SchedSettingController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/schedule-search-results', [
+        'uses'=>'SchedSettingController@search',
     ]
     );
 
     Route::get('/search-groups', [
-        'uses'=>'PagesController@searchGroups',
+        'uses'=>'PagesController@searchGroupIndex',
     ]
     );
+
+    Route::any('/group-search-results2', [
+        'uses'=>'PagesController@searchGroup',
+    ]
+    ); 
 
     Route::resource('/stage-settings', 'StageController')->parameters([
         'rol' => 'admin_user'
@@ -89,10 +106,15 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::get('/transfer-role', [
+    Route::get('/transfer-role-index', [
         'uses'=>'PagesController@transferRole',
     ]
     );
+
+    Route::any('/transfer-role-results', [
+        'uses'=>'AccountController@transfer'
+    ]
+    ); 
     
     Route::post('/searchProjects','ProjSearchController@search')->name('searchProj');
 });
