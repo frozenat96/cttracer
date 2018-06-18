@@ -21,7 +21,7 @@ class MyProjController extends Controller
         $Projectmodel = new Project();
         $proj = $Projectmodel->projectInfoByAccount($user_id);
         if(!count($proj)) {
-            return view('pages.my_project.index')->with('data', $proj);
+            return view('pages.my_project.index');
         }
     
         $group = DB::table('account')

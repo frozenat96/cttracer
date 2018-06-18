@@ -21,6 +21,7 @@
 
         <div class="jumbotron bx2">
                 <legend class="text-left"><span class="alert bg2">MY PROJECT</span><hr class="my-4"></legend>
+        @if(isset($data) && count($data))
         <div class="row">
             <div class="col-md-12">
                 <h5 id="font2">Project Name : </h5><ul class="list1"><li>{{$data['proj'][0]->projName}}
@@ -32,7 +33,7 @@
                     
                  
             
-        @if(count($data))
+        
 
             <section>
             <h5>Content Adviser</h5>
