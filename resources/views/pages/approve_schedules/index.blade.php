@@ -20,7 +20,7 @@
         <br class="my-4">
             <div class="row">
                 <div class="col-md-10">
-            <form method="post" action="/schedule-search-results" accept-charset="UTF-8" role="search">
+            <form method="post" action="/approve-schedules-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
                     <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
@@ -34,7 +34,7 @@
             </form>
                 </div>
                 <div class="col-md-1">
-                        <a href="/schedule-settings/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new schedule setting" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+                        <a href="/approve-schedules/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new schedule setting" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
                 </div>
             </div>
             <hr class="my-4">

@@ -36,6 +36,35 @@ class SchedAppController extends Controller
         return view('pages.approve_schedules.index')->with('data',$sched);
     }
 
+    public function search() {
+        $user_id = Auth::id();
+        $q = Input::get('q');
+      
+        if($q != '') {
+            $data = DB::table('schedule_approval')
+            ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+            ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
+            ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
+            ->join('schedule','schedule.schedNo','=','schedule_approval.schedAppSchedNo')
+            ->join('account','account.accNo','=','panel_group.panelAccNo')
+            ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*','account.*')
+            ->where('group.groupStatus','=','Submitted For Panel Approval')
+            ->where('panel_group.panelAccNo','=',$user_id)
+            ->where('schedule.schedStatus','!=','Finished')
+            ->where('group.groupName','LIKE', "%".$q."%")
+            ->paginate(3); 
+        } else {
+            return redirect()->action('SchedAppController@index');
+        }
+
+        $data->appends(array(
+            'q' => Input::get('q')
+        ));
+           
+        return view('pages.approve_schedules.index')->withData($data);
+    }
+
     public function calcSchedStatus($groupNo){
         $chairPanelApp = DB::table('schedule_approval')
         ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
@@ -70,7 +99,7 @@ class SchedAppController extends Controller
      */
     public function create()
     {
-        //
+        return redirect()->action('SchedAppController@index');
     }
 
     /**
