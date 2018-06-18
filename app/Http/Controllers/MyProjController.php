@@ -18,15 +18,18 @@ class MyProjController extends Controller
     public function index()
     {
         $user_id = Auth::id(); 
-
-        $proj = Project::projectInfoByAccount($user_id);
-        //return dd($users);
+        $Projectmodel = new Project();
+        $proj = $Projectmodel->projectInfoByAccount($user_id);
+        if(!count($proj)) {
+            return view('pages.my_project.index')->with('data', $proj);
+        }
+    
         $group = DB::table('account')
             ->join('group', 'account.accGroupNo', '=', 'group.groupNo')
             ->select('account.*')
             ->where('group.groupNo','=',$proj[0]->groupNo)
             ->get();
-
+        
         $pgroup = DB::table('panel_group')
         ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
         ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
@@ -34,7 +37,6 @@ class MyProjController extends Controller
         ->select('account.*','project_approval.*','panel_group.*')
         ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
         ->get();
-
         $adviser = DB::table('account')
         ->where('account.accNo','=',$proj[0]->groupAdviser)
         ->get();

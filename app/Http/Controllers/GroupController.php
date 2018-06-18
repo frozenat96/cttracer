@@ -18,7 +18,7 @@ class GroupController extends Controller
     public function index()
     {
         $groups = DB::table('group')
-        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('project','project.projGroupNo','=','group.groupNo')
         ->join('account','group.groupAdviser','=','account.accNo')
         ->select('group.*','project.*','account.*')
         ->paginate(10); 
@@ -32,7 +32,7 @@ class GroupController extends Controller
         if($q != '') {
             $data = DB::table('group')
             ->join('account','account.accNo','=','group.groupAdviser')
-            ->join('project','group.groupProjNo','=','project.projNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
             ->select('account.*','group.*','project.*')
             ->where('group.groupName','LIKE', "%".$q."%")
             ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
@@ -57,7 +57,7 @@ class GroupController extends Controller
     public function create()
     {
         $proj = DB::table('group')
-        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('project','project.projGroupNo','=','group.groupNo')
         ->select('group.*','project.*')
         ->get();
 

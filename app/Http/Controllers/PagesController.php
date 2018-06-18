@@ -36,7 +36,7 @@ class PagesController extends Controller
 
     public function searchGroupIndex() {
         $groups = DB::table('group')
-        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('project','project.projGroupNo','=','group.groupNo')
         ->join('account','group.groupAdviser','=','account.accNo')
         ->select('group.*','project.*','account.*')
         ->paginate(10); 
@@ -49,7 +49,7 @@ class PagesController extends Controller
         if($q != '') {
             $data = DB::table('group')
             ->join('account','account.accNo','=','group.groupAdviser')
-            ->join('project','group.groupProjNo','=','project.projNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
             ->select('account.*','group.*','project.*')
             ->where('group.groupName','LIKE', "%".$q."%")
             ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
@@ -84,14 +84,15 @@ class PagesController extends Controller
     }
 
     public function advisedGroupsIndex() {
+        $substatus = ['Submitted To Content Adviser','Not Ready For Defense','Ready For Defense','Submitted For Panel Approval'];
         $user_id = Auth::id(); 
         $groups = DB::table('group')
-        ->join('project','group.groupProjNo','=','project.projNo')
+        ->join('project','project.projGroupNo','=','group.groupNo')
         ->join('account','group.groupAdviser','=','account.accNo')
         ->select('group.*','project.*','account.*')
         ->where('account.accType','=','2')
         ->where('group.groupAdviser','=',$user_id)
-        ->where('group.groupStatus','=', 'Submitted To Content Adviser')
+        ->whereIn('group.groupStatus', $substatus)
         ->paginate(10); 
         return view('pages.advised-groups')->with('data',$groups);
     }
@@ -102,7 +103,7 @@ class PagesController extends Controller
         if($q != '') {
             $data = DB::table('group')
             ->join('account','account.accNo','=','group.groupAdviser')
-            ->join('project','group.groupProjNo','=','project.projNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
             ->select('account.*','group.*','project.*')
             ->where('account.accType','=','2')
             ->where('group.groupAdviser','=',$user_id)

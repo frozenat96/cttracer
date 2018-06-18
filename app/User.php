@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -33,5 +35,18 @@ class User extends Authenticatable
 
     public function group() {
         return $this->belongsToMany('App\models\Group','account_group','accNo','grpNo');
+    }
+
+    public function current() {
+        $user = DB::table('account')
+        ->join('account_type','account_type.accTypeNo','=','account.accType')
+        ->select('account.*','account_type.*')
+        ->where('account.accNo','=',Auth::id())->get();  
+        if(count($user)) {
+            return $user;
+        } else {
+            return 0;
+        }
+
     }
 }

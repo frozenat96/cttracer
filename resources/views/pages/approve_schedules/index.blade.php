@@ -1,10 +1,17 @@
 @extends('layouts.app')
 
 @section('style')
-
+    .list-group-item {
+        background-color: rgba(0,0,0,0);
+        border: none;
+    }
+    .card1 {
+        border: none;
+    }
 @endsection
 
 @section('content')
+<?php $grpModel = new App\models\Group; $userModel = new App\User; $user1=$userModel->current();?>
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
         <div class="jumbotron bg1">
@@ -36,23 +43,142 @@
             $model = new App\models\Group;
             ?> 
                 @foreach($data as $sched)
-                <div class="form-row">
-                    <div class="form-group col-md-3">
-                        <div>
-                            {{$sched->groupName}} {{$sched->groupStatus}}
-                        </div>
-                    </div>  
-                    <div class="form-group col-md-3">
-                        <span>
-                            Panel Member
-                            {{$sched->accFName}} {{$sched->accLName}} @if($sched->panelIsChair):: Chair
+                <div class="form-row card bx2 card1">
+                    <div class="col-md-12"> 
+                        <table class="table">
+                            <thead>
+                                <tr class="">
+                                    <th>Approval Details</th>
+                                    <th>Group Details</th>
+                                    <th>Schedule Details</th>
+                                    <th>Schedule Status</th>
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                        <?php
+                        $pgroup = DB::table('panel_group')
+                        ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
+                        ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
+                        ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
+                        ->select('account.*','schedule_approval.*','panel_group.*')
+                        ->where('panel_group.panelCGroupNo','=',$sched->groupNo)
+                        ->get();
+                        ?>
+                        <tbody>
+                            <tr>
+                                <td>
+                        <table>
+                            <tr><td>
+                        <span data-html="true" 
+                        class="btn btn-info"
+                        data-toggle="popover" 
+                        data-trigger="focus" 
+                        title="<center><b>Panel Approval</b></center>" 
+                        data-content="
+                        <table class='table-sm table-hover table-striped'>
+                            <thead>
+                                <tr>
+                                    <th>Panel Member</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($pgroup as $pmember)
+                            <tr>
+                                <td>
+                                    <small><span title='{{$pmember->accTitle}} {{$pmember->accFName}} {{$pmember->accMInitial}} {{$pmember->accLName}}'>
+                                    {{$pmember->accLName}}, {{$grpModel->initials($pmember->accFName)}}@if($pmember->panelIsChair)
+                                    (Chair panel member) @endif
+                                    </span></small>
+                                </td>
+                                <td>
+                                    @if($pmember->isApproved == 1)
+                                        <span class='badge badge-pill badge-success'>  Approved 
+                                        </span>
+                                    @elseif($pmember->isApproved == 2)
+                                        <span class='badge badge-pill badge-danger'>Disapproved
+                                        </span>
+                                    @else
+                                        <span class='badge badge-pill badge-warning'>Waiting
+                                        </span>
+                                     @endif 
+                                </td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                        ">Check Status</span>
+                        </td></tr>
+                        <tr><td>
+                            @if(in_array($user1[0]->accType,[3]))
+                            <button class="btn btn-secondary">Edit</button>
                             @endif
-                        </span>
-                    </div>
-                    <div class="form-group col-md-3">
-
+                        </td></tr>
+                        </table>
+                            </td>
+                            
+                            <td>
+                                <table class="table-sm table-hover table-striped">
+                                <tr>
+                                    <td>
+                                        <small><b>Group Name : {{$sched->groupName}}</b></small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <small><b>Group Type : {{$sched->grpType}}</b></small>
+                                    <td>
+                                </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table class="table-sm table-hover table-striped">
+                                <tr>
+                                    <td>
+                                        <small><b>Date : {{$sched->schedDate}}</b></small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <small><b>Starting Time : {{$sched->schedTimeStart}}</b></small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <small><b>Ending Time : {{$sched->schedTimeEnd}}</b></small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <small><b>Place : {{$sched->schedPlace}}</b></small>
+                                    </td>
+                                </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table class="table-sm table-hover table-striped">
+                                    <tr>
+                                        <td>
+                                            <small><b>Status : {{$sched->schedStatus}}</b></small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <small><b>For : {{$sched->schedType}}</b></small>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <button class="btn btn-success btn-sm">
+                                    Approve
+                                </button>
+                                
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
                     </div>  
-                        
                 </div>
                 @endforeach
             {!! $data->render() !!}
@@ -62,4 +188,12 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('includes2')
+<script type="text/javascript">
+$(document).ready(function () {
+
+});
+</script>
 @endsection

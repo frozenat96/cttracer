@@ -20,17 +20,47 @@ class SchedAppController extends Controller
         // 
         $user_id = Auth::id();
         $sched = DB::table('schedule_approval')
-        ->join('group','group.groupNo','=','schedule_approval.schedGroupNo')
-        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-        ->join('project','project.projNo','=','group.groupProjNo')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
+        ->join('project','project.projGroupNo','=','group.groupNo')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
         ->join('schedule','schedule.schedNo','=','schedule_approval.schedAppSchedNo')
         ->join('account','account.accNo','=','panel_group.panelAccNo')
         ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*','account.*')
         ->where('group.groupStatus','=','Submitted For Panel Approval')
         ->where('panel_group.panelAccNo','=',$user_id)
-        ->paginate(10); 
+        ->where('schedule.schedStatus','!=','Finished')
+        ->paginate(3); 
+        //return $this->calcSchedStatus($sched[0]->panelCGroupNo);
+        //return dd($sched);
         return view('pages.approve_schedules.index')->with('data',$sched);
+    }
+
+    public function calcSchedStatus($groupNo){
+        $chairPanelApp = DB::table('schedule_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->select('schedule_approval.isApproved')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->where('panel_group.panelIsChair','=','1')
+        ->where('schedule_approval.isApproved','=','1')
+        ->count();
+        $panelMembersApp = DB::table('schedule_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->select('schedule_approval.isApproved')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->where('panel_group.panelIsChair','=','0')
+        ->where('schedule_approval.isApproved','=','1')
+        ->count();
+        if($chairPanelApp && $panelMembersApp) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public function approve()
+    {
+        
     }
 
     /**

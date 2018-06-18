@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use DB;
+use Auth;
 
 class Project extends Eloquent
 {
@@ -17,10 +18,10 @@ class Project extends Eloquent
         return $this->belongsTo('App\models\Group');
     }
 
-    static public function projectInfoByAccount($id) {
+    public function projectInfoByAccount($id) {
         return DB::table('account')
             ->join('group', 'group.groupNo', '=', 'account.accGroupNo')
-            ->join('project', 'group.groupProjNo', '=', 'project.projNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
             ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
             ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
             ->select('project.*','account.*','group.*','panel_verdict.*','stage.*')

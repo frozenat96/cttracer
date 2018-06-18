@@ -20,9 +20,9 @@ class ProjAppController extends Controller
         $user_id = Auth::id(); 
 
         $proj = DB::table('project_approval')
-        ->join('group', 'group.groupNo', '=', 'project_approval.projAppGroupNo')
-        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-        ->join('project', 'project.projNo', '=', 'group.groupProjNo')
+        ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
+        ->join('group', 'group.groupNo', '=', 'panel_group.panelCGroupNo')
+        ->join('project','project.projGroupNo','=','group.groupNo')
         ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
         ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
         ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*','panel_group.*')
@@ -44,10 +44,9 @@ class ProjAppController extends Controller
         $q = Input::get('q');
         if($q != '') {
             $data = DB::table('project_approval')
-            ->join('group', 'group.groupNo', '=', 'project_approval.projAppGroupNo')
-            ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-            ->join('account','account.accNo','=','panel_group.panelAccNo')
-            ->join('project', 'project.projNo', '=', 'group.groupProjNo')
+            ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
+            ->join('group', 'group.groupNo', '=', 'panel_group.panelCGroupNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
             ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
             ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
             ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*','panel_group.*','account.*')
