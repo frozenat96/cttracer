@@ -43,7 +43,7 @@
             $model = new App\models\Group;
             ?> 
                 @foreach($data as $sched)
-                <div class="form-row card bx2 card1">
+                <div class="form-row card bx2 card1 jumbotron">
                     <div class="col-md-12"> 
                         <table class="table">
                             <thead>
@@ -86,10 +86,10 @@
                             @foreach($pgroup as $pmember)
                             <tr>
                                 <td>
-                                    <small><span title='{{$pmember->accTitle}} {{$pmember->accFName}} {{$pmember->accMInitial}} {{$pmember->accLName}}'>
+                                    <span title='{{$pmember->accTitle}} {{$pmember->accFName}} {{$pmember->accMInitial}} {{$pmember->accLName}}'>
                                     {{$pmember->accLName}}, {{$grpModel->initials($pmember->accFName)}}@if($pmember->panelIsChair)
                                     (Chair panel member) @endif
-                                    </span></small>
+                                    </span>
                                 </td>
                                 <td>
                                     @if($pmember->isApproved == 1)
@@ -107,11 +107,11 @@
                             @endforeach
                             </tbody>
                         </table>
-                        ">Check Status</span>
+                        "><i class="far fa-question-circle"></i> Check Status</span>
                         </td></tr>
                         <tr><td>
                             @if(in_array($user1[0]->accType,[3]))
-                            <button class="btn btn-secondary">Edit</button>
+                            <button class="btn btn-secondary"><span><i class="far fa-edit"></i> Edit</span></button> 
                             @endif
                         </td></tr>
                         </table>
@@ -129,23 +129,27 @@
                                         <small><b>Group Type : {{$sched->grpType}}</b></small>
                                     <td>
                                 </tr>
+                                <tr>
+                                    <td><small><b>Project Document : </b></small><a href="#" class="btn btn-link btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="View project document" data-placement="top"><span><i class="fas fa-project-diagram"></i></span> {{(substr($sched->projName, 0, 10) . '..')}}</a>
+                                    </td>
+                                </tr>
                                 </table>
                             </td>
                             <td>
                                 <table class="table-sm table-hover table-striped">
                                 <tr>
                                     <td>
-                                        <small><b>Date : {{$sched->schedDate}}</b></small>
+                                        <small><b>Date : {{date_format(new Datetime($sched->schedDate),"F j, Y")}}</b></small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <small><b>Starting Time : {{$sched->schedTimeStart}}</b></small>
+                                        <small><b>Starting Time : {{date_format(new Datetime($sched->schedTimeStart),"g:i A")}}</b></small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <small><b>Ending Time : {{$sched->schedTimeEnd}}</b></small>
+                                        <small><b>Ending Time : {{date_format(new Datetime($sched->schedTimeEnd),"g:i A")}}</b></small>
                                     </td>
                                 </tr>
                                 <tr>
@@ -170,10 +174,18 @@
                                 </table>
                             </td>
                             <td>
+                                <table class="table-sm">
+                                <tr><td>
                                 <button class="btn btn-success btn-sm">
-                                    Approve
+                                    <i class="fas fa-check"></i> Approve
                                 </button>
-                                
+                                </td></tr>
+                                <tr><td>
+                                <button class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times"></i> Disapprove
+                                </button>
+                                </td></tr>
+                                </table>
                             </td>
                             </tr>
                         </tbody>

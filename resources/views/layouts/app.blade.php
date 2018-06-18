@@ -17,7 +17,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
-        
+        <link rel="shortcut icon" href="{{asset('img/design/logo/logo_L3R_icon.ico')}}">
         <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
         <link rel="stylesheet" href="{{asset('css/bootstrap-submenu.css')}}">
         <link rel="stylesheet" href="{{asset('css/header.css')}}">
