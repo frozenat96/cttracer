@@ -38,7 +38,7 @@ class MyProjController extends Controller
         ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
         ->get();
         $adviser = DB::table('account')
-        ->where('account.accNo','=',$proj[0]->groupAdviser)
+        ->where('account.accNo','=',$proj[0]->groupCAdviserNo)
         ->get();
         $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'pgroup'=>$pgroup];
         return view('pages.my_project.index')->with('data', $data);

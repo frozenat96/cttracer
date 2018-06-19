@@ -19,7 +19,7 @@ class GroupController extends Controller
     {
         $groups = DB::table('group')
         ->join('project','project.projGroupNo','=','group.groupNo')
-        ->join('account','group.groupAdviser','=','account.accNo')
+        ->join('account','group.groupCAdviserNo','=','account.accNo')
         ->select('group.*','project.*','account.*')
         ->paginate(10); 
         return view('pages.groups.index')->with('data',$groups);
@@ -31,7 +31,7 @@ class GroupController extends Controller
       
         if($q != '') {
             $data = DB::table('group')
-            ->join('account','account.accNo','=','group.groupAdviser')
+            ->join('account','account.accNo','=','group.groupCAdviserNo')
             ->join('project','project.projGroupNo','=','group.groupNo')
             ->select('account.*','group.*','project.*')
             ->where('group.groupName','LIKE', "%".$q."%")
