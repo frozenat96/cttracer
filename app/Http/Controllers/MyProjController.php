@@ -84,7 +84,7 @@ class MyProjController extends Controller
      */
     public function edit($id)
     {
-        $proj = Project::find($id);
+        $proj = Project::find($id); 
         return view('pages.my_project.edit')->with('data', $proj);
     }
 

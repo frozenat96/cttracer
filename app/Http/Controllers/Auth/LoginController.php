@@ -79,8 +79,8 @@ class LoginController extends Controller
 
     public function findUser($user,$provider)
     {
-        //$authuser = DB::table('account')->where('AccEmail', $user->getEmail())->first();
-        $authuser = User::where('AccEmail', $user->getEmail())->first();
+        //$authuser = DB::table('account')->where('accEmail', $user->getEmail())->first();
+        $authuser = User::where('accEmail', $user->getEmail())->first();
         return $authuser;
     }
 

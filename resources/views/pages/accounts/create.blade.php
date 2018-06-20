@@ -39,12 +39,22 @@ $account_types = DB::table('account_type')->get();
                     </div>
                           <div class="form-group">
                             <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="ccs@su.edu.ph" required="yes" autocomplete="email">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="ccs@su.edu.ph" required="yes" autocomplete="email">
                           </div>
                           <div class="form-row">
+                            
+                            <div class="form-group col-md-4">
+                              <label for="role">Role</label>
+                              <select id="role" class="form-control" name="role" autocomplete="role" onchange="groupAllow(this);" required="yes" style="width: 100%">
+                                @foreach($data['acc_type'] as $acc)
+                                  <option value="{{$acc->accTypeNo}}">{{$acc->accTypeDescription}}</option>
+                                @endforeach
+                              </select>
+                            </div> 
+
                             <div class="form-group col-md-3" id="title-1">
                                 <label for="title">Title</label>
-                                  <select id="title" class="form-control" name="title" autocomplete="title">
+                                  <select id="title" class="form-control" name="title" autocomplete="title" style="width: 100%">
                                     <option value="">None</option>
                                     <option value="Mr.">Mr.</option>
                                     <option value="Ms.">Ms.</option>
@@ -56,26 +66,22 @@ $account_types = DB::table('account_type')->get();
                                   </select>
                             <div class="msel"></div>
                             </div>
-                            <div class="form-group col-md-4">
-                              <label for="role">Role</label>
-                              <select id="role" class="form-control" name="role" autocomplete="role" onchange="groupAllow(this);" required="yes">
-                                @foreach($data['acc_type'] as $acc)
-                                  <option value="{{$acc->accTypeNo}}">{{$acc->accTypeDescription}}</option>
-                                @endforeach
-                              </select>
-                            </div>
-                  
-                            <div class="form-group col-md-5" id="grp">
-                                <label for="group">Group</label>
-                                <select id="group" class="form-control" name="role" autocomplete="group" multiple="multiple">
-                                  @foreach($data['group'] as $grp)
-                                    <option value="{{$grp->groupNo}}">{{$grp->groupName}}</option>
-                                  @endforeach
-                                </select>
-                              </div>
-            
                           </div>
-                        
+                          <div class="form-row">
+                              <div class="form-group col-md-5" id="grp">
+                                  <label for="group">Group</label>
+                                  <div class="form-row">
+                                      <div class="form-group col">
+                                  <select id="group" class="form-control" name="group" autocomplete="group" style="width: 100%">
+                                      <option value="none" selected>None</option>
+                                      @foreach($data['group'] as $grp)
+                                      <option value="{{$grp->groupNo}}">{{$grp->groupName}}</option>
+                                      @endforeach
+                                  </select>
+                                      </div>
+                                  </div>
+                              </div>
+                        </div>
                           <div class="form-group text-right">
                               <hr class="my-4">
                               <button type="reset" class="btn btn-info btn-lg">
@@ -110,8 +116,8 @@ function groupAllow(v) {
     }
   }
 
-   $('#group').select2({allowClear:true,selectOnClose:true});
-   $('#title').select2({allowClear:true,selectOnClose:true});
-   $('#role').select2({allowClear:true,selectOnClose:true});
+   $('#group').select2({allowClear:true,selectOnClose:true,width: 'resolve'});
+   $('#title').select2({allowClear:true,selectOnClose:true,width: 'resolve'});
+   $('#role').select2({allowClear:true,selectOnClose:true,width: 'resolve'});
 </script>
 @endsection

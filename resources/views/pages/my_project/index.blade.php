@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h5 id="font2">Project Name : </h5><ul class="list1"><li>{{$data['proj'][0]->projName}}
-                        <!--<a href="/my-project/{{$data['proj'][0]->projNo}}/edit" class="">Edit title</a> --></li></ul><br>
+                        <a href="/my-project/{{$data['proj'][0]->projNo}}/edit" class="">Edit title</a></li></ul><br>
             </div>
         </div>
         <div class="row">

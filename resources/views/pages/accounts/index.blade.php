@@ -48,7 +48,7 @@
                         <tr scope="row">
                             <td>{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}</td>
                             <td>{{$acc->accTypeDescription}}</td>
-                            <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit account details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
+                            <td><a href="/accounts/{{$acc->accNo}}/edit" class="btn btn-secondary" data-toggle="popover" data-content="Edit account details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
                             <td><a href="#" class="btn btn-danger" data-toggle="popover" data-content="Delete this account" data-placement="top"><span><i class="fas fa-minus"></i> Delete</span></a></td>
                         </tr>
                     @endforeach

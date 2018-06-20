@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->timestamps(); */
             $table->increments('id');
-            $table->string('AccEmail');     
+            $table->string('accEmail');     
             $table->rememberToken();
             $table->timestamps();
         });
