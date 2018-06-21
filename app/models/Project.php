@@ -26,9 +26,9 @@ class Project extends Model
     }
 
     public function projectInfoByGroup($id) {
-        return DB::table('account')
-            ->join('group', 'group.groupNo', '=', 'account.accGroupNo')
-            ->join('project', 'group.groupProjNo', '=', 'project.projNo')
+        return DB::table('group')
+            ->join('account','account.accGroupNo','=','group.groupNo')
+            ->join('project','project.projGroupNo','=','group.groupNo')
             ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
             ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
             ->select('project.*','account.*','group.*','panel_verdict.*','stage.*')

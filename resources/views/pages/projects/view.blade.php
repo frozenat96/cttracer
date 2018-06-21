@@ -20,7 +20,7 @@
         </div>
 
         <div class="jumbotron bx2">
-                <legend class="text-left"><span class="alert bg2">MY PROJECT</span><hr class="my-4"></legend>
+                <legend class="text-left"><span class="alert bg2">PROJECT VIEW</span><hr class="my-4"></legend>
         @if(isset($data) && count($data))
         <div class="row">
             <div class="col-md-12">
@@ -135,6 +135,9 @@
 @endsection
 @section('includes2')
     <script type="text/javascript">
-       
+        $('#myList a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
     </script>
 @endsection

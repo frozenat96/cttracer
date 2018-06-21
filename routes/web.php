@@ -60,12 +60,21 @@ Route::group(['middleware' => ['auth']], function() {
         'rol' => 'admin_user'
     ]);
 
-    Route::resource('/project-search', 'ProjSearchController')->parameters([
+    Route::resource('/project-archive', 'ProjSearchController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+    
+    Route::any('/proj-archive-search-results', [
+        'uses'=>'ProjSearchController@search'
+    ]
+    ); 
+
+    Route::resource('/projects', 'ProjectController')->parameters([
         'rol' => 'admin_user'
     ]);
     
     Route::any('/proj-search-results', [
-        'uses'=>'ProjSearchController@search'
+        'uses'=>'ProjectController@search'
     ]
     ); 
 

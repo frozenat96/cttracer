@@ -83,7 +83,8 @@
                     <i class="fas fa-project-diagram"></i> Projects
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink4">
-              <a class="dropdown-item" href="/project-search"><i class="fas fa-archive"></i> Project Search</a>
+              <a class="dropdown-item" href="/project-archive"><i class="fas fa-archive"></i> Project Archive</a>
+              <a class="dropdown-item" href="/projects"><i class="fas fa-search"></i> Project Search</a>
               <a class="dropdown-item" href="/my-project"><i class="far fa-object-group"></i> My Project</a>
               <a class="dropdown-item" href="/approve-projects"><i class="fas fa-unlock-alt"></i> Approve Projects</a>
             </div>

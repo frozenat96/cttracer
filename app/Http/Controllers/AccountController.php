@@ -103,7 +103,11 @@ class AccountController extends Controller
             
         $acc->accLName = trim(ucwords(strtolower($request->input('last_name'))));
         if(in_array($request->input('role'),['1','2'])) {
-            $acc->accTitle = $request->input('title');
+            if($request->input('title') != '') {
+                $acc->accTitle = $request->input('title');
+            } else {
+                $acc->accTitle = '';
+            }
             $acc->accGroupNo = null;
         } elseif($request->input('role')=='3') {
             $acc->accTitle = '';
@@ -129,7 +133,7 @@ class AccountController extends Controller
             }
         }   
         //return view('/my-project/{id}/edit',['id'=>$id])->with('success','updated');
-        return redirect('/accounts');
+        return redirect()->back();
     }
 
     /**
@@ -172,15 +176,18 @@ class AccountController extends Controller
     {
         $group = Group::pluck('groupNo');
         $acc_type = AccountType::pluck('accTypeNo');
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'given_name' => ['required','max:50'],
             'middle_initial' => ['required','max:2'],
             'last_name' => ['required','max:50'],
             'title' => ['max:20'],
             'email' => ['E-mail','required','max:191'],
             'role' => ['Integer','required',Rule::In($acc_type->all())],
-            'group' => ['Integer','nullable',Rule::In($group->all())],
+            'group' => ['nullable'],
         ]);
+        if ($validator->fails()) {
+			return redirect()->back()->withInput()->withErrors($validator);
+        } 
 
         $acc = User::find($id);
         $acc->accFName = trim(ucwords(strtolower($request->input('given_name'))));
@@ -192,19 +199,26 @@ class AccountController extends Controller
             
         $acc->accLName = trim(ucwords(strtolower($request->input('last_name'))));
         if(in_array($acc->accType,['1','2'])) {
-            $acc->accTitle = $request->input('title');
+            if($request->input('title') != '') {
+                $acc->accTitle = $request->input('title');
+            } else {
+                $acc->accTitle = '';
+            }
             $acc->accGroupNo = null;
         } elseif($acc->accType=='3') {
             $acc->accTitle = '';
             $acc->accGroupNo = $request->input('group');
         }
         if($acc->accEmail != $request->input('email')) {
-            $this->validate($request, [
+            $validator = Validator::make($request->all(), [
                 'email' => ['unique:account,accEmail'],
             ]);
             $acc->accEmail = $request->input('email');
         } 
         $acc->accType = $request->input('role');
+        if ($validator->fails()) {
+			return redirect()->back()->withInput()->withErrors($validator);
+        } 
         if($acc->save()) {
         $request->session()->flash('alert-success', 'Account Information was Updated!');
         } else {
@@ -226,6 +240,14 @@ class AccountController extends Controller
     public function destroy($id)
     {
         $user_id = Auth::id(); 
+        $acc = User::find($user_id);
+        if(($acc->accType == '1') && ($user_id == $id)) {
+            return redirect()->back()->withErrors('Cannot delete capstone coordinator account.');
+        } else {
+            $delete = User::find($id);
+            $delete->delete();
+            return redirect()->back()->with('success', 'Account Information has been Deleted!');
+        }
 
     }
 }

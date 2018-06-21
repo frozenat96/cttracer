@@ -21,7 +21,7 @@ class ProjSearchController extends Controller
         $data = DB::table('project')
         ->select('project.*')
         ->select('project.*')
-        ->paginate(1);
+        ->paginate(10);
         return view('pages.project_search.index')->withData($data);
     }
 
@@ -44,7 +44,7 @@ class ProjSearchController extends Controller
             $data = DB::table('project')
             ->select('project.*')
             ->where('project.projName','LIKE', "%".$q."%") 
-            ->paginate(1)
+            ->paginate(10)
             ->setpath('');
         } else {
             return redirect()->action('ProjSearchController@index');

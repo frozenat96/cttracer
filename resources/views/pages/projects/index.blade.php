@@ -12,11 +12,11 @@
     <div class="col-md-12 justify-align-center" id="index_content1">
         <div class="jumbotron bg1">
         @include('inc.messages')
-        <h4><span class="alert bg2">PROJECT ARCHIVE</span></h4>
+        <h4><span class="alert bg2">PROJECT SEARCH</span></h4>
         <br class="my-4">
             <div class="row">
             <div class="col-md-12">
-                <form method="post" action="/proj-archive-search-results" accept-charset="UTF-8" role="search">
+                <form method="post" action="/proj-search-results" accept-charset="UTF-8" role="search">
                     {{csrf_field()}} 
                     <div class="input-group">
                         <input type="text" class="form-control" name="q" placeholder="Search Projects"> 
@@ -36,7 +36,10 @@
             <thead>
                 <tr>
                     <th scope="col">Project Name</th>
-                    <th scope="col">Project Document</th>
+                    <th scope="col">Group Name</th>
+                    <th scope="col">Project Status</th>
+                    <th scope="col">Project view</th>
+                    <th scope="col">Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,12 +49,17 @@
                             <span tabindex="0" class="" data-toggle="popover" data-content="{{$proj->projName}}" data-placement="top">{{(substr($proj->projName, 0, 20) . '..')}}</span>
                         </td>
                         <td>
-                            <a href="{{($proj->projDocument)}}" target="_blank">
-                                <span class="badge badge-info"> 
-                                    <i class="fas fa-external-link-alt"></i>
-                                     Document Link
-                                </span>
+                            <span tabindex="0" class="" data-toggle="popover" data-content="{{$proj->groupName}}" data-placement="top">{{(substr($proj->groupName, 0, 20) . '..')}}</span>
+                            </td>
+                        <td>
+                            <span tabindex="0" class="">{{$proj->pVerdictDescription}}</span>
+                        </td>
+                        <td>
+                        <a class="btn btn-warning" href="/projects/{{$proj->projGroupNo}}" data-toggle="popover" data-content="View project details" data-placement="top">
+                                    <i class="far fa-eye"></i> View Project 
                             </a>     
+                        </td>
+                        <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit project details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a>
                         </td>
                     </tr>
                 @endforeach
@@ -78,5 +86,3 @@
 @endsection
 
 @endsection
-
-

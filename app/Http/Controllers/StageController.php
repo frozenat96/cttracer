@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\models\Group;
+use App\models\Stage;
 use DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Auth;
 
 class StageController extends Controller
 {
@@ -67,14 +72,31 @@ class StageController extends Controller
      */
     public function store(Request $request)
     {
-        $validPanel = ["All","Custom"];
-        $this->validate($request, [
+        $validStagePanel = ['All','Custom'];
+        $validator = Validator::make($request->all(), [
             'stage_number' => ['required','unique:stage,stageNo'],
-            'stage_name' => ['required','max:50','unique:stage,stageName'],
-            'stage_defense_duration' => ['required','min:0'],
-            'stage_defense_duration' => ['required','min:0'],
-            'stage_panel' => ['required',Rule::In($validPanel)],
+            'stage_name' => ['required','max:50'],
+            'stage_defense_duration' => ['Integer','required'],
+            'stage_panel' => ['required',Rule::In($validStagePanel)],
+            'stage_link' => ['max:255'],
         ]);
+        
+        $stage = new Stage;        
+        $stage->stageNo = $request->input('stage_number');
+        $stage->stageName = trim(ucwords(strtolower($request->input('stage_name'))));
+        $stage->stageDefDuration = $request->input('stage_defense_duration');
+        $stage->stagePanel = $request->input('stage_panel');
+        if($request->input('stage_link') != '') {
+            $stage->stageRefLink = $request->input('stage_link');
+        } else {
+            $stage->stageRefLink = '';
+        }
+        if($stage->save()) {
+            $request->session()->flash('alert-success', 'Stage Information was Updated!');
+        } else {
+            $request->session()->flash('alert-danger', 'Stage Information was not Updated!');
+        }
+        return redirect()->back();
     }
 
     /**
@@ -96,7 +118,9 @@ class StageController extends Controller
      */
     public function edit($id)
     {
-        //
+        $stage = Stage::find($id);
+        $data = ['stage'=>$stage];
+        return view('pages.stages.edit')->with('data',$data); 
     }
 
     /**
@@ -108,7 +132,41 @@ class StageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validStagePanel = ['All','Custom'];
+        $validator = Validator::make($request->all(), [
+            'stage_number' => ['required'],
+            'stage_name' => ['required','max:50'],
+            'stage_defense_duration' => ['Integer','required'],
+            'stage_panel' => ['required',Rule::In($validStagePanel)],
+            'stage_link' => ['max:255'],
+        ]);
+        
+        $stage = Stage::find($id);
+        if($stage->stageNo != $request->input('stage_number')) {
+            $validator = Validator::make($request->all(), [
+                'stage_number' => ['unique:stage,stageNo'],
+            ]);
+            $stage->stageNo = $request->input('stage_number');
+        }
+        if ($validator->fails()) {
+			return redirect()->back()->withInput()->withErrors($validator);
+        } 
+        $stage->stageName = trim(ucwords(strtolower($request->input('stage_name'))));
+        $stage->stageDefDuration = $request->input('stage_defense_duration');
+        $stage->stagePanel = $request->input('stage_panel');
+        if($request->input('stage_link') != '') {
+            $stage->stageRefLink = $request->input('stage_link');
+        } else {
+            $stage->stageRefLink = '';
+        }
+        if($stage->save()) {
+            $request->session()->flash('alert-success', 'Stage Information was Updated!');
+            } else {
+            $request->session()->flash('alert-danger', 'Stage Information was not Updated!');
+            }
+        return redirect()->action(
+            'StageController@edit', ['id' => $id]
+        );
     }
 
     /**
@@ -119,6 +177,8 @@ class StageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $delete = Stage::find($id);
+        $delete->delete();
+        return redirect()->back()->with('success', 'Stage Information has been Deleted!');
     }
 }

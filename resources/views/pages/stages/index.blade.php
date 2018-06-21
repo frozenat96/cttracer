@@ -50,8 +50,13 @@
                             <td>{{$stage->stageName}}</td>
                             <td>{{$stage->stageDefDuration}} minutes</td>
                             <td>{{$stage->stagePanel}}</td>
-                            <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit stage details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
-                            <td><a href="#" class="btn btn-danger" data-toggle="popover" data-content="Delete this stage" data-placement="top"><span><i class="fas fa-minus"></i> Delete</span></a></td>
+                            <td><a href="/stage-settings/{{$stage->stageNo}}/edit" class="btn btn-secondary" data-toggle="popover" data-content="Edit stage details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
+                            <td>
+                            {!!Form::open(['action' => ['StageController@destroy',$stage->stageNo], 'method' => 'POST']) !!}
+                            <button  type="submit" class="btn btn-danger" name="submit" data-toggle="popover" data-content="Delete this stage" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-minus"></i> Delete</span></button>
+                            <input type="hidden" name="_method" value="DELETE">
+                            {!!Form::close() !!}
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
