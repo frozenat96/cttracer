@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\models\ScheduleApproval;
+use App\models\Schedule;
+use App\models\Group;
 use Auth;
 use DB;
 use Illuminate\Support\Facades\Input;
@@ -19,20 +22,20 @@ class SchedAppController extends Controller
     {
         // 
         $user_id = Auth::id();
+
         $sched = DB::table('schedule_approval')
         ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
         ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
         ->join('project','project.projGroupNo','=','group.groupNo')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
-        ->join('schedule','schedule.schedNo','=','schedule_approval.schedAppSchedNo')
+        ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
         ->join('account','account.accNo','=','panel_group.panelAccNo')
-        ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*','account.*')
+        ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*')
         ->where('group.groupStatus','=','Submitted For Panel Approval')
         ->where('panel_group.panelAccNo','=',$user_id)
         ->where('schedule.schedStatus','!=','Finished')
         ->paginate(3); 
         //return $this->calcSchedStatus($sched[0]->panelCGroupNo);
-        //return dd($sched);
         return view('pages.approve_schedules.index')->with('data',$sched);
     }
 
@@ -46,13 +49,14 @@ class SchedAppController extends Controller
             ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
             ->join('project','project.projGroupNo','=','group.groupNo')
             ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
-            ->join('schedule','schedule.schedNo','=','schedule_approval.schedAppSchedNo')
+            ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
             ->join('account','account.accNo','=','panel_group.panelAccNo')
-            ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*','account.*')
+            ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*')
             ->where('group.groupStatus','=','Submitted For Panel Approval')
-            ->where('panel_group.panelAccNo','=',$user_id)
+            ->orWhere('panel_group.panelAccNo','=',$user_id)
             ->where('schedule.schedStatus','!=','Finished')
             ->where('group.groupName','LIKE', "%".$q."%")
+            ->groupBy('group.groupNo')
             ->paginate(3); 
         } else {
             return redirect()->action('SchedAppController@index');
@@ -63,6 +67,35 @@ class SchedAppController extends Controller
         ));
            
         return view('pages.approve_schedules.index')->withData($data);
+    }
+
+    public function approvalStatus(Request $request) {
+        if (is_null($request->input('submit'))){
+            return redirect()->back()->with('error', 'Schedule approval failed.');
+        } 
+        $q = DB::table('schedule_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
+        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->select('schedule_approval.*','account.*','panel_group.*','group.*')
+        ->where('account.accNo','=',$request->input('acc'))
+        ->where('panel_group.panelCGroupNo','=',$request->input('grp'))
+        ->get();
+        $approval = ScheduleApproval::find($q[0]->schedAppNo);
+        if($request->input('opt')=='1') {
+            $approval->isApproved = 1;
+            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was approved.';
+        } else {
+            $approval->isApproved = 2;
+            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was disapproved.';
+        }
+        if($approval->save()) {
+            $this->calcSchedStatus($request->input('grp'));
+            return redirect()->back()->with('success', $msg);
+        } else {
+            return redirect()->back()->with('error', 'Schedule approval failed.');
+        }
+        
     }
 
     public function calcSchedStatus($groupNo){
@@ -80,16 +113,19 @@ class SchedAppController extends Controller
         ->where('panel_group.panelIsChair','=','0')
         ->where('schedule_approval.isApproved','=','1')
         ->count();
-        if($chairPanelApp && $panelMembersApp) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
 
-    public function approve()
-    {
-        
+        $sched = DB::table('schedule')
+        ->join('group','group.groupNo','=','schedule.schedGroupNo')
+        ->select('schedule.*')
+        ->where('schedule.schedGroupNo','=',$groupNo)
+        ->get();
+        $schedstatus = Schedule::find($sched[0]->schedNo);
+        if($chairPanelApp && $panelMembersApp) {
+            $schedstatus->schedStatus = "Ready";
+        } else {
+            $schedstatus->schedStatus = "Not Ready";
+        }
+        $schedstatus->save();
     }
 
     /**

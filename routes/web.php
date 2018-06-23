@@ -55,7 +55,14 @@ Route::group(['middleware' => ['auth']], function() {
         'uses'=>'SchedAppController@search'
     ]
     ); 
-   
+
+    Route::any('/approveStatus', [
+        'uses'=>'SchedAppController@approvalStatus',
+        'as' => 'approve-status'
+    ]
+    ); 
+
+
     Route::resource('/my-project', 'MyProjController')->parameters([
         'rol' => 'admin_user'
     ]);
@@ -96,15 +103,19 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
+    Route::resource('/quick-view', 'QuickViewController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/quick-view-search-results', [
+        'uses'=>'QuickViewController@search',
+    ]
+    ); 
+
     Route::get('/search-groups', [
         'uses'=>'PagesController@searchGroupIndex',
     ]
     );
-
-    Route::any('/group-search-results2', [
-        'uses'=>'PagesController@searchGroup',
-    ]
-    ); 
 
     Route::resource('/stage-settings', 'StageController')->parameters([
         'rol' => 'admin_user'

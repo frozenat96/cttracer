@@ -110,7 +110,7 @@
                         "><i class="far fa-question-circle"></i> Check Status</span>
                         </td></tr>
                         <tr><td>
-                            @if(in_array($user1[0]->accType,[3]))
+                            @if(in_array($user1[0]->accType,['1']))
                             <button class="btn btn-secondary"><span><i class="far fa-edit"></i> Edit</span></button> 
                             @endif
                         </td></tr>
@@ -174,16 +174,38 @@
                                 </table>
                             </td>
                             <td>
+                                <?php 
+                                 $acc = DB::table('panel_group')
+                                ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
+                                ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
+                                ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
+                                ->select('account.*','schedule_approval.*','panel_group.*')
+                                ->where('panel_group.panelCGroupNo','=',$sched->groupNo)
+                                ->where('account.accNo','=',Auth::id())
+                                ->get();
+                                ?>
                                 <table class="table-sm">
-                                <tr><td>
-                                <button class="btn btn-success btn-sm">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
+                                <tr><td>     
+
+                                {!!Form::open(['action' => 'SchedAppController@approvalStatus', 'method' => 'POST']) !!}
+                                <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
+                                <input type="hidden" name="opt" value="1">
+                                <input type="hidden" name="grp" value="{{$sched->groupNo}}">
+                                <input type="hidden" name="acc" value="{{$sched->accNo}}">
+                                <input type="hidden" name="_method" value="PUT">
+                                {!!Form::close() !!}
+
                                 </td></tr>
                                 <tr><td>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fas fa-times"></i> Disapprove
-                                </button>
+                                
+                                {!!Form::open(['action' => 'SchedAppController@approvalStatus', 'method' => 'POST']) !!}
+                                <button  type="submit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Dispprove schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Disapprove</span></button>
+                                <input type="hidden" name="opt" value="0">
+                                <input type="hidden" name="grp" value="{{$sched->groupNo}}">
+                                <input type="hidden" name="acc" value="{{$sched->accNo}}">
+                                <input type="hidden" name="_method" value="PUT">
+                                {!!Form::close() !!}
+                                
                                 </td></tr>
                                 </table>
                             </td>

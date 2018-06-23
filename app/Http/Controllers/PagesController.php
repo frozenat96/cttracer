@@ -37,9 +37,11 @@ class PagesController extends Controller
     public function searchGroupIndex() {
         $groups = DB::table('group')
         ->join('project','project.projGroupNo','=','group.groupNo')
+        ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
+        ->join('stage','stage.stageNo','=','project.projStageNo')
         ->join('account','group.groupCAdviserNo','=','account.accNo')
-        ->select('group.*','project.*','account.*')
-        ->paginate(10); 
+        ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
+        ->paginate(3); 
         return view('pages.search-groups')->with('data',$groups);
     }
 
@@ -48,13 +50,17 @@ class PagesController extends Controller
       
         if($q != '') {
             $data = DB::table('group')
-            ->join('account','account.accNo','=','group.groupCAdviserNo')
             ->join('project','project.projGroupNo','=','group.groupNo')
-            ->select('account.*','group.*','project.*')
+            ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
+            ->join('stage','stage.stageNo','=','project.projStageNo')
+            ->join('account','group.groupCAdviserNo','=','account.accNo')
+            ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
             ->where('group.groupName','LIKE', "%".$q."%")
             ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
             ->orWhere('group.groupStatus','LIKE', "%".$q."%")
-            ->paginate(10);
+            ->orWhere('panel_verdict.pVerdictDescription','LIKE', "%".$q."%")
+            ->orWhere('stage.stageName','LIKE', "%".$q."%")
+            ->paginate(3);
         } else {
             return redirect()->action('PagesController@searchGroupIndex');
         }

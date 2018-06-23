@@ -46,7 +46,7 @@
                             <span tabindex="0" class="" data-toggle="popover" data-content="{{$proj->projName}}" data-placement="top">{{(substr($proj->projName, 0, 20) . '..')}}</span>
                         </td>
                         <td>
-                            <a href="{{($proj->projDocument)}}" target="_blank">
+                            <a href="{{($proj->projDocumentLink)}}" target="_blank">
                                 <span class="badge badge-info"> 
                                     <i class="fas fa-external-link-alt"></i>
                                      Document Link

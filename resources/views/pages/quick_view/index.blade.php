@@ -19,7 +19,7 @@
         <br class="my-4">
             <div class="row">
                 <div class="col-md-12">
-            <form method="post" action="/group-search-results2" accept-charset="UTF-8" role="search">
+            <form method="post" action="/quick-view-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
                     <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
@@ -89,7 +89,7 @@
                             <td>
                                     <table class="table-sm table-hover table-striped">
                                     <tr><td>
-                                    <a href="#" class="btn btn-success btn-sm" title="{{$grp->projName}}" data-toggle="popover" data-content="Modify schedule" data-placement="top"><span><i class="far fa-calendar-plus"></i></span> Modify Schedule</a>
+                                    <a href="/quick-view/{{$grp->groupNo}}/edit" class="btn btn-success btn-sm" data-toggle="popover" data-content="Modify schedule" data-placement="top"><span><i class="far fa-calendar-plus"></i></span> Modify Schedule</a>
                                     </td></tr>
                                         <a href="#" class="btn btn-secondary btn-sm" title="{{$grp->projName}}" data-toggle="popover" data-content="Edit Group Details" data-placement="top"><span><i class="far fa-edit"></i></span> Edit Group Details</a>
                                     </table>

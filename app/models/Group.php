@@ -13,13 +13,17 @@ class Group extends Model
     public $timestamps = false;
 
     public function projects() {
-        return $this->belongsTo('App\models\Project','projGroupNo');
+        return $this->hasOne('App\models\Project','projGroupNo');
     }
 
     public function account() {
         return $this->belongsToMany('App\User','account_group','grpNo','accNo');
     }
         
+    public function schedule() {
+        return $this->hasOne('App\models\Schedule','schedGroupNo');
+    }
+
     public function initials($str) {
         $ret = '';
         foreach (explode(' ', $str) as $word)
