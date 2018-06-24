@@ -91,7 +91,12 @@
                                     <tr><td>
                                     <a href="/quick-view/{{$grp->groupNo}}/edit" class="btn btn-success btn-sm" data-toggle="popover" data-content="Modify schedule" data-placement="top"><span><i class="far fa-calendar-plus"></i></span> Modify Schedule</a>
                                     </td></tr>
-                                        <a href="#" class="btn btn-secondary btn-sm" title="{{$grp->projName}}" data-toggle="popover" data-content="Edit Group Details" data-placement="top"><span><i class="far fa-edit"></i></span> Edit Group Details</a>
+                                    <tr><td>
+                                        <a href="/groups/{{$grp->groupNo}}/edit" class="btn btn-secondary btn-sm" data-toggle="popover" data-content="Modify Group Details" data-placement="top"><span><i class="far fa-edit"></i></span> Modify Group Details</a>
+                                    </td></tr>
+                                    <tr><td>
+                                        <a href="/groups/{{$grp->groupNo}}/edit" class="btn btn-info btn-sm" data-toggle="popover" data-content="Modify the Group's Project Approval Details" data-placement="top"><span><i class="far fa-edit"></i></span> Modify Project Approval</a>
+                                    </td></tr>
                                     </table>
                                 </td>
 

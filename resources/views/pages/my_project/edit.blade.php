@@ -24,7 +24,7 @@
                         <span><i class="fas fa-recycle"></i> Reset Values</span>
                         </button>
                         <button type="submit" class="btn btn-success btn-lg">
-                            <span><i class="fas fa-plus"></i> Update</span>
+                            <span><i class="far fa-edit"></i> Save Changes</span>
                         </button>
                     </div>
                 {!!Form::close() !!}

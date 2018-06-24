@@ -55,7 +55,7 @@
                             <td>{{$grp->groupStatus}}</td>
                             <td><span data-content="{{$grp->accTitle}} {{$grp->accFName}} {{$grp->accMInitial}} {{$grp->accLName}}" data-toggle="popover" data-placement="top">{{$grp->accLName}}, {{$model->initials($grp->accFName)}}</span></td>
                             <td><a href="#" class="btn btn-warning" title="{{$grp->projName}}" data-toggle="popover" data-content="View project details" data-placement="top"><span><i class="fas fa-project-diagram"></i></span> {{(substr($grp->projName, 0, 10) . '..')}}</a></td>
-                            <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit group details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
+                            <td><a href="/groups/{{$grp->groupNo}}/edit" class="btn btn-secondary" data-toggle="popover" data-content="Edit group details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a></td>
                             <td><a href="#" class="btn btn-danger" data-toggle="popover" data-content="Delete this group" data-placement="top"><span><i class="fas fa-minus"></i> Delete</span></a></td>
                         </tr>
                     @endforeach

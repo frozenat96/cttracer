@@ -98,7 +98,36 @@ class GroupController extends Controller
      */
     public function edit($id)
     {
-        //
+        $group = DB::table('group')
+        ->join('project','project.projGroupNo','=','group.groupNo')
+        ->join('account','account.accNo','=','groupCAdviserNo')
+        ->select('group.*','project.*','account.*')
+        ->where('group.groupNo','=',$id)
+        ->get();
+
+        $pgroup = DB::table('account')
+        ->join('panel_group','panel_group.panelAccNo','=','account.accNo')
+        ->select('account.*','panel_group.*')
+        ->where('panel_group.panelCGroupNo','=',$id)
+        ->get();
+
+        $panel_members = DB::table('account')
+        ->where('account.accType','=','2')
+        ->get();
+
+        $stage = DB::table('stage')->get();
+        $pverdict = DB::table('panel_verdict')->get();
+        $data = [
+            'group'=>$group,
+            'panel_members'=>$panel_members,
+            'pgroup'=>$pgroup,
+            'stage'=>$stage,
+            'panel_verdict'=>$pverdict
+        ];
+
+        
+        //return(dd($data));
+        return view('pages.groups.edit')->with('data',$data);
     }
 
     /**
