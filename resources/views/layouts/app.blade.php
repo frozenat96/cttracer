@@ -18,6 +18,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
         <link rel="shortcut icon" href="{{asset('img/design/logo/logo_L3R_icon.ico')}}">
+        <link rel="stylesheet" href="{{asset('css/multi-select.css')}}">
         <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
         <link rel="stylesheet" href="{{asset('css/bootstrap-submenu.css')}}">
         <link rel="stylesheet" href="{{asset('css/header.css')}}">
@@ -28,7 +29,7 @@
         <script src="{{asset('js/jquery-3.3.1.min.js')}}"></script>
         <script src="{{asset('js/popper.min.js')}}"></script>
         <script src="{{asset('js/bootstrap.min.js')}}"></script>
-        
+        <script src="{{asset('js/jquery.multi-select.js')}}"></script>
         <script src="{{asset('js/knockout-3.4.2.js')}}"></script>   
         <link rel="stylesheet" href="{{asset('css/search-select.min.css')}}">
         <script src="{{asset('js/search-select.min.js')}}"></script>

@@ -96,8 +96,8 @@ $account_types = DB::table('account_type')->get();
                     <div class="form-row" style="height:50px;margin-top:30px;">
                         <h6 class=""><span class="alert bg2">GROUP PANEL MEMBER DETAILS</span></h6>
                     </div>
-                    <div class="form-row">
-                        <div class="col-auto my-1">
+                    <div class="form-row row justify-content-center">
+                        <div class="col-md-6 my-1">
                             <div class="custom-control custom-checkbox mr-sm-2">
                                 <input type="checkbox" class="custom-control-input" id="customControlAutosizing" name="EditGroupPanel">
                                 <label class="custom-control-label" for="customControlAutosizing" data-toggle="popover" data-content="Editing the group panel members will remove the current panel members and create a new one." data-placement="top">Edit Group Panel Members</label>
@@ -105,7 +105,7 @@ $account_types = DB::table('account_type')->get();
                         </div>
                     </div>
                     <div id="for_panel_group">
-                    <div class="form-row">
+                    <div class="form-row row justify-content-center">
                         <div class="form-group col-md-6">
                             <select id="panel_group" class="form-control" name="panel_group[]" autocomplete="Panel Group" multiple="multiple" required="yes">
                                 @foreach($data['panel_members'] as $acc)
@@ -122,6 +122,11 @@ $account_types = DB::table('account_type')->get();
                             </select>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <span>Note : The first panel member on the selected list will be the chair panel member.</span>
+                        </div>
+                    </div>
                     </div>
                     </section>
                     @endif
@@ -131,14 +136,14 @@ $account_types = DB::table('account_type')->get();
                         <button type="reset" class="btn btn-info btn-lg">
                         <span><i class="fas fa-recycle"></i> Reset Values</span>
                         </button>
-                        <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Are you sure?')">
+                        <button id="sub1" type="submit" class="btn btn-success btn-lg">
                             <span><i class="far fa-edit"></i> Save Changes</span>
                         </button>
                     </div>
                         </fieldset>
                         <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupNo','=',$data['group'][0]->groupNo)->pluck('panelGroupNo'); ?>
                         <input type="hidden" name="_method" value="PUT">
-                        <input type="hidden" name="panel_select" value="{{$pg}}">
+                        <input type="hidden" id="panel_select" name="panel_select" value="{{$pg}}">
                 {!!Form::close() !!}
             </div>
             </div>
@@ -150,8 +155,14 @@ $account_types = DB::table('account_type')->get();
 <script type="text/javascript">
 $('#group_type').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#content_adviser').select2({allowClear:true,selectOnClose:true,width:'resolve'});
-//$('#panel_group').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 var vals = [];
+$('#panel_group').multiSelect({ 
+    keepOrder: true, 
+    selectableHeader: "<div class='custom-header alert-dark text-center'>Select Options</div>",
+    selectionHeader: "<div class='custom-header alert-dark text-center'>Selected List</div>",
+});
+//$('#panel_group').select2({allowClear:true,selectOnClose:true,width:'resolve'});
+
 $(document).ready(function () {
     $('#panel_group').change(function(e) {
     for(var i=0; i <$('#panel_group option').length; i++) {
@@ -167,12 +178,13 @@ $(document).ready(function () {
     }
   });
 
-    $("#form1").click(function(){
+    $("#sub1").click(function(){
         var order = [];
         vals.forEach(function(ele) {
-        order.push( $($('#selector option')[ele]).val() );
+        order.push( $($('#panel_group option')[ele]).val() );
         });
         $("#panel_select").val(order); 
+        return confirm('Are you sure?');
     });
 });
 

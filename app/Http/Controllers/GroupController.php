@@ -143,7 +143,7 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return dd($request->all());
+        $panel_sel = explode(',',$request->input('panel_select'));
         $valid_group_types = ["Capstone","Thesis"];
         $valid_panel_members= DB::table('account')
         ->where('account.accType','=','2')
@@ -194,24 +194,30 @@ class GroupController extends Controller
         }
 
         $pgroup = DB::table('panel_group')
-        ->select('panel_group.panelGroupNo')
         ->where('panel_group.panelCGroupNo','=',$id)
-        ->get();
+        ->pluck('panelGroupNo');
 
-        if(!is_null($request->input('EditGroupPanel')) && !($pgroup === $request->input('panel_select'))) {
+        if(!is_null($request->input('EditGroupPanel')) && !($pgroup === $panel_sel)) {
             $validator = Validator::make($request->all(), [
                 'panel_group' => ['required'],
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withInput()->withErrors($validator);
             }
-    
+            DB::beginTransaction();
+            try{
                 $x = $this->modifyPanelDelete($id);
-                $y = $this->modifyPanelAdd($id,$request->input('panel_select'));
-            
-            if(!$x || !$y) {
-                return redirect()->back()->withInput()->withErrors('Cannot save information.');
+                $y = $this->modifyPanelAdd($id,$panel_sel);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
             }
+            if(!$x || !$y) {
+                DB::rollback();
+                return redirect()->back()->withInput()->withErrors('Cannot save information.');
+            }     
+            
+            
         }
        
         if($group->save() && $project->save()) {
@@ -249,8 +255,6 @@ class GroupController extends Controller
     public function modifyPanelAdd($id,$panel) {
         foreach($panel as $key => $value) {
             if($key == 0) {
-                DB::beginTransaction();
-                try {
                 $x = DB::table('panel_group')->insert([
                     [
                     'panelCGroupNo' => $id, 
@@ -258,16 +262,11 @@ class GroupController extends Controller
                     'panelIsChair' => '1'
                     ]
                 ]);
-                DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollback();
-                }
+                 
                 if(!$x) {
                     return false;
                 }
             } else {
-                DB::beginTransaction();
-                try {
                 $y = DB::table('panel_group')->insert([
                     [
                     'panelCGroupNo' => $id, 
@@ -275,10 +274,6 @@ class GroupController extends Controller
                     'panelIsChair' => '0'
                     ]
                 ]);
-                DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollback();
-                }
                 if(!$y) {
                     return 0;
                 }
@@ -290,25 +285,19 @@ class GroupController extends Controller
         ->pluck('panelGroupNo');
 
         foreach($pgroup as $pg) {
-            DB::beginTransaction();
-            try {
             $x = DB::table('schedule_approval')->insert([
                 [
-                'schedPGroupNo' => "'{$pg}'",
+                'schedPGroupNo' => $pg,
                 'isApproved' => '0'
                 ]
             ]);
             $y = DB::table('project_approval')->insert([
                 [
-                'projAppPGroupNo' => "'{$pg}'",
+                'projAppPGroupNo' => $pg,
                 'isApproved' => '0',
                 'revisionLink' => ''
                 ]
             ]);
-            DB::commit();
-            } catch (\Exception $e) {
-                DB::rollback();
-            }
             if(!$x || !$y) {
                 return 0;
             }
