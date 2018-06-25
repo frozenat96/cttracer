@@ -17,7 +17,7 @@ $account_types = DB::table('account_type')->get();
         <div class="row justify-content-center">
             <div class="col-md-9 jumbotron bx2">
                 @include('inc.messages')
-                <form method="post" action="{{action('GroupController@store')}}" accept-charset="UTF-8" role="create">
+                {!!Form::open(['action' => ['GroupController@update',$data['group'][0]->groupNo], 'method' => 'POST','id'=>'form1']) !!}
                         <fieldset>
                             <legend class="text-left"><span class="alert bg2">EDIT GROUP FORM</span><hr class="my-4"></legend>
                             
@@ -99,7 +99,7 @@ $account_types = DB::table('account_type')->get();
                     <div class="form-row">
                         <div class="col-auto my-1">
                             <div class="custom-control custom-checkbox mr-sm-2">
-                                <input type="checkbox" class="custom-control-input" id="customControlAutosizing">
+                                <input type="checkbox" class="custom-control-input" id="customControlAutosizing" name="EditGroupPanel">
                                 <label class="custom-control-label" for="customControlAutosizing" data-toggle="popover" data-content="Editing the group panel members will remove the current panel members and create a new one." data-placement="top">Edit Group Panel Members</label>
                             </div>
                         </div>
@@ -107,9 +107,9 @@ $account_types = DB::table('account_type')->get();
                     <div id="for_panel_group">
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <select id="panel_group" class="form-control" name="panel_group" autocomplete="Panel Group" multiple="multiple" required="yes">
+                            <select id="panel_group" class="form-control" name="panel_group[]" autocomplete="Panel Group" multiple="multiple" required="yes">
                                 @foreach($data['panel_members'] as $acc)
-                                <option value="{{$acc->accNo}}" data-toggle="popover" data-content="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" data-placement="right" 
+                                <option value="{{$acc->accNo}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" 
                                     @foreach($data['pgroup'] as $pgroup)
                                         @if($pgroup->accNo == $acc->accNo)
                                         selected 
@@ -131,12 +131,15 @@ $account_types = DB::table('account_type')->get();
                         <button type="reset" class="btn btn-info btn-lg">
                         <span><i class="fas fa-recycle"></i> Reset Values</span>
                         </button>
-                        <button type="submit" class="btn btn-success btn-lg">
+                        <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Are you sure?')">
                             <span><i class="far fa-edit"></i> Save Changes</span>
                         </button>
                     </div>
                         </fieldset>
-                </form>
+                        <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupNo','=',$data['group'][0]->groupNo)->pluck('panelGroupNo'); ?>
+                        <input type="hidden" name="_method" value="PUT">
+                        <input type="hidden" name="panel_select" value="{{$pg}}">
+                {!!Form::close() !!}
             </div>
             </div>
         </div>
@@ -145,13 +148,34 @@ $account_types = DB::table('account_type')->get();
 @endsection
 @section('includes2')
 <script type="text/javascript">
-
-$(document).ready(function () {
-  
-});
-
 $('#group_type').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#content_adviser').select2({allowClear:true,selectOnClose:true,width:'resolve'});
-$('#panel_group').select2({allowClear:true,selectOnClose:true,width:'resolve'});
+//$('#panel_group').select2({allowClear:true,selectOnClose:true,width:'resolve'});
+var vals = [];
+$(document).ready(function () {
+    $('#panel_group').change(function(e) {
+    for(var i=0; i <$('#panel_group option').length; i++) {
+      if ($($('#panel_group option')[i]).prop('selected') ) {
+        if (!vals.includes(i)) {
+          vals.push(i);
+        }
+      } else {
+        if (vals.includes(i)) {
+          vals.splice(vals.indexOf(i), 1);
+        }
+      }
+    }
+  });
+
+    $("#form1").click(function(){
+        var order = [];
+        vals.forEach(function(ele) {
+        order.push( $($('#selector option')[ele]).val() );
+        });
+        $("#panel_select").val(order); 
+    });
+});
+
+
 </script>
 @endsection
