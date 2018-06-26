@@ -96,9 +96,10 @@
                                 <button type="reset" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-recycle"></i> Reset Values</span>
                                 </button>
-                                <button type="submit" id="sub1" class="btn btn-success btn-lg">
+                                <button type="button" id="sub1" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
                                     <span><i class="far fa-edit"></i> Save Changes</span>
                                 </button>
+                                <button id="sub2" type="submit" style="display:none;"></button>
                             </div>
                         </fieldset>
                         <input type="hidden" name="_method" value="PUT">
@@ -111,12 +112,7 @@
 @section('includes2')
 <script type="text/javascript">
 $(document).ready(function () {
-    $("#sub1").click(function(){
-        if(confirm("Are you sure?")) {
-            $("#form_submit1").submit();
-        }
-    });
-    
+
 });
 
 //$('#group_type').select2({allowClear:true,selectOnClose:true});

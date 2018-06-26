@@ -109,13 +109,21 @@ $account_types = DB::table('account_type')->get();
                         <div class="form-group col-md-6">
                             <select id="panel_group" class="form-control" name="panel_group[]" autocomplete="Panel Group" multiple="multiple" required="yes">
                                 @foreach($data['panel_members'] as $acc)
-                                <option value="{{$acc->accNo}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" 
+                                <option value="{{$acc->accNo}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}@foreach($data['pgroup'] as $pgroup)@if(($pgroup->accNo == $acc->accNo) && ($pgroup->panelIsChair)) -- Chair Panel Member
+                                    @endif
+                                    @endforeach" 
                                     @foreach($data['pgroup'] as $pgroup)
-                                        @if($pgroup->accNo == $acc->accNo)
-                                        selected 
-                                        @endif
-                                    @endforeach>
+                                    @if($pgroup->accNo == $acc->accNo)
+                                    selected
+                                    @endif
+                                    @endforeach
+                                  >
                                     <span>{{$acc->accLName}}, {{$model->initials($acc->accFName)}}
+                                        @foreach($data['pgroup'] as $pgroup)
+                                        @if(($pgroup->accNo == $acc->accNo) && ($pgroup->panelIsChair))
+                                        *
+                                        @endif
+                                        @endforeach
                                     </span>
                                 </option>
                                 @endforeach
@@ -136,12 +144,13 @@ $account_types = DB::table('account_type')->get();
                         <button type="reset" class="btn btn-info btn-lg">
                         <span><i class="fas fa-recycle"></i> Reset Values</span>
                         </button>
-                        <button id="sub1" type="submit" class="btn btn-success btn-lg">
+                        <button id="sub1" type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
                             <span><i class="far fa-edit"></i> Save Changes</span>
                         </button>
+                        <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
                     </div>
                         </fieldset>
-                        <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupNo','=',$data['group'][0]->groupNo)->pluck('panelGroupNo'); ?>
+                        <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupNo','=',$data['group'][0]->groupNo)->pluck('panelAccNo'); ?>
                         <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" id="panel_select" name="panel_select" value="{{$pg}}">
                 {!!Form::close() !!}
@@ -164,6 +173,7 @@ $('#panel_group').multiSelect({
 //$('#panel_group').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 
 $(document).ready(function () {
+
     $('#panel_group').change(function(e) {
     for(var i=0; i <$('#panel_group option').length; i++) {
       if ($($('#panel_group option')[i]).prop('selected') ) {
@@ -184,10 +194,7 @@ $(document).ready(function () {
         order.push( $($('#panel_group option')[ele]).val() );
         });
         $("#panel_select").val(order); 
-        return confirm('Are you sure?');
     });
 });
-
-
 </script>
 @endsection

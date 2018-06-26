@@ -60,15 +60,18 @@ class GroupController extends Controller
      */
     public function create()
     {
-        $proj = DB::table('group')
-        ->join('project','project.projGroupNo','=','group.groupNo')
-        ->select('group.*','project.*')
-        ->get();
-
-        $content_adviser = DB::table('account')
+        $panel_members = DB::table('account')
         ->where('account.accType','=','2')
         ->get();
-        $data = ['proj'=>$proj,'content_adviser'=>$content_adviser];
+
+        $stage = DB::table('stage')->get();
+        $pverdict = DB::table('panel_verdict')->get();
+        $data = [
+            'panel_members'=>$panel_members,
+            'stage'=>$stage,
+            'panel_verdict'=>$pverdict
+        ]; 
+        //return(dd($data));
         return view('pages.groups.create')->with('data',$data);
     }
 
@@ -80,7 +83,55 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $valid_group_types = ["Capstone","Thesis"];
+        $valid_panel_members= DB::table('account')
+        ->where('account.accType','=','2')
+        ->pluck('accNo');
+        $valid_stages = DB::table('stage')->pluck('stageNo');
+        $valid_panel_verdict = DB::table('panel_verdict')
+        ->pluck('panelVerdictNo');
+
+        $validator = Validator::make($request->all(), [
+            'group_name' => ['required','max:100','unique:group,groupName'],
+            'group_type' => ['required',Rule::In($valid_group_types)],
+            'content_adviser' => ['required',Rule::In($valid_panel_members->all())],
+            'group_project_name' => ['required','max:100','unique:project,projName'],
+            'stage_no' => ['Integer','required',Rule::In($valid_stages->all())],
+            'panel_verdict' => ['Integer','required',Rule::In($valid_panel_verdict->all())],
+            'document_link' => ['max:255'],
+        ]);
+        if ($validator->fails()) {
+			return redirect()->back()->withInput()->withErrors($validator);
+        }
+        try {
+            DB::beginTransaction();
+            $group = new Group;
+            $project = new Project;
+            $group->groupName = $request->input('group_name');
+            $group->grpType = $request->input('group_type');
+            $group->groupCAdviserNo = $request->input('content_adviser');
+            $group->save();
+            $project->projName = $request->input('group_project_name');
+            $project->projGroupNo = $group->groupNo;
+            $project->projStageNo = $request->input('stage_no');
+            $project->projPVerdictNo = $request->input('panel_verdict');
+                if($request->input('document_link') != ''){
+                    $project->projDocumentLink = $request->input('document_link');
+                }
+                else {
+                    $project->projDocumentLink = '';
+                }
+            $project->save();
+            DB::commit();
+            $request->session()->flash('alert-success', 'Group Information was Created!');
+            return redirect()->back();
+            
+        } catch(\Exception $e){
+            DB::rollback();
+            $request->session()->flash('alert-danger', 'Group Information was not Updated!');
+            return redirect()->back()->withInput()->withErrors('Cannot save information.');
+        }
+        
     }
 
     /**
@@ -197,35 +248,35 @@ class GroupController extends Controller
         ->where('panel_group.panelCGroupNo','=',$id)
         ->pluck('panelGroupNo');
 
-        if(!is_null($request->input('EditGroupPanel')) && !($pgroup === $panel_sel)) {
-            $validator = Validator::make($request->all(), [
-                'panel_group' => ['required'],
-            ]);
-            if ($validator->fails()) {
-                return redirect()->back()->withInput()->withErrors($validator);
-            }
+        try {
             DB::beginTransaction();
-            try{
+            if(!is_null($request->input('EditGroupPanel')) && !($pgroup === $panel_sel)) {
+                $validator = Validator::make($request->all(), [
+                    'panel_group' => ['required'],
+                ]);
+                if ($validator->fails()) {
+                    return redirect()->back()->withInput()->withErrors($validator);
+                }
+
                 $x = $this->modifyPanelDelete($id);
                 $y = $this->modifyPanelAdd($id,$panel_sel);
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollback();
+                if(!$x || !$y) {
+                    DB::rollback();
+                    return redirect()->back()->withInput()->withErrors('Group Information was not Updated!');
+                } 
             }
-            if(!$x || !$y) {
+            if(!$group->save() || !$project->save()) {
                 DB::rollback();
-                return redirect()->back()->withInput()->withErrors('Cannot save information.');
-            }     
-            
-            
-        }
-       
-        if($group->save() && $project->save()) {
+                $request->session()->flash('alert-danger', 'Group Information was not Updated!');
+                return redirect()->back()->withInput();
+            }
+            DB::commit();
             $request->session()->flash('alert-success', 'Group Information was Updated!');
             return redirect()->back();
-        } else {
-            $request->session()->flash('alert-danger', 'Account Information was not Updated!');
-            return redirect()->back()->withInput()->withErrors('Cannot save information.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            $request->session()->flash('alert-danger', 'Group Information was not Updated!');
+            return redirect()->back()->withInput();
         }
     }
 

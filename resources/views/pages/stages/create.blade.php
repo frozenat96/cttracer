@@ -60,9 +60,10 @@
                             <button type="reset" class="btn btn-info btn-lg">
                             <span><i class="fas fa-recycle"></i> Reset Values</span>
                             </button>
-                            <button type="submit" class="btn btn-success btn-lg">
+                            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
                                 <span><i class="fas fa-plus"></i> Create Stage</span>
                             </button>
+                            <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
                         </div>
                     </fieldset>
                 </form>

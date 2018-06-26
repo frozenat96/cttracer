@@ -87,9 +87,10 @@ $account_types = DB::table('account_type')->get();
                               <button type="reset" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-recycle"></i> Reset Values</span>
                               </button>
-                              <button type="submit" class="btn btn-success btn-lg">
+                              <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
                                   <span><i class="far fa-edit"></i> Save Changes</span>
                               </button>
+                              <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
                           </div>
                         </fieldset>
                         <input type="hidden" name="_method" value="PUT">

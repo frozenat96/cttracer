@@ -79,7 +79,15 @@ $(function () {
   $('[data-toggle="popover"]').popover();
 })
 $('[data-toggle="popover"]').popover({ trigger: "hover" });
+
+    if(('#confirmed').length > 0) {
+        $('#confirmed').click(function(){
+            $('#confirm1').modal('hide');
+            $('#sub2').trigger('click');
+        });
+    }
 });
 
 </script>
 <script src="{{asset('js/bootstrap-submenu.js')}}"></script>
+@include('inc.confirm');
