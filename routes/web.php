@@ -37,13 +37,24 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::get('/advised-groups', [
-        'uses'=>'PagesController@advisedGroupsIndex',
-    ]
-    );
+    Route::resource('/advised-groups', 'AdvisedGroupsController')->parameters([
+        'rol' => 'admin_user'
+    ]);
 
     Route::any('/advised-groups-search-results', [
-        'uses'=>'PagesController@advisedGroupsSearch'
+        'uses'=>'AdvisedGroupsController@search'
+    ]
+    ); 
+
+    Route::any('/contentAdvAppForSched', [
+        'uses'=>'AdvisedGroupsController@contentAdvAppForSched',
+        'as' => 'ContentAdvAppForSched'
+    ]
+    ); 
+
+    Route::any('/contentAdvCorrectForSched', [
+        'uses'=>'AdvisedGroupsController@ContentAdvCorrectForSched',
+        'as' => 'ContentAdvCorrectForSched'
     ]
     ); 
 
@@ -94,15 +105,7 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     ); 
 
-    Route::resource('/schedule-settings', 'SchedSettingController')->parameters([
-        'rol' => 'admin_user'
-    ]);
-
-    Route::any('/schedule-search-results', [
-        'uses'=>'SchedSettingController@search',
-    ]
-    );
-
+   
     Route::resource('/quick-view', 'QuickViewController')->parameters([
         'rol' => 'admin_user'
     ]);
@@ -111,6 +114,18 @@ Route::group(['middleware' => ['auth']], function() {
         'uses'=>'QuickViewController@search',
     ]
     ); 
+
+    Route::any('/modifyProjApp/{id}', [
+        'uses'=>'QuickViewController@modifyProjApp',
+        'as'=> 'modifyProjApp'
+    ]
+    );
+
+    Route::any('/modifyProjAppUpdate', [
+        'uses'=>'QuickViewController@modifyProjAppUpdate',
+        'as'=> 'modifyProjAppUpdate'
+    ]
+    );
 
     Route::get('/search-groups', [
         'uses'=>'PagesController@searchGroupIndex',
@@ -151,6 +166,16 @@ Route::get('/hello', function () {
  Route::get('/users/{id}',function($id){
     return 'This is user ' . $id;
 });
+
+ Route::resource('/schedule-settings', 'SchedSettingController')->parameters([
+        'rol' => 'admin_user'
+    ]);
+
+    Route::any('/schedule-search-results', [
+        'uses'=>'SchedSettingController@search',
+    ]
+    );
+
  */
 
 

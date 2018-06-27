@@ -7,6 +7,9 @@ use App\User;
 use Auth;
 use App\models\Project;
 use App\models\AccountGroup;
+use App\models\Schedule;
+use App\models\ScheduleApproval;
+use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Input;
 
@@ -87,45 +90,6 @@ class PagesController extends Controller
         $data=Project::where('projName','LIKE','%'.$request->search."%")->paginate(1);
         $data = response()->json($data);
         return redirect()->action('ProjSearchController@index')->with('data',$data)->send();
-    }
-
-    public function advisedGroupsIndex() {
-        $substatus = ['Submitted To Content Adviser','Not Ready For Defense','Ready For Defense','Submitted For Panel Approval'];
-        $user_id = Auth::id(); 
-        $groups = DB::table('group')
-        ->join('project','project.projGroupNo','=','group.groupNo')
-        ->join('account','group.groupCAdviserNo','=','account.accNo')
-        ->select('group.*','project.*','account.*')
-        ->where('account.accType','=','2')
-        ->where('group.groupCAdviserNo','=',$user_id)
-        ->whereIn('group.groupStatus', $substatus)
-        ->paginate(10); 
-        return view('pages.advised-groups')->with('data',$groups);
-    }
-
-    public function advisedGroupsSearch() {
-        $q = Input::get('q');
-      
-        if($q != '') {
-            $data = DB::table('group')
-            ->join('account','account.accNo','=','group.groupCAdviserNo')
-            ->join('project','project.projGroupNo','=','group.groupNo')
-            ->select('account.*','group.*','project.*')
-            ->where('account.accType','=','2')
-            ->where('group.groupCAdviserNo','=',$user_id)
-            ->where('group.groupStatus','=', 'Submitted To Content Adviser')
-            ->where('group.groupName','LIKE', "%".$q."%")
-            ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
-            ->paginate(10);
-        } else {
-            return redirect()->action('PagesController@advisedGroupsIndex');
-        }
-
-        $data->appends(array(
-            'q' => Input::get('q')
-        ));
-           
-        return view('pages.groups.index')->withData($data);
     }
 
 }

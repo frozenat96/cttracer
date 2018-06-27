@@ -46,7 +46,7 @@
     </head>
     <body>
         
-        @include('inc.navbar')
+        @include('inc.navbar2')
         <wrapper class="d-flex flex-column" >
                 <main class="flex-fill" id="app"> 
                     <div class="container" id="cont1">
@@ -54,7 +54,7 @@
             @yield('content')
     
 
-                        
+            @include('inc.confirm');  
                     </div>
                 </main>
         @yield('paginator')
@@ -90,4 +90,3 @@ $('[data-toggle="popover"]').popover({ trigger: "hover" });
 
 </script>
 <script src="{{asset('js/bootstrap-submenu.js')}}"></script>
-@include('inc.confirm');

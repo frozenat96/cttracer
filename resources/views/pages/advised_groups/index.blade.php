@@ -49,7 +49,7 @@
                             <thead>
                                 <tr class="">
                                     <th>Group Details</th>
-                                    @if($sched->projPVerdictNo == '1')
+                                    @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
                                     <th>Schedule Details</th>
                                     <th>Schedule Status</th>
                                     @else
@@ -91,7 +91,7 @@
                                 <tr>
                                     <td>
                                         <small><b>For: 
-                                        @if($sched->projPVerdictNo == '1')
+                                        @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
                                             Requesting of Schedule
                                         @else
                                             Approval of Revisions
@@ -99,7 +99,7 @@
                                         </b></small>
                                     <td>
                                 </tr>
-                                @if($sched->projPVerdictNo == '1')
+                                @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
                                 <tr>
                                     <td><small><b>Project Document : </b></small><a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-warning btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i></span> Download Document</a>
                                     </td>
@@ -107,7 +107,7 @@
                                 @endif
                                 </table>
                             </td>
-                            @if($sched->projPVerdictNo == '1')
+                            @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
                             <td>
                                 <table class="table-sm table-hover table-striped">
                                 <tr>
@@ -189,15 +189,8 @@
 
                                 </td></tr>
                                 <tr><td>
-                                
-                                {!!Form::open(['action' => 'AdvisedGroupsController@edit', 'method' => 'POST']) !!}
-                                <button  type="submit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Dispprove schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Make Corrections</span></button>
-                                <input type="hidden" name="opt" value="0">
-                                <input type="hidden" name="grp" value="{{$sched->groupNo}}">
-                                <input type="hidden" name="acc" value="{{$sched->accNo}}">
-                                <input type="hidden" name="_method" value="PUT">
-                                {!!Form::close() !!}
-                                
+                                <a href="/advised-groups/{{$sched->groupNo}}/edit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Make corrections" data-placement="top"><span><i class="fas fa-times"></i> Make Corrections</span>
+                                </a>
                                 </td></tr>
                                 </table>
                             </td>

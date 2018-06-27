@@ -27,7 +27,6 @@ $account_types = DB::table('account_type')->get();
                     <h6 class=""><span class="alert bg2">GROUP DETAILS</span></h6>
                     </div>
                     <div class="form-row">
-                    
                         <div class="form-group col-md-10">
                             <label for="group_name">Group Name</label>
                             <input name="group_name" type="text" class="form-control" id="group_name" placeholder="Group Name" required="yes" autocomplete="given-name" value="{{$data['group'][0]->groupName}}">
@@ -51,6 +50,21 @@ $account_types = DB::table('account_type')->get();
                                 @endforeach
                             </select>
                         </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-10">
+                            <label for="group_status">Group Status</label>
+                            <select id="group_status" class="form-control" name="group_status" autocomplete="Group Status" required="yes">
+                                <option value="Waiting" @if(($data['group'][0]->groupStatus)== "Waiting") selected @endif>Waiting</option>
+                                <option title="Document is submitted to the content adviser" value="Submitted to Content Adviser" @if(($data['group'][0]->groupStatus)== "Submitted to Content Adviser") selected @endif>Submitted to Content Adviser</option>
+                                <option title="Document is approved by the content adviser" value="Approved by Content Adviser" @if(($data['group'][0]->groupStatus)== "Approved by Content Adviser") selected @endif>Approved by Content Adviser</option>
+                                <option title="Document is corrected by the content adviser" value="Corrected by Content Adviser" @if(($data['group'][0]->groupStatus)== "Corrected by Content Adviser") selected @endif>Corrected by Content Adviser</option>
+                                <option title="Document is submitted to the panel members" value="Submitted to Panel Members" @if(($data['group'][0]->groupStatus)== "Submitted to Panel Members") selected @endif>Submitted to Panel Members</option>
+                                <option value="Corrected by Panel Members" @if(($data['group'][0]->groupStatus)== "Corrected by Panel Members") selected @endif>Corrected by Panel Members</option>
+                                <option title="Project is waiting for the processing of requirements for completion" value="Waiting for Completion" @if(($data['group'][0]->groupStatus)== "Waiting for Completion") selected @endif>Waiting for Completion</option>
+                                <option title="The group has completely finished the project" value="Finished" @if(($data['group'][0]->groupStatus)== "Finished") selected @endif>Finished</option>
+                            </select>
+                        </div>     
                     </div>
                     </section>
                     <hr class="my-4">
@@ -162,6 +176,7 @@ $account_types = DB::table('account_type')->get();
 @endsection
 @section('includes2')
 <script type="text/javascript">
+$('#group_status').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#group_type').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#content_adviser').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 var vals = [];

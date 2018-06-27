@@ -26,11 +26,9 @@ class ProjAppController extends Controller
         ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
         ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
         ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*','panel_group.*')
-        ->where([
-            ['group.groupStatus','=','Submitted For Panel Approval'],
-            ['panel_group.panelAccNo','=',$user_id]
-            ])
-        ->whereIn('panel_verdict.panelVerdictNo',[2,3])
+        ->where('panel_group.panelAccNo','=',$user_id)
+        ->whereIn('group.groupStatus',['Submitted to Content Adviser'])
+        ->whereIn('project.projPVerdictNo',[2,3]) 
         ->paginate(1);
         $data = ['proj'=>$proj];
         return view('pages.approve_projects.index')->with('data',$proj);
@@ -51,14 +49,12 @@ class ProjAppController extends Controller
             ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
             ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*','panel_group.*','account.*')
             ->where('project.projName','LIKE', "%".$q."%")
-            ->where([
-                ['group.groupStatus','=','Submitted For Panel Approval'],
-                ['panel_group.panelAccNo','=',$user_id]
-                ])
-            ->whereIn('panel_verdict.panelVerdictNo',[2,3])
+            ->where('panel_group.panelAccNo','=',$user_id)
+            ->whereIn('group.groupStatus',['Approved by Content Adviser'])
+            ->whereIn('project.projPVerdictNo',[2,3])
             ->paginate(1)
             ->setpath('');
-
+ 
             $data->appends(array(
                 'q' => Input::get('q')
             ));

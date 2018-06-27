@@ -70,7 +70,7 @@
                         <table>
                             <tr><td>
                         <span data-html="true" 
-                        class="btn btn-info"
+                        class="btn btn-info btn-sm"
                         data-toggle="popover" 
                         data-trigger="focus" 
                         title="<center><b>Panel Approval</b></center>" 
@@ -127,6 +127,11 @@
                                 <tr>
                                     <td>
                                         <small><b>Group Type : {{$sched->grpType}}</b></small>
+                                    <td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <small><b>Group Status : {{$sched->groupStatus}}</b></small>
                                     <td>
                                 </tr>
                                 <tr>

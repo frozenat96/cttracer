@@ -84,7 +84,7 @@ class ProjectController extends Controller
         $Projectmodel = new Project();
         $proj = $Projectmodel->projectInfoByGroup($id);
         if(!count($proj)) {
-            return redirect()->back()->withErrors('Project not found.');
+            return view('pages.projects.view');
         }
     
         $group = DB::table('account')
@@ -100,10 +100,18 @@ class ProjectController extends Controller
         ->select('account.*','project_approval.*','panel_group.*')
         ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
         ->get();
+        $schedApp = DB::table('panel_group')
+        ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
+        ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
+        ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
+        ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
+        ->select('account.*','schedule_approval.*','panel_group.*','schedule.*')
+        ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
+        ->get();
         $adviser = DB::table('account')
         ->where('account.accNo','=',$proj[0]->groupCAdviserNo)
         ->get();
-        $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'pgroup'=>$pgroup];
+        $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'projApp'=>$pgroup,'schedApp'=>$schedApp];
         return view('pages.projects.view')->with('data', $data);
     }
 

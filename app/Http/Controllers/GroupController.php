@@ -202,6 +202,16 @@ class GroupController extends Controller
         $valid_stages = DB::table('stage')->pluck('stageNo');
         $valid_panel_verdict = DB::table('panel_verdict')
         ->pluck('panelVerdictNo');
+        $valid_group_status = [
+            "Waiting",
+            "Submitted to Content Adviser",
+            "Approved by Content Adviser",
+            "Corrected by Content Adviser",
+            "Submitted to Panel Members",
+            "Corrected by Panel Members",
+            "Waiting for Completion",
+            "Finished"
+        ];
 
         $validator = Validator::make($request->all(), [
             'group_name' => ['required','max:100'],
@@ -211,6 +221,7 @@ class GroupController extends Controller
             'stage_no' => ['Integer','required',Rule::In($valid_stages->all())],
             'panel_verdict' => ['Integer','required',Rule::In($valid_panel_verdict->all())],
             'document_link' => ['max:255'],
+            'group_status' => ['required',Rule::In($valid_group_status)],
         ]);
         if ($validator->fails()) {
 			return redirect()->back()->withInput()->withErrors($validator);
@@ -221,6 +232,7 @@ class GroupController extends Controller
         $project = Project::find($project[0]->projNo);
         $group->grpType = $request->input('group_type');
         $group->groupCAdviserNo = $request->input('content_adviser');
+        $group->groupStatus = $request->input('group_status');
         $project->projStageNo = $request->input('stage_no');
         $project->projPVerdictNo = $request->input('panel_verdict');
         $project->projDocumentLink = $request->input('document_link');
@@ -262,21 +274,18 @@ class GroupController extends Controller
                 $y = $this->modifyPanelAdd($id,$panel_sel);
                 if(!$x || !$y) {
                     DB::rollback();
-                    return redirect()->back()->withInput()->withErrors('Group Information was not Updated!');
+                    return redirect()->back()->withInput()->with('error', 'Group Information was not Updated!');
                 } 
             }
             if(!$group->save() || !$project->save()) {
                 DB::rollback();
-                $request->session()->flash('alert-danger', 'Group Information was not Updated!');
-                return redirect()->back()->withInput();
+                return redirect()->back()->withInput()->with('error', 'Group Information was not Updated!');
             }
             DB::commit();
-            $request->session()->flash('alert-success', 'Group Information was Updated!');
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Group Information was Updated!');
         } catch (\Exception $e) {
             DB::rollback();
-            $request->session()->flash('alert-danger', 'Group Information was not Updated!');
-            return redirect()->back()->withInput();
+            return redirect()->back()->withInput()->with('error', 'Group Information was not Updated!');
         }
     }
 

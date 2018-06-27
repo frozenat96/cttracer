@@ -75,7 +75,7 @@
                             <td>
                                 <table class="table-sm table-hover table-striped">
                                 <tr><td>
-                                Project View : <a href="#" class="btn btn-warning" title="{{$grp->projName}}" data-toggle="popover" data-content="View project details" data-placement="top"><span><i class="fas fa-project-diagram"></i></span> {{(substr($grp->projName, 0, 10) . '..')}}</a>
+                                Project View : <a href="/projects/{{$grp->groupNo}}" class="btn btn-warning" title="{{$grp->projName}}" data-toggle="popover" data-content="View project details" data-placement="top"><span><i class="fas fa-project-diagram"></i></span> {{(substr($grp->projName, 0, 10) . '..')}}</a>
                                 </td></tr>
                                 <tr><td>
                                 Project Stage : {{$grp->stageName}}
@@ -94,9 +94,11 @@
                                     <tr><td>
                                         <a href="/groups/{{$grp->groupNo}}/edit" class="btn btn-secondary btn-sm" data-toggle="popover" data-content="Modify Group Details" data-placement="top"><span><i class="far fa-edit"></i></span> Modify Group Details</a>
                                     </td></tr>
+                                    @if((in_array($grp->projPVerdictNo,['2','3'])) && (in_array($grp->groupStatus,['Submitted to Panel Members','Corrected by Panel Members'])))
                                     <tr><td>
-                                        <a href="/groups/{{$grp->groupNo}}/edit" class="btn btn-info btn-sm" data-toggle="popover" data-content="Modify the Group's Project Approval Details" data-placement="top"><span><i class="far fa-edit"></i></span> Modify Project Approval</a>
+                                    <a href="{!! route('modifyProjApp', ['id'=>$grp->groupNo]) !!}" class="btn btn-info btn-sm" data-toggle="popover" data-content="Modify the Group's Project Approval Details" data-placement="top"><span><i class="far fa-edit"></i></span> Modify Project Approval</a>
                                     </td></tr>
+                                    @endif
                                     </table>
                                 </td>
 

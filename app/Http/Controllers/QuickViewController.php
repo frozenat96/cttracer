@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Auth;
 use App\models\Project;
+use App\models\ProjectApproval;
 use App\models\AccountGroup;
 use App\models\Schedule;
 use App\models\ScheduleApproval;
@@ -57,7 +58,7 @@ class QuickViewController extends Controller
             'q' => Input::get('q')
         ));
            
-        return view('pages.quick_view.index')->withData($data);
+        return view('pages.quick_view.index')->with('data',$data);
     }
     /**
      * Show the form for creating a new resource.
@@ -108,7 +109,55 @@ class QuickViewController extends Controller
         ->where('group.groupNo','=',$id)
         ->get();
         //return dd($data);
-        return view('pages.quick_view.modify-schedule')->withData($data);
+        return view('pages.quick_view.modify-schedule')->with('data',$data);
+    }
+
+    public function modifyProjApp($id) 
+    {
+        $data = DB::table('group')
+        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
+        ->join('project_approval','project_approval.projAppPGroupNo','=','panel_group.panelGroupNo')
+        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->select('account.*','project_approval.*','panel_group.*','group.*')
+        ->where('group.groupNo','=',$id)
+        ->get();
+        //return dd($data);
+        return view('pages.quick_view.modify-projApp')->with('data',$data);
+    }
+
+    public function modifyProjAppUpdate(Request $request)
+    {
+        $data = DB::table('group')
+        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
+        ->join('project_approval','project_approval.projAppPGroupNo','=','panel_group.panelGroupNo')
+        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->select('account.*','project_approval.*','panel_group.*','group.*')
+        ->where('group.groupNo','=',$request->input('groupNo'))
+        ->get();
+
+        try {
+            DB::beginTransaction();
+            foreach($data as $pmembers) {
+                $pj1 = ProjectApproval::find($pmembers->projAppNo);
+                $x = 'proj_app_' . $pmembers->accNo;
+                $y = 'proj_rlink_' . $pmembers->accNo;
+                $v = $request->input($x);
+                $v2 = $request->input($y);
+                $pj1->isApproved = $v;
+                if(is_null($v2)) {
+                    $pj1->revisionLink = '';
+                } else {
+                    $pj1->revisionLink = $v2;
+                }        
+                $pj1->save();
+            }
+            DB::commit();
+            $request->session()->flash('alert-success', 'Project Approval Information was Updated!');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput()->with('error', 'Project Approval Information was not Updated!');
+        }
     }
 
     /**
@@ -143,24 +192,30 @@ class QuickViewController extends Controller
         ->where('group.groupNo','=',$id)
         ->get();
         
-        $sc0 = Schedule::find($data[0]->schedNo);
-        $sc0->schedDate = $request->input('date');
-        $sc0->schedTimeStart = $request->input('starting_time');
-        $sc0->schedTimeEnd = $request->input('ending_time');
-        $sc0->schedPlace = $request->input('place');
-        $sc0->schedType = $request->input('schedule_type');
-        $sc0->schedStatus = $request->input('schedule_status');
-        $sc0->saveorFail();
-
-        foreach($data as $pmembers) {
-            $sc1 = ScheduleApproval::find($pmembers->schedAppNo);
-            $x = 'sched_app_' . $pmembers->accNo;
-            $v = $request->input($x);
-            $sc1->isApproved = $v;
-            $sc1->saveorFail();
+        try {
+            DB::beginTransaction();
+            $sc0 = Schedule::find($data[0]->schedNo);
+            $sc0->schedDate = $request->input('date');
+            $sc0->schedTimeStart = $request->input('starting_time');
+            $sc0->schedTimeEnd = $request->input('ending_time');
+            $sc0->schedPlace = $request->input('place');
+            $sc0->schedType = $request->input('schedule_type');
+            $sc0->schedStatus = $request->input('schedule_status');
+            $sc0->save();
+            foreach($data as $pmembers) {
+                $sc1 = ScheduleApproval::find($pmembers->schedAppNo);
+                $x = 'sched_app_' . $pmembers->accNo;
+                $v = $request->input($x);
+                $sc1->isApproved = $v;
+                $sc1->save();
+            }
+            DB::commit();
+            $request->session()->flash('alert-success', 'Schedule Information was Updated!');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Schedule Information was not Updated!');
+            DB::rollback();
         }
-        $request->session()->flash('alert-success', 'Schedule Information was Updated!');
-        return redirect()->back();
     }
 
     /**

@@ -15,7 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-9 jumbotron bx2">
                 @include('inc.messages')
-                {!!Form::open(['action' => ['QuickViewController@update',$data[0]->groupNo], 'method' => 'POST','id'=>'form_submit1']) !!}
+                {!!Form::open(['action' => ['QuickViewController@update',$data[0]->groupNo], 'method' => 'POST','id'=>'form1']) !!}
                         <fieldset>
                             <legend class="text-left"><span class="alert bg2">MODIFY SCHEDULE FORM</span><hr class="my-4"></legend>
                             
