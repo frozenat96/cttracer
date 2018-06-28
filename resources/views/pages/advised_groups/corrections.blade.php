@@ -15,6 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-9 bx2 jumbotron">
                 @include('inc.messages')
+                @if(isset($data) && count($data))
                 {!!Form::open(['action' => 'AdvisedGroupsController@ContentAdvCorrectForSched', 'method' => 'POST']) !!}
                         <fieldset>
                                 <legend class="text-left"><span class="alert bg2">CORRECT DOCUMENT</span><hr class="my-4"></legend>
@@ -44,6 +45,9 @@
                         </div>   
                     <input type="hidden" name="_method" value="PUT">
                 {!!Form::close() !!}
+                @else
+                <p>No results found.</p>
+                @endif
             </div>
         </div>
     </div>
@@ -54,7 +58,7 @@
 
 $(document).ready(function () {
 
-  $('#transferee_account').select2({allowClear:true,selectOnClose:true});
+
 });
 
 </script>

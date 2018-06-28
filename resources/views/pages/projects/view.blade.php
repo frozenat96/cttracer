@@ -67,7 +67,7 @@
                         <h6>Group Status : {{$data['proj'][0]->groupStatus}}</h6>
                             </li>
                             <li>
-                        <h6>Project Status : {{$data['proj'][0]->pVerdictDescription}}</h6>
+                        <h6>Project Panel Verdict : {{$data['proj'][0]->pVerdictDescription}}</h6>
                             </li>
                         </ul>
                 </section>

@@ -1,35 +1,66 @@
 @extends('layouts.app')
 
-@section('style')
+@section('includes')
 
+@endsection
+
+@section('style')
+ 
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
+        
         <div class="row justify-content-center">
-            <div class="col-md-9 jumbotron bx2">
+            <div class="col-md-9 bx2 jumbotron">
                 @include('inc.messages')
-                <legend class="text-left"><span class="alert bg2">MY PROJECT EDIT</span><hr class="my-4"></legend>
-                {{$data}}
+                @if(isset($data))
                 {!!Form::open(['action' => ['MyProjController@update',$data->projNo], 'method' => 'POST']) !!}
-                <div class="form-group">
-                        <label for="project_name">Project Name</label>
-                        <input name="project_name" type="text" class="form-control" id="given_name" placeholder="Project Name" required="yes" value="{{$data->projName}}"> 
+                        <fieldset>
+                                <legend class="text-left"><span class="alert bg2">SUBMIT DOCUMENT</span><hr class="my-4"></legend>
+                    
+                            {{csrf_field()}} 
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="for_group">For Group Of : {{$data->groupName}}</label>
+                            <input type="hidden" name="groupNo" value="{{$data->groupNo}}">
+                            <p>Note : If you are submitting for revision of documents and has been corrected, you must include the files of all the panel members that has corrections and/or the minutes form in your zip file.</p>
+                        </div>
                     </div>
-                    <input type="hidden" name="_method" value="PUT">
+                    <div class="form-row">
+                        <div class="form-group col-md-12" id="acc">
+                            <label for="document_link">Corrected Document Link</label>
+                            <input class="form-control" name="document_link" autocomplete="Document Link" required="yes" value="{{$data->projDocumentLink}}">
+                        </div>
+                    </div>
                     <div class="form-group text-right">
-                        <hr class="my-4">
-                        <button type="reset" class="btn btn-info btn-lg">
-                        <span><i class="fas fa-recycle"></i> Reset Values</span>
-                        </button>
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <span><i class="far fa-edit"></i> Save Changes</span>
-                        </button>
-                    </div>
+                            <hr class="my-4">
+                            <button type="reset" class="btn btn-info btn-lg">
+                              <span><i class="fas fa-recycle"></i> Reset Values</span>
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
+                                <span><i class="far fa-edit"></i> Save Changes</span>
+                            </button>
+                            <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
+                        </div>   
+                    <input type="hidden" name="_method" value="PUT">
                 {!!Form::close() !!}
+                @else
+                <p>No results found.</p>
+                @endif
             </div>
         </div>
     </div>
 </div>
+@endsection
+@section('includes2')
+<script type="text/javascript">
+
+$(document).ready(function () {
+
+   
+});
+
+</script>
 @endsection

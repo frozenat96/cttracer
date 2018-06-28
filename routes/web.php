@@ -20,7 +20,7 @@ Route::group(['middleware' => ['auth']], function() {
     );
 
     Route::resource('/accounts', 'AccountController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/acc-search-results', [
@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth']], function() {
     );
 
     Route::resource('/groups', 'GroupController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/group-search-results', [
@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth']], function() {
     );
 
     Route::resource('/advised-groups', 'AdvisedGroupsController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/advised-groups-search-results', [
@@ -59,7 +59,7 @@ Route::group(['middleware' => ['auth']], function() {
     ); 
 
     Route::resource('/approve-schedules', 'SchedAppController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/approve-schedules-search-results', [
@@ -75,11 +75,11 @@ Route::group(['middleware' => ['auth']], function() {
 
 
     Route::resource('/my-project', 'MyProjController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::resource('/project-archive', 'ProjSearchController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
     
     Route::any('/proj-archive-search-results', [
@@ -88,7 +88,7 @@ Route::group(['middleware' => ['auth']], function() {
     ); 
 
     Route::resource('/projects', 'ProjectController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
     
     Route::any('/proj-search-results', [
@@ -97,7 +97,7 @@ Route::group(['middleware' => ['auth']], function() {
     ); 
 
     Route::resource('/approve-projects', 'ProjAppController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/app-proj-search-results', [
@@ -107,7 +107,7 @@ Route::group(['middleware' => ['auth']], function() {
 
    
     Route::resource('/quick-view', 'QuickViewController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/quick-view-search-results', [
@@ -133,7 +133,7 @@ Route::group(['middleware' => ['auth']], function() {
     );
 
     Route::resource('/stage-settings', 'StageController')->parameters([
-        'rol' => 'admin_user'
+        'roles' => 'Student'
     ]);
 
     Route::any('/stage-search-results', [
@@ -168,7 +168,7 @@ Route::get('/hello', function () {
 });
 
  Route::resource('/schedule-settings', 'SchedSettingController')->parameters([
-        'rol' => 'admin_user'
+        'rol' => 'Student'
     ]);
 
     Route::any('/schedule-search-results', [
