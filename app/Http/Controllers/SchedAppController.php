@@ -210,4 +210,42 @@ class SchedAppController extends Controller
     {
         //
     }
+
+    public function approvalStatus_e(Request $request) {
+        if (is_null($request->input('submit'))){
+            return redirect()->back()->with('error', 'Schedule approval failed.');
+        } 
+        $q = DB::table('schedule_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
+        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->select('schedule_approval.*','account.*','panel_group.*','group.*')
+        ->where('account.accNo','=',$request->input('acc'))
+        ->where('panel_group.panelCGroupNo','=',$request->input('grp'))
+        ->get();
+        $approval = ScheduleApproval::find($q[0]->schedAppNo);
+        if($request->input('opt')=='1') {
+            $approval->isApproved = 1;
+            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was approved.';
+        } else {
+            $approval->isApproved = 2;
+            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was disapproved.';
+        }
+        try{
+            DB::beginTransaction();
+            if($approval->save() && $this->calcSchedStatus($request->input('grp'))) {
+                DB::commit();
+                return redirect('/')->with('success', $msg);
+            } else {
+                DB::rollback();
+                return redirect('/')->with('error', 'Schedule approval failed.');
+            }
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect('/')->with('error', 'Schedule approval failed.');
+        }
+        
+        
+    }
 }

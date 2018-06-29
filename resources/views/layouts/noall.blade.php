@@ -48,7 +48,7 @@
         </style>
     </head>
     <body>
-        @include('inc.navbar2')
+        
         <wrapper class="d-flex flex-column" >
                 <main class="flex-fill"> 
                     <div class="container" id="cont1">
@@ -60,7 +60,7 @@
                     </div>
                 </main>
         @yield('paginator')
-        @include('inc.footer')        
+         
         </wrapper>
    
     </body>

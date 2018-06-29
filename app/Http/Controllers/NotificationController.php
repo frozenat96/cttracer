@@ -24,7 +24,7 @@ class NotificationController extends Controller
         ->where('notification.notifiable_id','=',Auth::id())
         ->where('notification.type','=','App\Notifications\NotifyPanelOnSchedRequest')
         ->delete();
-        return redirect()->action('ProjAppController@index');
+        return redirect()->action('SchedAppController@index');
     }
 
     public function NotifyPanelOnRevisions() {

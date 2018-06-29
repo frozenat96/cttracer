@@ -36101,63 +36101,56 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _vm._m(0),
-      _vm._v(" "),
-      _vm._l(_vm.notifications, function(notification) {
-        return _c("div", [_vm._m(1, true)])
-      })
-    ],
-    2
-  )
+  return _vm._m(0)
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "nav-link dropdown-toggle",
-        attrs: {
-          href: "#",
-          id: "navbarDropdownMenuLink4",
-          "data-toggle": "dropdown",
-          "aria-haspopup": "true",
-          "aria-expanded": "false"
-        }
-      },
-      [
-        _c("span", { staticClass: "badge badge-pill badge-success" }),
-        _vm._v(" "),
-        _c("i", { staticClass: "fas fa-project-diagram" }),
-        _vm._v(" Notifications")
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "form",
-      {
-        attrs: { method: "post", action: "/approve-schedules-search-results" }
-      },
-      [
-        _c("label"),
-        _vm._v(" "),
-        _c("input", { attrs: { type: "hidden", name: "q", value: "am" } }),
-        _vm._v(" "),
-        _c("input", {
-          staticClass: "btn btn-link",
-          attrs: { type: "submit", value: "View" }
-        })
-      ]
-    )
+    return _c("div", [
+      _c(
+        "a",
+        {
+          staticClass: "nav-link dropdown-toggle",
+          attrs: {
+            href: "#",
+            id: "navbarDropdownMenuLink4",
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false"
+          }
+        },
+        [
+          _c("span", { staticClass: "badge badge-pill badge-success" }),
+          _vm._v(" "),
+          _c("i", { staticClass: "fas fa-project-diagram" }),
+          _vm._v(" Notifications")
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "form",
+          {
+            attrs: {
+              method: "post",
+              action: "/approve-schedules-search-results"
+            }
+          },
+          [
+            _c("label"),
+            _vm._v(" "),
+            _c("input", { attrs: { type: "hidden", name: "q", value: "am" } }),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "btn btn-link",
+              attrs: { type: "submit", value: "View" }
+            })
+          ]
+        )
+      ])
+    ])
   }
 ]
 render._withStripped = true

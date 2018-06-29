@@ -58,7 +58,7 @@ $(document).ready(function () {
         case '3': ViewModels.Notifications.callToServerForStudent();break;
     }
     //console.log("Customers", ViewModels.CustomerViewModel.Customers());
-    Echo.private('channelExampleEvent')
+    Echo.private('notifications')
     .listen('eventTrigger', (e) => {
         let role = $('meta[name="role"]').attr('content');
         switch(role) {

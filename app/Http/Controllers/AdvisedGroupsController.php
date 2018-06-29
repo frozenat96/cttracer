@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Input;
 use App\Events\eventTrigger;
+use App\mail\SendMail;
+use Mail;
 
 class AdvisedGroupsController extends Controller
 {
@@ -145,15 +147,18 @@ class AdvisedGroupsController extends Controller
         $panel = DB::table('panel_group')
         ->where('panel_group.panelCGroupNo','=',$group->groupNo)
         ->pluck('panelAccNo');
-        event(new eventTrigger('trigger'));
-        foreach($panel as $p){
-            User::find($p)->notify(new NotifyPanelOnSchedRequest($group));
-        }
+        
         try{
             DB::beginTransaction();
             $group->groupStatus = 'Approved by Content Adviser';
             $group->save();
-            
+            event(new eventTrigger('trigger'));
+            foreach($panel as $p){
+                $x = User::find($p);
+                $x->notify(new NotifyPanelOnSchedRequest($group));
+                $z = ['grp'=>$group->groupNo,'acc'=>$p,'to'=>$x->accEmail];
+                Mail::send(new SendMail($z));
+            }
             DB::commit();
             return redirect()->back()->with('success', 'The document of group : ' . $group->groupName . ' was approved.');
             

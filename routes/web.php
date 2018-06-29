@@ -175,12 +175,24 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/NotifyAdviserOnRevisions','NotificationController@NotifyAdviserOnRevisions');
     Route::any('/NotifyAdviserOnRevisions_d','NotificationController@NotifyAdviserOnRevisions_d');
 
+
+    //For Email
+    Route::any('/NotifyPanelOnSchedRequest_e','MailController@NotifyPanelOnSchedRequest_e');
+    Route::any('/NotifyPanelOnSchedRequest_s','MailController@NotifyPanelOnSchedRequest_s');
+
 });
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
-
+Route::any('/approved-sched-via-email',function(){
+    return view('events.approved-sched-via-email');
+});
+Route::any('/approveStatus_e', [
+    'uses'=>'SchedAppController@approvalStatus_e',
+    'as' => 'approve-status_e',
+]
+); 
 Auth::routes();
 
 

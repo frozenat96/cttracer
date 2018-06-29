@@ -193,6 +193,7 @@
                                 <tr><td>     
 
                                 {!!Form::open(['action' => 'SchedAppController@approvalStatus', 'method' => 'POST']) !!}
+                                {{csrf_field()}}
                                 <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
                                 <input type="hidden" name="opt" value="1">
                                 <input type="hidden" name="grp" value="{{$sched->groupNo}}">
@@ -204,6 +205,7 @@
                                 <tr><td>
                                 
                                 {!!Form::open(['action' => 'SchedAppController@approvalStatus', 'method' => 'POST']) !!}
+                                {{csrf_field()}}
                                 <button  type="submit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Dispprove schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Disapprove</span></button>
                                 <input type="hidden" name="opt" value="0">
                                 <input type="hidden" name="grp" value="{{$sched->groupNo}}">
