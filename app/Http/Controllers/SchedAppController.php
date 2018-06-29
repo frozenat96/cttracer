@@ -33,7 +33,7 @@ class SchedAppController extends Controller
         ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
         ->where('panel_group.panelAccNo','=',$user_id)
         ->whereIn('group.groupStatus', ['Approved by Content Adviser'])
-        ->where('project.projPVerdictNo','!=','1')
+        ->whereNotIn('project.projPVerdictNo',['2','3'])
         ->where('schedule.schedStatus','!=','Finished')
         ->paginate(3); 
         //return $this->calcSchedStatus($sched[0]->panelCGroupNo);
@@ -54,11 +54,10 @@ class SchedAppController extends Controller
             ->join('account','account.accNo','=','panel_group.panelAccNo')
             ->select('schedule_approval.*','schedule.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
             ->whereIn('group.groupStatus', ['Approved by Content Adviser'])
-            ->orWhere('panel_group.panelAccNo','=',$user_id)
+            ->where('panel_group.panelAccNo','=',$user_id)
             ->where('schedule.schedStatus','!=','Finished')
-            ->where('project.projPVerdictNo','!=','1')
+            ->whereNotIn('project.projPVerdictNo',['2','3'])
             ->where('group.groupName','LIKE', "%".$q."%")
-            ->groupBy('group.groupNo')
             ->paginate(3); 
         } else {
             return redirect()->action('SchedAppController@index');

@@ -10,9 +10,12 @@ use App\models\Group;
 use App\models\AccountGroup;
 use App\models\Schedule;
 use App\models\ScheduleApproval;
+use App\models\PanelGroup;
+use App\Notifications\NotifyPanelOnSchedRequest;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Input;
+use App\Events\eventTrigger;
 
 class AdvisedGroupsController extends Controller
 {
@@ -139,10 +142,18 @@ class AdvisedGroupsController extends Controller
             return redirect()->back()->with('error', 'Approval failed.');
         } 
         $group = Group::find($request->input('groupNo'));
+        $panel = DB::table('panel_group')
+        ->where('panel_group.panelCGroupNo','=',$group->groupNo)
+        ->pluck('panelAccNo');
+        event(new eventTrigger('trigger'));
+        foreach($panel as $p){
+            User::find($p)->notify(new NotifyPanelOnSchedRequest($group));
+        }
         try{
             DB::beginTransaction();
             $group->groupStatus = 'Approved by Content Adviser';
             $group->save();
+            
             DB::commit();
             return redirect()->back()->with('success', 'The document of group : ' . $group->groupName . ' was approved.');
             

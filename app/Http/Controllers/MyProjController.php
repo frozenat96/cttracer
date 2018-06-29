@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use DB;
 use App\models\Project;
 use App\models\Group;
+use App\User;
 use Auth;
 use Illuminate\Validation\Rule;
-
+use App\Notifications\NotifyAdviserOnSchedRequest;
+use App\Notifications\NotifyAdviserOnRevisions;
 class MyProjController extends Controller
 {
     /**
@@ -123,6 +125,13 @@ class MyProjController extends Controller
             $proj->projDocumentLink = $request->input('document_link');
             $proj->save();
             $group->groupStatus = 'Submitted to Content Adviser';
+
+            if(in_array($proj->projPVerdictNo,['2','3'])) {
+                User::find($group->groupCAdviserNo)->notify(new NotifyAdviserOnRevisions($group));
+            } else {
+                User::find($group->groupCAdviserNo)->notify(new NotifyAdviserOnSchedRequest($group));
+            }
+            
             $group->save();
             $request->session()->flash('alert-success', 'The document was submitted to your Content Adviser!');
             DB::commit();

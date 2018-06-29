@@ -12,6 +12,7 @@
 */
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
+use App\Events\eventTrigger;
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [
@@ -19,167 +20,166 @@ Route::group(['middleware' => ['auth']], function() {
     ]
     );
 
-    Route::resource('/accounts', 'AccountController')->parameters([
-        'roles' => 'Student'
-    ]);
-
-    Route::any('/acc-search-results', [
-        'uses'=>'AccountController@search'
-    ]
-    );
-
-    Route::resource('/groups', 'GroupController')->parameters([
-        'roles' => 'Student'
-    ]);
-
-    Route::any('/group-search-results', [
-        'uses'=>'GroupController@search'
-    ]
-    );
-
-    Route::resource('/advised-groups', 'AdvisedGroupsController')->parameters([
-        'roles' => 'Student'
-    ]);
-
-    Route::any('/advised-groups-search-results', [
-        'uses'=>'AdvisedGroupsController@search'
-    ]
-    ); 
-
-    Route::any('/contentAdvAppForSched', [
-        'uses'=>'AdvisedGroupsController@contentAdvAppForSched',
-        'as' => 'ContentAdvAppForSched'
-    ]
-    ); 
-
-    Route::any('/contentAdvCorrectForSched', [
-        'uses'=>'AdvisedGroupsController@ContentAdvCorrectForSched',
-        'as' => 'ContentAdvCorrectForSched'
-    ]
-    ); 
-
-    Route::resource('/approve-schedules', 'SchedAppController')->parameters([
-        'roles' => 'Student'
-    ]);
-
-    Route::any('/approve-schedules-search-results', [
-        'uses'=>'SchedAppController@search'
-    ]
-    ); 
-
-    Route::any('/approveStatus', [
-        'uses'=>'SchedAppController@approvalStatus',
-        'as' => 'approve-status'
-    ]
-    ); 
+    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+        Route::resource('/projects', 'ProjectController')->parameters([
+            ]);
+            
+        Route::any('/proj-search-results', [
+                'uses'=>'ProjectController@search',
+            ]
+            ); 
+    }); //End Route::Group Capstone Coordinator/Panel Members
 
 
-    Route::resource('/my-project', 'MyProjController')->parameters([
-        'roles' => 'Student'
-    ]);
+    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+        Route::resource('/accounts', 'AccountController');
+        Route::any('/acc-search-results', [
+            'uses'=>'AccountController@search',
+        ]
+        );
 
+
+        Route::resource('/groups', 'GroupController')->parameters([]);
+            Route::any('/group-search-results', [
+            'uses'=>'GroupController@search',
+            ]
+            );
+
+            Route::resource('/quick-view', 'QuickViewController');
+        
+            Route::any('/quick-view-search-results', [
+                'uses'=>'QuickViewController@search',
+            ]
+            ); 
+        
+            Route::any('/modifyProjApp/{id}', [
+                'uses'=>'QuickViewController@modifyProjApp',
+                'as'=> 'modifyProjApp',
+            ]
+            );
+        
+            Route::any('/modifyProjAppUpdate', [
+                'uses'=>'QuickViewController@modifyProjAppUpdate',
+                'as'=> 'modifyProjAppUpdate',
+            ]
+            );
+    
+            Route::resource('/stage-settings', 'StageController')->parameters([
+            ]);
+
+            Route::any('/stage-search-results', [
+                'uses'=>'StageController@search',
+            ]
+            );
+
+            Route::get('/transfer-role-index', [
+                'uses'=>'PagesController@transferRole',
+            ]
+            );
+
+            Route::any('/transfer-role-results', [
+                'uses'=>'AccountController@transfer',
+            ]
+            ); 
+
+    }); //End Route::Group Capstone Coordinator
+
+   
+    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+        Route::resource('/advised-groups', 'AdvisedGroupsController')->parameters([
+        ]);
+    
+        Route::any('/advised-groups-search-results', [
+            'uses'=>'AdvisedGroupsController@search',
+        ]
+        ); 
+
+        Route::any('/contentAdvAppForSched', [
+            'uses'=>'AdvisedGroupsController@contentAdvAppForSched',
+            'as' => 'ContentAdvAppForSched',
+            'roles' => 'Student'
+        ]
+        ); 
+    
+        Route::any('/contentAdvCorrectForSched', [
+            'uses'=>'AdvisedGroupsController@ContentAdvCorrectForSched',
+            'as' => 'ContentAdvCorrectForSched',
+            'roles' => 'Student'
+        ]
+        ); 
+
+        Route::resource('/approve-schedules', 'SchedAppController')->parameters([
+            'roles' => 'Student',
+        ]);
+
+        Route::any('/approve-schedules-search-results', [
+            'uses'=>'SchedAppController@search',
+        ]
+        ); 
+
+
+        Route::any('/approveStatus', [
+            'uses'=>'SchedAppController@approvalStatus',
+            'as' => 'approve-status',
+        ]
+        ); 
+
+        Route::resource('/approve-projects', 'ProjAppController')->parameters([
+            'roles' => 'Student'
+        ]);
+    
+        Route::any('/app-proj-search-results', [
+            'uses'=>'ProjAppController@search',
+            'roles' => 'Student'
+        ]
+        ); 
+
+    }); //End Route::Group Panel Member
+
+    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+        Route::resource('/my-project', 'MyProjController')->parameters([
+            'roles' => 'Student'
+        ]);
+    }); //End Route::Group Student
+
+    //routes without middleware:
     Route::resource('/project-archive', 'ProjSearchController')->parameters([
-        'roles' => 'Student'
     ]);
     
     Route::any('/proj-archive-search-results', [
-        'uses'=>'ProjSearchController@search'
+        'uses'=>'ProjSearchController@search',
     ]
     ); 
-
-    Route::resource('/projects', 'ProjectController')->parameters([
-        'roles' => 'Student'
-    ]);
-    
-    Route::any('/proj-search-results', [
-        'uses'=>'ProjectController@search'
-    ]
-    ); 
-
-    Route::resource('/approve-projects', 'ProjAppController')->parameters([
-        'roles' => 'Student'
-    ]);
-
-    Route::any('/app-proj-search-results', [
-        'uses'=>'ProjAppController@search'
-    ]
-    ); 
-
    
-    Route::resource('/quick-view', 'QuickViewController')->parameters([
-        'roles' => 'Student'
-    ]);
+    //Notifications
+    Route::get('/alertBox',function(){
+        return view('events.event-listener');
+    });
 
-    Route::any('/quick-view-search-results', [
-        'uses'=>'QuickViewController@search',
-    ]
-    ); 
+    Route::get('/fireEvent', 'NotificationController@notifyFireSchedRequest');
+    /*
+    Route::get('/fireEvent',function(){
+        event(new eventTrigger('How Are You?'));
+        return 'Event fired';
+    });*/
 
-    Route::any('/modifyProjApp/{id}', [
-        'uses'=>'QuickViewController@modifyProjApp',
-        'as'=> 'modifyProjApp'
-    ]
-    );
+    Route::post('/NotifyPanelOnSchedRequest','NotificationController@NotifyPanelOnSchedRequest');
+    Route::any('/NotifyPanelOnSchedRequest_d','NotificationController@NotifyPanelOnSchedRequest_d');
 
-    Route::any('/modifyProjAppUpdate', [
-        'uses'=>'QuickViewController@modifyProjAppUpdate',
-        'as'=> 'modifyProjAppUpdate'
-    ]
-    );
+    Route::post('/NotifyPanelOnRevisions','NotificationController@NotifyPanelOnRevisions');
+    Route::any('/NotifyPanelOnRevisions_d','NotificationController@NotifyPanelOnRevisions_d');
 
-    Route::get('/search-groups', [
-        'uses'=>'PagesController@searchGroupIndex',
-    ]
-    );
+    Route::post('/NotifyAdviserOnSchedRequest','NotificationController@NotifyAdviserOnSchedRequest');
+    Route::any('/NotifyAdviserOnSchedRequest_d','NotificationController@NotifyAdviserOnSchedRequest_d');
 
-    Route::resource('/stage-settings', 'StageController')->parameters([
-        'roles' => 'Student'
-    ]);
+    Route::post('/NotifyAdviserOnRevisions','NotificationController@NotifyAdviserOnRevisions');
+    Route::any('/NotifyAdviserOnRevisions_d','NotificationController@NotifyAdviserOnRevisions_d');
 
-    Route::any('/stage-search-results', [
-        'uses'=>'StageController@search'
-    ]
-    );
-
-    Route::get('/transfer-role-index', [
-        'uses'=>'PagesController@transferRole',
-    ]
-    );
-
-    Route::any('/transfer-role-results', [
-        'uses'=>'AccountController@transfer'
-    ]
-    ); 
-    
-    Route::post('/searchProjects','ProjSearchController@search')->name('searchProj');
 });
 
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
-/*
-Route::get('/hello', function () {
-    // return view('welcome');
-    return 'Hello World';
- });
-
- Route::get('/users/{id}',function($id){
-    return 'This is user ' . $id;
-});
-
- Route::resource('/schedule-settings', 'SchedSettingController')->parameters([
-        'rol' => 'Student'
-    ]);
-
-    Route::any('/schedule-search-results', [
-        'uses'=>'SchedSettingController@search',
-    ]
-    );
-
- */
-
-
-
 
 Auth::routes();
 

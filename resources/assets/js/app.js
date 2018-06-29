@@ -15,9 +15,15 @@ window.axios = require('axios');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+let token = document.head.querySelector('meta[name="csrf-token"]');
+if(token) {
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+} else {
+    console.error('CSRF token not found.'); 
+}
+//window.axios.defaults.common['X-Requested-With'] = 'XMLHttpRequest';
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('project-search', require('./components/project_search/project_search.vue'));
+Vue.component('notification', require('./components/Notifications.vue'));
 
-const app = new Vue({
-    el: '#app'
-});
+

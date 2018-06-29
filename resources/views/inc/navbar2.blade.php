@@ -5,6 +5,9 @@
                   <img src="{{asset('img/design/logo/logo.png')}}" style="width: 100px;">
                 </li>
             </ul>
+
+            
+            
             <ul class="navbar-nav navbar-right">
                 <?php 
                 
@@ -34,7 +37,7 @@
         </div> 
         
     </nav>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #F85353;height: 100px;">
+    <nav class="navbar navbar-expand-lg navbar-light" class="nav-header2" style="background-color: #F85353;height: 70px;">
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
@@ -69,7 +72,35 @@
             </div>
           </li>
         </ul>
+        
          <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item dropdown menu1">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    
+                  <i class="fas fa-bell"></i>  Notifications 
+                  <!-- ko if: AllNotifications() -->
+                  <span class="badge badge-pill badge-success" data-bind="text: AllNotifications()"></span>
+                  <!-- /ko -->
+                </a>
+
+           <!-- ko if: AllNotifications() -->
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink5">
+            @if($user[0]->accType == '1')
+
+            @elseif($user[0]->accType == '2')
+              <!-- ko if: NotifyPanelOnSchedRequest().length -->
+                <a class="dropdown-item" href="/NotifyPanelOnSchedRequest_d"> Schedule Approvals (Panel) <span class="badge badge-pill badge-success" data-bind="text: NotifyPanelOnSchedRequest().length"></span></a>
+              <!-- /ko -->
+
+            @elseif($user[0]->accType == '3')
+            @endif
+              
+
+
+           </div>
+           <!-- /ko -->
+            </li>
+
              <li class="nav-item dropdown menu1">
                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-project-diagram"></i> Projects

@@ -1,5 +1,5 @@
 nav {
-	font-size: 1.5em;
+	font-size: 1.2em;
 	font-weight: bold;
 }
 
@@ -9,4 +9,14 @@ nav {
 
 .dropdown-menu {
 	font-size: 0.8em;
+}
+
+.nav-header1 {
+	width: 100%;
+	height: 100px;
+}
+
+.nav-header2 {
+	background-color: #F85353!important;
+	height: 70px!important;
 }

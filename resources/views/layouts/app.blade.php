@@ -15,24 +15,30 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="role" content="{{Auth::user() ? Auth::user()->accType : ''}}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
         <link rel="shortcut icon" href="{{asset('img/design/logo/logo_L3R_icon.ico')}}">
         <link rel="stylesheet" href="{{asset('css/multi-select.css')}}">
         <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
-        <link rel="stylesheet" href="{{asset('css/bootstrap-submenu.css')}}">
-        <link rel="stylesheet" href="{{asset('css/header.css')}}">
+        <link rel="stylesheet" href="{{asset('css/bootstrap-submenu.css')}}">   
         <link rel="stylesheet" href="{{asset('css/footer.css')}}">
         <link rel="stylesheet" href="{{asset('css/default.css')}}">
         <link rel="stylesheet" href="{{asset('css/fontawesome/web-fonts-with-css/css/fontawesome-all.min.css')}}">
+        <link rel="stylesheet" href="{{asset('css/header.css')}}">
+
+
+        
 
         <script src="{{asset('js/jquery-3.3.1.min.js')}}"></script>
+        <script src="{{asset('js/vm/sched-request.vm.js')}}"></script>
         <script src="{{asset('js/popper.min.js')}}"></script>
         <script src="{{asset('js/bootstrap.min.js')}}"></script>
         <script src="{{asset('js/jquery.multi-select.js')}}"></script>
         <script src="{{asset('js/knockout-3.4.2.js')}}"></script>   
         <link rel="stylesheet" href="{{asset('css/search-select.min.css')}}">
         <script src="{{asset('js/search-select.min.js')}}"></script>
+        
         
         @yield('includes')
         <title>{{config('app.name','cttracer')}}</title>
@@ -45,10 +51,9 @@
         </style>
     </head>
     <body>
-        
         @include('inc.navbar2')
         <wrapper class="d-flex flex-column" >
-                <main class="flex-fill" id="app"> 
+                <main class="flex-fill"> 
                     <div class="container" id="cont1">
         
             @yield('content')
@@ -60,6 +65,7 @@
         @yield('paginator')
         @include('inc.footer')        
         </wrapper>
+   
     </body>
 </html>
 @yield('includes2')
@@ -90,3 +96,4 @@ $('[data-toggle="popover"]').popover({ trigger: "hover" });
 
 </script>
 <script src="{{asset('js/bootstrap-submenu.js')}}"></script>
+<script src="{{asset('js/app.js')}}"></script>

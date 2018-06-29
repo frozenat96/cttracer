@@ -26,8 +26,9 @@ class User extends Authenticatable
     ];
 
     public function roles() {
-        return $this->hasOne('App\models\AccountType','accTypeNo','accType');
+        return $this->hasOne('App\models\AccountType','accTypeNo');
     }
+    
     public function hasAnyRole($roles) {
         if(is_array($roles)) {
             foreach($roles as $role) {
@@ -36,7 +37,7 @@ class User extends Authenticatable
                 }
             }
         } else {
-            if($this->hasRole($role)) {
+            if($this->hasRole($roles)) {
                 return true;
             }
         }
@@ -44,16 +45,18 @@ class User extends Authenticatable
     }
 
     public function hasRole($role) {
+        $user_id = Auth::id(); 
         $user = DB::table('account')
         ->join('account_type','account_type.accTypeNo','=','account.accType')
         ->select('account.*','account_type.*')
-        ->where('account.accNo','=',Auth::id())
-        ->where('account_type.accTypeDescription','=',$role)
-        ->count();  
-        if($user) {
+        ->where('account.accNo','=',$user_id)
+        ->first();
+        $x = $this->roles()->where('accTypeDescription',$role)->first();
+        if($user->accTypeDescription == $role) {
             return true;
         }
         return false;
+
     }
 
     /**

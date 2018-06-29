@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light" style="width: 100%;height: 100px;">
+<nav class="navbar navbar-expand-lg navbar-light" class="nav-header1">
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
@@ -34,7 +34,7 @@
         </div> 
         
     </nav>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #F85353;height: 100px;">
+    <nav class="navbar navbar-expand-lg navbar-light" class="nav-header2">
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
