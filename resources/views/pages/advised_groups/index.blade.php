@@ -19,22 +19,19 @@
         <h4><span class="alert bg2">ADVISED GROUPS</span></h4>
         <br class="my-4">
             <div class="row">
-                <div class="col-md-10">
-            <form method="post" action="/advised-groups-search-results" accept-charset="UTF-8" role="search">
-                {{csrf_field()}} 
-                <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-info btn-lg">
-                            <span><i class="fas fa-search"></i> Search</span>
-                        </button>
-                    </span>
-                    
-                </div>
-            </form>
-                </div>
-                <div class="col-md-1">
-                        <a href="/approve-schedules/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new schedule setting" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+                <div class="col-md-12">
+                    <form method="post" action="/advised-groups-search-results" accept-charset="UTF-8" role="search">
+                        {{csrf_field()}} 
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-info btn-lg">
+                                    <span><i class="fas fa-search"></i> Search</span>
+                                </button>
+                            </span>
+                            
+                        </div>
+                    </form>
                 </div>
             </div>
             <hr class="my-4">
@@ -101,7 +98,7 @@
                                 </tr>
                                 @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
                                 <tr>
-                                    <td><small><b>Project Document : </b></small><a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-warning btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i></span> Download Document</a>
+                                    <td><small><b>Project Document : </b></small><a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-link btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i> {{(substr($sched->projName, 0, 10) . '..')}}</span></a>
                                     </td>
                                 </tr>
                                 @endif
@@ -156,7 +153,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <small><b>Project Document : <a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-warning btn-sm"><span><i class="fas fa-download"></i></span> Download Document</a></b></small>
+                                            <small><b>Project Document : <a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-link btn-sm" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i> {{(substr($sched->projName, 0, 10) . '..')}}</span></a></b></small>
                                         </td>
                                     </tr>
                                     <tr>

@@ -28,6 +28,18 @@ Route::group(['middleware' => ['auth']], function() {
                 'uses'=>'ProjectController@search',
             ]
             ); 
+
+        Route::any('/accDelete/{id}', [
+            'uses'=>'AccountController@deleteUpdate',
+            'as' => 'accDelete',
+        ]
+        ); 
+
+        Route::any('/transferExecute', [
+            'uses'=>'AccountController@transferExecute',
+            'as' => 'transferExecute',
+        ]
+        ); 
     }); //End Route::Group Capstone Coordinator/Panel Members
 
 
@@ -97,19 +109,16 @@ Route::group(['middleware' => ['auth']], function() {
         Route::any('/contentAdvAppForSched', [
             'uses'=>'AdvisedGroupsController@contentAdvAppForSched',
             'as' => 'ContentAdvAppForSched',
-            'roles' => 'Student'
         ]
         ); 
     
         Route::any('/contentAdvCorrectForSched', [
             'uses'=>'AdvisedGroupsController@ContentAdvCorrectForSched',
             'as' => 'ContentAdvCorrectForSched',
-            'roles' => 'Student'
         ]
         ); 
 
         Route::resource('/approve-schedules', 'SchedAppController')->parameters([
-            'roles' => 'Student',
         ]);
 
         Route::any('/approve-schedules-search-results', [
@@ -118,19 +127,23 @@ Route::group(['middleware' => ['auth']], function() {
         ); 
 
 
-        Route::any('/approveStatus', [
-            'uses'=>'SchedAppController@approvalStatus',
-            'as' => 'approve-status',
+        Route::any('/schedApprovalStatus', [
+            'uses'=>'SchedAppController@schedApprovalStatus',
+            'as' => 'sched-approve-status',
+        ]
+        ); 
+
+        Route::any('/projApprovalStatus', [
+            'uses'=>'ProjAppController@projApprovalStatus',
+            'as' => 'proj-approve-status',
         ]
         ); 
 
         Route::resource('/approve-projects', 'ProjAppController')->parameters([
-            'roles' => 'Student'
         ]);
     
         Route::any('/app-proj-search-results', [
             'uses'=>'ProjAppController@search',
-            'roles' => 'Student'
         ]
         ); 
 
@@ -138,11 +151,10 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
         Route::resource('/my-project', 'MyProjController')->parameters([
-            'roles' => 'Student'
         ]);
     }); //End Route::Group Student
 
-    //routes without middleware:
+    //routes without roles needed
     Route::resource('/project-archive', 'ProjSearchController')->parameters([
     ]);
     
@@ -188,11 +200,16 @@ Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::any('/approved-sched-via-email',function(){
     return view('events.approved-sched-via-email');
 });
-Route::any('/approveStatus_e', [
-    'uses'=>'SchedAppController@approvalStatus_e',
-    'as' => 'approve-status_e',
+Route::any('/schedApprovalStatus_e', [
+    'uses'=>'SchedAppController@schedApprovalStatus_e',
+    'as' => 'sched-approve-status_e',
 ]
 ); 
+
+Route::any('/email-config', function(){
+    return view('events.email')->with(['grp'=>'1','acc'=>'10']);
+}); 
+ 
 Auth::routes();
 
 

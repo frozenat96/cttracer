@@ -38,6 +38,14 @@ class NotificationController extends Controller
         ->where('type','=','App\Notifications\NotifyAdviserOnSchedRequest')
         ->get();
     }
+    
+    public function NotifyAdviserOnSchedRequest_d() {
+        DB::table('notification')
+        ->where('notification.notifiable_id','=',Auth::id())
+        ->where('notification.type','=','App\Notifications\NotifyAdviserOnSchedRequest')
+        ->delete();
+        return redirect()->action('AdvisedGroupsController@index');
+    }
 
     public function NotifyAdviserOnRevisions() {
         return $notify = Notify::where('notifiable_id','=',Auth::id())

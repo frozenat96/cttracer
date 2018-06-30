@@ -15,7 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-9 bx2 jumbotron">
                 @include('inc.messages')
-                @if(isset($data) && count($data))
+                @if(isset($data) && !is_null($data))
                 {!!Form::open(['action' => 'AdvisedGroupsController@ContentAdvCorrectForSched', 'method' => 'POST']) !!}
                         <fieldset>
                                 <legend class="text-left"><span class="alert bg2">CORRECT DOCUMENT</span><hr class="my-4"></legend>

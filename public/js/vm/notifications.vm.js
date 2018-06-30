@@ -39,9 +39,10 @@ function NotificationsVM() {
         axios.post('/NotifyPanelOnSchedRequest').then(response => {
             //self.schedRequest(response.data[0]);
             self.NotifyPanelOnSchedRequest(response.data);
-            console.log(self.NotifyPanelOnSchedRequest());
-        }).catch(error => {
-            console.log(error.message);
+        });
+        axios.post('/NotifyAdviserOnSchedRequest').then(response => {
+            //self.schedRequest(response.data[0]);
+            self.NotifyAdviserOnSchedRequest(response.data);
         });
         
 	}.bind(this);

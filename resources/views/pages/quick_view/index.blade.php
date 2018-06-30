@@ -24,7 +24,7 @@
                 <div class="input-group">
                     <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
                     <span class="input-group-btn">
-                        <button type="submit" class="btn btn-info">
+                        <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
                         </button>
                     </span>

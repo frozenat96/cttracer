@@ -28,7 +28,7 @@
         <link rel="stylesheet" href="{{asset('css/header.css')}}">
 
         <script src="{{asset('js/jquery-3.3.1.min.js')}}"></script>
-        <script src="{{asset('js/vm/sched-request.vm.js')}}"></script>
+        <script src="{{asset('js/vm/notifications.vm.js')}}"></script>
         <script src="{{asset('js/popper.min.js')}}"></script>
         <script src="{{asset('js/bootstrap.min.js')}}"></script>
         <script src="{{asset('js/jquery.multi-select.js')}}"></script>
@@ -76,10 +76,10 @@ $.ajaxSetup({
 
 $(document).ready(function () {
     $('.popover-dismiss').popover({
-  trigger: 'focus'
+    trigger: 'focus'
 });
 $(function () {
-  $('[data-toggle="popover"]').popover();
+    $('[data-toggle="popover"]').popover();
 })
 $('[data-toggle="popover"]').popover({ trigger: "hover" });
 

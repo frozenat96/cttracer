@@ -17,7 +17,7 @@ $account_types = DB::table('account_type')->get();
         <div class="row justify-content-center">
             <div class="col-md-9 jumbotron bx2">
                 @include('inc.messages')
-                {!!Form::open(['action' => ['GroupController@update',$data['group'][0]->groupNo], 'method' => 'POST','id'=>'form1']) !!}
+                {!!Form::open(['action' => ['GroupController@update',$data['group']->groupNo], 'method' => 'POST','id'=>'form1']) !!}
                         <fieldset>
                             <legend class="text-left"><span class="alert bg2">EDIT GROUP FORM</span><hr class="my-4"></legend>
                             
@@ -29,15 +29,15 @@ $account_types = DB::table('account_type')->get();
                     <div class="form-row">
                         <div class="form-group col-md-10">
                             <label for="group_name">Group Name</label>
-                            <input name="group_name" type="text" class="form-control" id="group_name" placeholder="Group Name" required="yes" autocomplete="given-name" value="{{$data['group'][0]->groupName}}">
+                            <input name="group_name" type="text" class="form-control" id="group_name" placeholder="Group Name" required="yes" autocomplete="given-name" value="{{$data['group']->groupName}}">
                         </div>     
                     </div>  
                     <div class="form-row">
                         <div class="form-group col-md-3">
                             <label for="group_type">Group Type</label>
                                 <select id="group_type" class="form-control" name="group_type" autocomplete="Group Type" required="yes">
-                                <option value="Capstone" @if(($data['group'][0]->grpType)== "Capstone") selected @endif>Capstone</option>
-                                <option value="Thesis" @if(($data['group'][0]->grpType)== "Thesis") selected @endif>Thesis</option>
+                                <option value="Capstone" @if(($data['group']->grpType)== "Capstone") selected @endif>Capstone</option>
+                                <option value="Thesis" @if(($data['group']->grpType)== "Thesis") selected @endif>Thesis</option>
                                 </select>
                         </div>
 
@@ -46,7 +46,7 @@ $account_types = DB::table('account_type')->get();
                             <?php $model = new App\models\Group; ?>
                             <select id="content_adviser" class="form-control" name="content_adviser" autocomplete="Content Adviser" required="yes">
                                 @foreach($data['panel_members'] as $acc)
-                                <option value="{{$acc->accNo}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" @if(($data['group'][0]->groupCAdviserNo)== $acc->accNo) selected @endif><span>{{$acc->accLName}}, {{$model->initials($acc->accFName)}}</span></option>
+                                <option value="{{$acc->accNo}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" @if(($data['group']->groupCAdviserNo)== $acc->accNo) selected @endif><span>{{$acc->accLName}}, {{$model->initials($acc->accFName)}}</span></option>
                                 @endforeach
                             </select>
                         </div>
@@ -55,14 +55,27 @@ $account_types = DB::table('account_type')->get();
                         <div class="form-group col-md-10">
                             <label for="group_status">Group Status</label>
                             <select id="group_status" class="form-control" name="group_status" autocomplete="Group Status" required="yes">
-                                <option value="Waiting" @if(($data['group'][0]->groupStatus)== "Waiting") selected @endif>Waiting</option>
-                                <option title="Document is submitted to the content adviser" value="Submitted to Content Adviser" @if(($data['group'][0]->groupStatus)== "Submitted to Content Adviser") selected @endif>Submitted to Content Adviser</option>
-                                <option title="Document is approved by the content adviser" value="Approved by Content Adviser" @if(($data['group'][0]->groupStatus)== "Approved by Content Adviser") selected @endif>Approved by Content Adviser</option>
-                                <option title="Document is corrected by the content adviser" value="Corrected by Content Adviser" @if(($data['group'][0]->groupStatus)== "Corrected by Content Adviser") selected @endif>Corrected by Content Adviser</option>
-                                <option title="Document is submitted to the panel members" value="Submitted to Panel Members" @if(($data['group'][0]->groupStatus)== "Submitted to Panel Members") selected @endif>Submitted to Panel Members</option>
-                                <option value="Corrected by Panel Members" @if(($data['group'][0]->groupStatus)== "Corrected by Panel Members") selected @endif>Corrected by Panel Members</option>
-                                <option title="Project is waiting for the processing of requirements for completion" value="Waiting for Completion" @if(($data['group'][0]->groupStatus)== "Waiting for Completion") selected @endif>Waiting for Completion</option>
-                                <option title="The group has completely finished the project" value="Finished" @if(($data['group'][0]->groupStatus)== "Finished") selected @endif>Finished</option>
+
+                                <option value="Waiting" @if(($data['group']->groupStatus)== "Waiting") selected @endif>Waiting</option>
+
+                                <option title="Document is submitted to the content adviser" value="Submitted to Content Adviser" @if(($data['group']->groupStatus)== "Submitted to Content Adviser") selected @endif>Submitted to Content Adviser</option>
+
+                                <option title="Document is approved by the content adviser" value="Approved by Content Adviser" @if(($data['group']->groupStatus)== "Approved by Content Adviser") selected @endif>Approved by Content Adviser</option>
+
+                                <option title="Document is corrected by the content adviser" value="Corrected by Content Adviser" @if(($data['group']->groupStatus)== "Corrected by Content Adviser") selected @endif>Corrected by Content Adviser</option>
+
+                                <option title="Waiting for the schedule to be finalized" value="Waiting for Final Schedule" @if(($data['group']->groupStatus)== "Waiting for Final Schedule") selected @endif>Waiting for Final Schedule</option>
+
+                                <option title="The Group is ready for defense" value="Ready for Defense" @if(($data['group']->groupStatus)== "Ready for Defense") selected @endif>Ready for Defense</option>
+
+                                <option value="Corrected by Panel Members" @if(($data['group']->groupStatus)== "Corrected by Panel Members") selected @endif>Corrected by Panel Members</option>
+
+                                <option title="The Group is ready for the next stage" value="Ready for Next Stage" @if(($data['group']->groupStatus)== "Ready for Next Stage") selected @endif>Ready for Next Stage</option>
+
+                                <option title="Project is waiting for the processing of requirements for completion" value="Waiting for Project Completion" @if(($data['group']->groupStatus)== "Waiting for Project Completion") selected @endif>Waiting for Project Completion</option>
+
+                                <option title="The group has completely finished the project" value="Finished" @if(($data['group']->groupStatus)== "Finished") selected @endif>Finished</option>
+
                             </select>
                         </div>     
                     </div>
@@ -75,7 +88,7 @@ $account_types = DB::table('account_type')->get();
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="group_project_name">Group Project Name</label>
-                            <input name="group_project_name" type="text" class="form-control" id="group_project_name" placeholder="Group Project Name" required="yes" autocomplete="given-name" value="{{$data['group'][0]->projName}}">
+                            <input name="group_project_name" type="text" class="form-control" id="group_project_name" placeholder="Group Project Name" required="yes" autocomplete="given-name" value="{{$data['group']->projName}}">
                             </div>    
                     </div>
                     <div class="form-row">
@@ -83,7 +96,7 @@ $account_types = DB::table('account_type')->get();
                             <label for="stage_no">Stage No.</label>
                             <select id="stage_no" class="form-control" name="stage_no" autocomplete="Stage Number" required="yes">
                                 @foreach($data['stage'] as $stage)
-                                <option value="{{$stage->stageNo}}" @if(($data['group'][0]->projStageNo)== $stage->stageNo) selected @endif><span>STAGE {{$stage->stageNo}} : {{$stage->stageName}}</span></option>
+                                <option value="{{$stage->stageNo}}" @if(($data['group']->projStageNo)== $stage->stageNo) selected @endif><span>STAGE {{$stage->stageNo}} : {{$stage->stageName}}</span></option>
                                 @endforeach
                             </select>
                         </div>
@@ -91,7 +104,7 @@ $account_types = DB::table('account_type')->get();
                             <label for="panel_verdict">Panel Verdict</label>
                             <select id="panel_verdict" class="form-control" name="panel_verdict" autocomplete="Panel Verdict" required="yes">
                                 @foreach($data['panel_verdict'] as $verdict)
-                                <option value="{{$verdict->panelVerdictNo}}" @if(($data['group'][0]->projPVerdictNo)== $verdict->panelVerdictNo) selected @endif><span>{{$verdict->pVerdictDescription}}</span></option>
+                                <option value="{{$verdict->panelVerdictNo}}" @if(($data['group']->projPVerdictNo)== $verdict->panelVerdictNo) selected @endif><span>{{$verdict->pVerdictDescription}}</span></option>
                                 @endforeach
                             </select>
                         </div>
@@ -99,7 +112,7 @@ $account_types = DB::table('account_type')->get();
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="document_link">Group Project Document Link</label>
-                            <input name="document_link" type="text" class="form-control" id="document_link" placeholder="Group Project Document Link" autocomplete="Group Project Document Link" value="{{$data['group'][0]->projDocumentLink}}">
+                            <input name="document_link" type="text" class="form-control" id="document_link" placeholder="Group Project Document Link" autocomplete="Group Project Document Link" value="{{$data['group']->projDocumentLink}}">
                         </div>
                     </div>
                     </section>
@@ -164,7 +177,7 @@ $account_types = DB::table('account_type')->get();
                         <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
                     </div>
                         </fieldset>
-                        <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupNo','=',$data['group'][0]->groupNo)->pluck('panelAccNo'); ?>
+                        <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupNo','=',$data['group']->groupNo)->pluck('panelAccNo'); ?>
                         <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" id="panel_select" name="panel_select" value="{{$pg}}">
                 {!!Form::close() !!}

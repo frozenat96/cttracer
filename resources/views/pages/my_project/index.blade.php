@@ -25,8 +25,8 @@
         <div class="row">
             <!--
             <div class="col-md-12">
-                <h5 id="font2">Project Name : </h5><ul class="list1"><li>{{$data['proj'][0]->projName}}
-                        <a href="/my-project/{{$data['proj'][0]->projNo}}/edit" class="">Edit title</a></li></ul><br>
+                <h5 id="font2">Project Name : </h5><ul class="list1"><li>{{$data['proj']->projName}}
+                        <a href="/my-project/{{$data['proj']->projNo}}/edit" class="">Edit title</a></li></ul><br>
             </div>
             -->
         </div>
@@ -41,7 +41,7 @@
             <h5>Content Adviser</h5>
             <ul class="list1">
                 <li>
-                    {{$data['adviser'][0]->accTitle}} {{$data['adviser'][0]->accFName}} {{$data['adviser'][0]->accMInitial}} {{$data['adviser'][0]->accLName}}
+                    {{$data['adviser']->accTitle}} {{$data['adviser']->accFName}} {{$data['adviser']->accMInitial}} {{$data['adviser']->accLName}}
                 </li>
             </ul>
             <br>
@@ -61,31 +61,35 @@
                     <h5>Project Information</h5> 
                         <ul class="list1">
                             <li>
-                        <h6>Stage : {{$data['proj'][0]->projStageNo}} ({{$data['proj'][0]->stageName}})</h6>
+                        <h6>Stage : {{$data['proj']->projStageNo}} ({{$data['proj']->stageName}})</h6>
                             </li>
                             <li>
-                        <h6>Group Status : {{$data['proj'][0]->groupStatus}}</h6>
+                        <h6>Group Status : {{$data['proj']->groupStatus}}</h6>
                             </li>
                             <li>
-                        <h6>Project Panel Verdict : {{$data['proj'][0]->pVerdictDescription}}</h6>
+                        <h6>Project Panel Verdict : {{$data['proj']->pVerdictDescription}}</h6>
                             </li>
+                            <li>
+                        <h6>Project Document : 
+                        <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download project document" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> download</a>
+                            </li></h6>
                         </ul>
                 </section>
             </div>
             <div class="col-md-3">
-                @if(in_array($data['proj'][0]->groupStatus,['Waiting']))
+                @if(in_array($data['proj']->groupStatus,['Waiting','Corrected by Content Adviser']))
                 <h5>Options</h5>
-                <a href="/my-project/{{$data['proj'][0]->groupNo}}/edit" class="btn btn-primary">Submit Document</a>
-                @elseif($data['proj'][0]->groupStatus == 'Submitted to Content Adviser')
+                <a href="/my-project/{{$data['proj']->groupNo}}/edit" class="btn btn-primary">Submit Document</a>
+                @elseif($data['proj']->groupStatus == 'Submitted to Content Adviser')
                 <h5>Status</h5>
                 <span>Waiting for content adviser's approval</span>
-                @elseif($data['proj'][0]->groupStatus == 'Submitted to Panel Members')
+                @elseif($data['proj']->groupStatus == 'Submitted to Panel Members')
                 <h5>Status</h5>
                 <span>Waiting for panel members' approval</span>
                 @endif
             </div>
         </div>
-        @if((in_array($data['proj'][0]->projPVerdictNo,['2','3'])) && (in_array($data['proj'][0]->groupStatus,['Submitted to Panel Members','Corrected by Panel Members'])) )
+        @if((in_array($data['proj']->projPVerdictNo,['2','3'])) && (in_array($data['proj']->groupStatus,['Approved by Content Adviser','Submitted to Panel Members','Corrected by Panel Members'])) )
         <hr class="my-4">
         <div class="row">
             <div class="col-md-12">
@@ -127,7 +131,27 @@
             </table>
             </div>
         </div>
-        @elseif((in_array($data['proj'][0]->projPVerdictNo,['1','4','5','6'])) && (in_array($data['proj'][0]->groupStatus,['Submitted to Panel Members','Corrected by Panel Members'])))
+
+        <!-- comment section -->
+        <div class="form-row">
+            <?php $grpModel = new App\models\Group; ?>
+            <label for="">Comments of panel members</label>
+                @foreach($data['projApp'] as $pmember)
+                <div class="form-group col-md-12 align-self-center">
+                
+                <label for="proj_approval_comment">
+                    <span title='{{$pmember->accTitle}} {{$pmember->accFName}} {{$pmember->accMInitial}} {{$pmember->accLName}}'>
+                        {{$pmember->accLName}}, {{$grpModel->initials($pmember->accFName)}}@if($pmember->panelIsChair)
+                        (Chair panel member) @endif
+                        </span>
+                </label>
+                <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accNo}}" class="form-control" readonly="readonly">{{$pmember->projAppComment}}</textarea>
+                </div>
+                @endforeach
+        </div> 
+        <!-- End of comment section -->
+
+        @elseif((!in_array($data['proj']->projPVerdictNo,['2','3'])) && (in_array($data['proj']->groupStatus,['Approved by Content Adviser','Submitted to Panel Members','Corrected by Panel Members'])))
         <hr class="my-4">
         <div class="row">
             <div class="col-md-4">
@@ -135,22 +159,22 @@
             <br>
             <ul class="list1">
                     <li>
-                <h6>Date : {{date_format(new Datetime($data['schedApp'][0]->schedDate),"F j, Y")}}</h6>
+                <h6>Date : {{date_format(new Datetime($data['schedApp']->schedDate),"F j, Y")}}</h6>
                     </li>
                     <li>
-                <h6>Starting Time : {{date_format(new Datetime($data['schedApp'][0]->schedTimeStart),"g:i A")}}</h6>
+                <h6>Starting Time : {{date_format(new Datetime($data['schedApp']->schedTimeStart),"g:i A")}}</h6>
                     </li>
                     <li>
-                <h6>Ending Time : {{date_format(new Datetime($data['schedApp'][0]->schedTimeEnd),"g:i A")}}</h6>
+                <h6>Ending Time : {{date_format(new Datetime($data['schedApp']->schedTimeEnd),"g:i A")}}</h6>
                     </li>
                     <li>
-                <h6>Place : {{$data['schedApp'][0]->schedPlace}}</h6>
+                <h6>Place : {{$data['schedApp']->schedPlace}}</h6>
                     </li>
                     <li>
-                <h6>Type of schedule : {{$data['schedApp'][0]->schedType}}</h6>
+                <h6>Type of schedule : {{$data['schedApp']->schedType}}</h6>
                     </li>
                     <li>
-                <h6>Status : {{$data['schedApp'][0]->schedStatus}}</h6>
+                <h6>Status : {{$data['schedApp']->schedStatus}}</h6>
                      </li>
             </ul>
             </div>

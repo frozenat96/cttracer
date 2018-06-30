@@ -11,6 +11,10 @@ use Auth;
 use Illuminate\Validation\Rule;
 use App\Notifications\NotifyAdviserOnSchedRequest;
 use App\Notifications\NotifyAdviserOnRevisions;
+use App\Events\eventTrigger;
+use App\mail\SendMail;
+use Mail;
+
 class MyProjController extends Controller
 {
     /**
@@ -23,14 +27,14 @@ class MyProjController extends Controller
         $user_id = Auth::id(); 
         $Projectmodel = new Project();
         $proj = $Projectmodel->projectInfoByAccount($user_id);
-        if(!count($proj)) {
+        if(is_null($proj)) {
             return view('pages.projects.view');
         }
     
         $group = DB::table('account')
             ->join('group', 'account.accGroupNo', '=', 'group.groupNo')
             ->select('account.*')
-            ->where('group.groupNo','=',$proj[0]->groupNo)
+            ->where('group.groupNo','=',$proj->groupNo)
             ->get();
         
         $pgroup = DB::table('panel_group')
@@ -38,7 +42,7 @@ class MyProjController extends Controller
         ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
         ->join('project_approval', 'project_approval.projAppPGroupNo', '=', 'panel_group.panelGroupNo')
         ->select('account.*','project_approval.*','panel_group.*')
-        ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
+        ->where('panel_group.panelCGroupNo','=',$proj->groupNo)
         ->get();
         $schedApp = DB::table('panel_group')
         ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
@@ -46,11 +50,11 @@ class MyProjController extends Controller
         ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
         ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
         ->select('account.*','schedule_approval.*','panel_group.*','schedule.*')
-        ->where('panel_group.panelCGroupNo','=',$proj[0]->groupNo)
+        ->where('panel_group.panelCGroupNo','=',$proj->groupNo)
         ->get();
         $adviser = DB::table('account')
-        ->where('account.accNo','=',$proj[0]->groupCAdviserNo)
-        ->get();
+        ->where('account.accNo','=',$proj->groupCAdviserNo)
+        ->first();
         $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'projApp'=>$pgroup,'schedApp'=>$schedApp];
         return view('pages.my_project.index')->with('data', $data);
     }
@@ -128,8 +132,10 @@ class MyProjController extends Controller
 
             if(in_array($proj->projPVerdictNo,['2','3'])) {
                 User::find($group->groupCAdviserNo)->notify(new NotifyAdviserOnRevisions($group));
+                event(new eventTrigger('trigger'));
             } else {
                 User::find($group->groupCAdviserNo)->notify(new NotifyAdviserOnSchedRequest($group));
+                event(new eventTrigger('trigger'));
             }
             
             $group->save();

@@ -10,6 +10,10 @@ use App\models\Group;
 use Auth;
 use DB;
 use Illuminate\Support\Facades\Input;
+use App\Events\eventTrigger;
+use App\mail\SendMail;
+use Mail;
+use App\Notifications\NotifyCoordOnSchedFinalize;
 
 class SchedAppController extends Controller
 {
@@ -70,8 +74,8 @@ class SchedAppController extends Controller
         return view('pages.approve_schedules.index')->withData($data);
     }
 
-    public function approvalStatus(Request $request) {
-        if (is_null($request->input('submit'))){
+    public function schedApprovalStatus(Request $request) {
+        if (is_null($request->input('opt'))){
             return redirect()->back()->with('error', 'Schedule approval failed.');
         } 
         $q = DB::table('schedule_approval')
@@ -81,14 +85,19 @@ class SchedAppController extends Controller
         ->select('schedule_approval.*','account.*','panel_group.*','group.*')
         ->where('account.accNo','=',$request->input('acc'))
         ->where('panel_group.panelCGroupNo','=',$request->input('grp'))
-        ->get();
-        $approval = ScheduleApproval::find($q[0]->schedAppNo);
+        ->first();
+        $approval = ScheduleApproval::find($q->schedAppNo);
         if($request->input('opt')=='1') {
             $approval->isApproved = 1;
-            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was approved.';
+            $msg = 'The schedule of group : ' . $q->groupName . ' was approved.';
         } else {
             $approval->isApproved = 2;
-            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was disapproved.';
+            $msg = 'The schedule of group : ' . $q->groupName . ' was disapproved.';
+        }
+        if(!is_null($request->input('shortmsg'))) {
+            $approval->schedAppMsg = $request->input('shortmsg');
+        } else {
+            $approval->schedAppMsg = '';
         }
         try{
             DB::beginTransaction();
@@ -109,6 +118,13 @@ class SchedAppController extends Controller
     }
 
     public function calcSchedStatus($groupNo){
+        $pMembersWaiting = DB::table('schedule_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->select('schedule_approval.isApproved')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->where('schedule_approval.isApproved','=','0')
+        ->count();
+
         $chairPanelApp = DB::table('schedule_approval')
         ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
         ->select('schedule_approval.isApproved')
@@ -128,15 +144,33 @@ class SchedAppController extends Controller
         ->join('group','group.groupNo','=','schedule.schedGroupNo')
         ->select('schedule.*')
         ->where('schedule.schedGroupNo','=',$groupNo)
-        ->get();
-        $schedstatus = Schedule::find($sched[0]->schedNo);
+        ->first();
+        $schedstatus = Schedule::find($sched->schedNo);
         $group = Group::find($groupNo);
-        if($chairPanelApp && $panelMembersApp) {
-            $schedstatus->schedStatus = "Ready";
-            $group->groupStatus = 'Ready for Defense';
-        } else {
-            $schedstatus->schedStatus = "Not Ready";
-            $group->groupStatus = 'Waiting';
+        if($pMembersWaiting <= 1) {
+            if($chairPanelApp && $panelMembersApp) {
+                $schedstatus->schedStatus = 'Ready';
+                $group->groupStatus = 'Waiting for Final Schedule';
+                $cc = DB::table('account')
+                ->where('account.accType','=','1')
+                ->first();
+                $x = User::find($cc->accNo);
+                $x->notify(new NotifyCoordOnSchedFinalize($group));
+                event(new eventTrigger('trigger'));
+                $z = ['grp'=>$group->groupNo,'acc'=>$cc->accNo,'to'=>$cc->accEmail];
+
+            } elseif(!$panelMembersApp) {
+                $schedstatus->schedStatus = "Not Ready";
+                $group->groupStatus = 'Waiting';
+                $this->resetSchedApp($groupNo);
+            }
+            if(!$pMembersWaiting) {
+                if((!$chairPanelApp) || !$panelMembersApp) {
+                    $schedstatus->schedStatus = "Not Ready";
+                    $group->groupStatus = 'Waiting';
+                    $this->resetSchedApp($groupNo);
+                }
+            }    
         }
         if($schedstatus->save() && $group->save()) {
             return 1;
@@ -145,6 +179,14 @@ class SchedAppController extends Controller
         }
     }
 
+    public function resetSchedApp($groupNo) {
+        $update = DB::table('schedule_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->update([
+            'schedule_approval.isApproved' => '0'
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -211,9 +253,9 @@ class SchedAppController extends Controller
         //
     }
 
-    public function approvalStatus_e(Request $request) {
-        if (is_null($request->input('submit'))){
-            return redirect()->back()->with('error', 'Schedule approval failed.');
+    public function schedApprovalStatus_e(Request $request) {
+        if (is_null($request->input('opt'))){
+            return redirect()->back()->with('error', ['Schedule approval failed.']);
         } 
         $q = DB::table('schedule_approval')
         ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
@@ -222,14 +264,17 @@ class SchedAppController extends Controller
         ->select('schedule_approval.*','account.*','panel_group.*','group.*')
         ->where('account.accNo','=',$request->input('acc'))
         ->where('panel_group.panelCGroupNo','=',$request->input('grp'))
-        ->get();
-        $approval = ScheduleApproval::find($q[0]->schedAppNo);
+        ->first();
+        $approval = ScheduleApproval::find($q->schedAppNo);
         if($request->input('opt')=='1') {
             $approval->isApproved = 1;
-            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was approved.';
+            $msg = 'The schedule of group : ' . $q->groupName . ' was approved.';
         } else {
             $approval->isApproved = 2;
-            $msg = 'The schedule of group : ' . $q[0]->groupName . ' was disapproved.';
+            $msg = 'The schedule of group : ' . $q->groupName . ' was disapproved.';
+        }
+        if(!is_null($request->input('shortmsg'))) {
+            $approval->schedAppMsg = $request->input('shortmsg');
         }
         try{
             DB::beginTransaction();

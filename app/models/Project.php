@@ -22,7 +22,7 @@ class Project extends Model
             ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
             ->select('project.*','account.*','group.*','panel_verdict.*','stage.*')
             ->where('account.accNo','=',$id)
-            ->get();
+            ->first();
     }
 
     public function projectInfoByGroup($id) {
@@ -33,7 +33,7 @@ class Project extends Model
             ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
             ->select('project.*','account.*','group.*','panel_verdict.*','stage.*')
             ->where('group.groupNo','=',$id)
-            ->get();
+            ->first();
     }
 
     

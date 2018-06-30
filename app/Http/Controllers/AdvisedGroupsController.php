@@ -40,7 +40,7 @@ class AdvisedGroupsController extends Controller
         ->select('schedule.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
         ->where('account.accType','=','2')
         ->where('group.groupCAdviserNo','=',$user_id)
-        ->whereIn('group.groupStatus', ['Submitted To Content Adviser'])
+        ->whereIn('group.groupStatus', $substatus)
         ->paginate(3); 
         //return $this->calcSchedStatus($sched[0]->panelCGroupNo);
         return view('pages.advised_groups.index')->with('data',$groups);
@@ -152,13 +152,15 @@ class AdvisedGroupsController extends Controller
             DB::beginTransaction();
             $group->groupStatus = 'Approved by Content Adviser';
             $group->save();
-            event(new eventTrigger('trigger'));
+            
             foreach($panel as $p){
                 $x = User::find($p);
                 $x->notify(new NotifyPanelOnSchedRequest($group));
                 $z = ['grp'=>$group->groupNo,'acc'=>$p,'to'=>$x->accEmail];
-                Mail::send(new SendMail($z));
+                //email notification
+                //Mail::send(new SendMail($z));
             }
+            event(new eventTrigger('trigger'));
             DB::commit();
             return redirect()->back()->with('success', 'The document of group : ' . $group->groupName . ' was approved.');
             

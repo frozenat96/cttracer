@@ -28,8 +28,8 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <label for="sched_approval">Project Approval Status</label>
-                            <table class="table table-striped table-sm" id="sched_approval">
+                            <label for="proj_approval">Project Approval Status</label>
+                            <table class="table table-striped table-sm" id="proj_approval">
                                 <thead>
                                     <tr>
                                     <th>Panel Name</th>
@@ -60,6 +60,24 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="">Comments of panel members</label>
+                            @foreach($data as $pmember)
+                            <hr class="my-4">
+                            <label for="proj_approval_comment">
+                                <span title='{{$pmember->accTitle}} {{$pmember->accFName}} {{$pmember->accMInitial}} {{$pmember->accLName}}'>
+                                    {{$pmember->accLName}}, {{$grpModel->initials($pmember->accFName)}}@if($pmember->panelIsChair)
+                                    (Chair panel member) @endif
+                                    </span>
+                            </label>
+                            <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accNo}}" class="form-control" maxlength="1600" value="{{$pmember->projAppComment}}">
+                                
+                            </textarea>
+
+                            @endforeach
                         </div>
                     </div>
                             <div class="form-group text-right">

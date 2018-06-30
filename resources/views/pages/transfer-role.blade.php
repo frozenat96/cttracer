@@ -15,7 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-9 bx2 jumbotron">
                 @include('inc.messages')
-                <form method="post" action="{{action('AccountController@transfer')}}" accept-charset="UTF-8" role="create">
+                <form method="post" action="{{action('AccountController@transferExecute')}}" accept-charset="UTF-8" role="create">
                         <fieldset>
                                 <legend class="text-left"><span class="alert bg2">TRANSFER ROLE FORM</span><hr class="my-4"></legend>
                     
@@ -33,10 +33,12 @@
                     </div>
                     <div class="form-group text-center">
                         <hr class="my-4">
-                        <button type="submit" class="btn btn-warning btn-lg">
+                        <button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#confirm1">
                             <span><i class="fas fa-exchange-alt"></i> Transfer Role</span>
                         </button>
-                    </div>       
+                        <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
+                    </div>  
+                    <input type="hidden" name="_method" value="PUT">     
                 </form>
             </div>
         </div>

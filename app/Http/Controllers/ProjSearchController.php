@@ -20,7 +20,6 @@ class ProjSearchController extends Controller
     {
         $data = DB::table('project')
         ->select('project.*')
-        ->select('project.*')
         ->paginate(10);
         return view('pages.project_search.index')->withData($data);
     }

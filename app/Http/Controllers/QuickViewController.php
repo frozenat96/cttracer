@@ -107,7 +107,7 @@ class QuickViewController extends Controller
         ->join('account','account.accNo','=','panel_group.panelAccNo')
         ->select('group.*','schedule.*','schedule_approval.*','panel_group.*','account.*')
         ->where('group.groupNo','=',$id)
-        ->get();
+        ->first();
         //return dd($data);
         return view('pages.quick_view.modify-schedule')->with('data',$data);
     }

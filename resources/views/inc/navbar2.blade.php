@@ -91,12 +91,18 @@
               <!-- ko if: NotifyPanelOnSchedRequest().length -->
                 <a class="dropdown-item" href="/NotifyPanelOnSchedRequest_d"> Schedule Approvals (Panel) <span class="badge badge-pill badge-success" data-bind="text: NotifyPanelOnSchedRequest().length"></span></a>
               <!-- /ko -->
+              <!-- ko if: NotifyAdviserOnSchedRequest().length -->
+              <a class="dropdown-item" href="/NotifyAdviserOnSchedRequest_d"> Schedule Approvals (Content Adviser) <span class="badge badge-pill badge-success" data-bind="text: NotifyAdviserOnSchedRequest().length"></span></a>
+              <!-- /ko -->
 
             @elseif($user[0]->accType == '3')
             @endif
               
-
-
+           </div>
+           <!-- /ko -->
+           <!-- ko ifnot: AllNotifications() -->
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink5">
+              <a class="dropdown-item" href="#"> No new notifications</a>
            </div>
            <!-- /ko -->
             </li>

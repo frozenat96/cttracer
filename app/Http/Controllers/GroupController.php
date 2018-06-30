@@ -158,7 +158,7 @@ class GroupController extends Controller
         ->join('account','account.accNo','=','groupCAdviserNo')
         ->select('group.*','project.*','account.*')
         ->where('group.groupNo','=',$id)
-        ->get();
+        ->first();
 
         $pgroup = DB::table('account')
         ->join('panel_group','panel_group.panelAccNo','=','account.accNo')
@@ -207,9 +207,10 @@ class GroupController extends Controller
             "Submitted to Content Adviser",
             "Approved by Content Adviser",
             "Corrected by Content Adviser",
-            "Submitted to Panel Members",
+            "Waiting for Final Schedule",
+            "Ready for Defense",
             "Corrected by Panel Members",
-            "Waiting for Completion",
+            "Waiting for Project Completion",
             "Finished"
         ];
 

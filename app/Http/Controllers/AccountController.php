@@ -189,40 +189,50 @@ class AccountController extends Controller
 			return redirect()->back()->withInput()->withErrors($validator);
         } 
 
-        $acc = User::find($id);
-        $acc->accFName = trim(ucwords(strtolower($request->input('given_name'))));
-        if(strlen($request->input('middle_initial')) != 2){
-            $acc->accMInitial = trim(ucwords(strtolower($request->input('middle_initial')))) . '.';
-        } else {
-            $acc->accMInitial = trim(ucwords(strtolower($request->input('middle_initial'))));
-        }
-            
-        $acc->accLName = trim(ucwords(strtolower($request->input('last_name'))));
-        if(in_array($acc->accType,['1','2'])) {
-            if($request->input('title') != '') {
-                $acc->accTitle = $request->input('title');
+        try {
+            DB::beginTransaction();
+            $acc = User::find($id);
+            $acc->accFName = trim(ucwords(strtolower($request->input('given_name'))));
+            if(strlen($request->input('middle_initial')) != 2){
+                $acc->accMInitial = trim(ucwords(strtolower($request->input('middle_initial')))) . '.';
             } else {
-                $acc->accTitle = '';
+                $acc->accMInitial = trim(ucwords(strtolower($request->input('middle_initial'))));
             }
-            $acc->accGroupNo = null;
-        } elseif($acc->accType=='3') {
-            $acc->accTitle = '';
-            $acc->accGroupNo = $request->input('group');
-        }
-        if($acc->accEmail != $request->input('email')) {
-            $validator = Validator::make($request->all(), [
-                'email' => ['unique:account,accEmail'],
-            ]);
-            $acc->accEmail = $request->input('email');
-        } 
-        $acc->accType = $request->input('role');
-        if ($validator->fails()) {
-			return redirect()->back()->withInput()->withErrors($validator);
-        } 
-        if($acc->save()) {
-        $request->session()->flash('alert-success', 'Account Information was Updated!');
-        } else {
-        $request->session()->flash('alert-danger', 'Account Information was not Updated!');
+                
+            $acc->accLName = trim(ucwords(strtolower($request->input('last_name'))));
+            if($request->input('role')=='1') {
+                $x = DB::table('account')->where('account.accType','=','1')->count();
+                if($x) {
+                    return redirect()->back()->with('error', ['Account Information was not Updated.','Only one (1) Capstone Coordinator account is allowed.']);
+                }
+            }
+            if(in_array($acc->accType,['1','2'])) {
+                if($request->input('title') != '') {
+                    $acc->accTitle = $request->input('title');
+                } else {
+                    $acc->accTitle = '';
+                }
+                $acc->accGroupNo = null;
+            } elseif($acc->accType=='3') {
+                $acc->accTitle = '';
+                $acc->accGroupNo = $request->input('group');
+            }
+            if($acc->accEmail != $request->input('email')) {
+                $validator = Validator::make($request->all(), [
+                    'email' => ['unique:account,accEmail'],
+                ]);
+                $acc->accEmail = $request->input('email');
+            } 
+            $acc->accType = $request->input('role');
+            if ($validator->fails()) {
+                return redirect()->back()->withInput()->withErrors($validator);
+            } 
+            $acc->save();
+            DB::commit();
+            $request->session()->flash('alert-success', 'Account Information was Updated!');
+        } catch(\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Account Information was not Updated.');
         }
         //return view('/my-project/{id}/edit',['id'=>$id])->with('success','updated');
         return redirect()->action(
@@ -239,15 +249,120 @@ class AccountController extends Controller
      */
     public function destroy($id)
     {
-        $user_id = Auth::id(); 
-        $acc = User::find($user_id);
-        if(($acc->accType == '1') && ($user_id == $id)) {
-            return redirect()->back()->withErrors('Cannot delete capstone coordinator account.');
-        } else {
-            $delete = User::find($id);
-            $delete->delete();
-            return redirect()->back()->with('success', 'Account Information has been Deleted!');
+        
+       
+    }
+
+    public function transferExecute(Request $request) {
+        $valid_panel_members= DB::table('account')
+        ->where('account.accType','=','2')
+        ->pluck('accNo');
+        $validator = Validator::make($request->all(), [
+            'transferee_account' => ['required',Rule::In($valid_panel_members->all())],
+        ]);
+        if ($validator->fails()) {
+			return redirect()->back()->withInput()->withErrors($validator);
         }
 
+        $cc = DB::table('account')->where('account.accType','=','1')->first();
+        
+        $transferer = User::find($cc->accNo);
+        $transferee = User::find($request->input('transferee_account'));
+
+        if($transferee->accType!='2') {
+            return redirect()->back()->with('error', ['Transfer of account information failed!','The account to be transfered to is not a Panel Member.']);
+        }
+        $temp = User::find($transferer->accNo);
+        $temp2 = User::find($transferee->accNo);
+    
+        $email1 = $transferer->accEmail;
+        $email2 = $transferee->accEmail;
+
+        try {
+            DB::beginTransaction();
+
+            $transferer->accFName = $transferee->accFName;
+            $transferee->accFName = $temp->accFName;
+
+            $transferer->accMInitial = $transferee->accMInitial;
+            $transferee->accMInitial = $temp->accMInitial;
+
+            $transferer->accLName = $transferee->accLName;
+            $transferee->accLName = $temp->accLName;
+
+            $transferer->accTitle = $transferee->accTitle;
+            $transferee->accTitle = $temp->accTitle;
+
+            $transferer->accEmail = $transferer->accEmail . '!';
+            $transferee->accEmail = $transferee->accEmail . '!';
+
+            $transferee->save();
+            $transferer->save();
+
+            $transferer->accEmail = $email2;
+            $transferee->accEmail = $email1;
+            $transferee->save();
+            $transferer->save();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Transfer of account information was successful!');
+        } catch (\Exception $e) {
+            return dd($e);
+            DB::rollback();
+            return redirect()->back()->with('error', 'Transfer of account information failed!');
+        }
+
+    }
+
+    public function deleteUpdate($id) {
+        $user_id = Auth::id(); 
+        $currentUser = User::find($user_id);
+        try{
+            DB::beginTransaction();
+            $deleteAccount = User::find($id);
+            if(($currentUser->accType == '1') && ($user_id == $id)) {
+                //if trying to delete own account and acount type is Capstone Coordinator
+                return redirect()->back()->with('error','Cannot delete capstone coordinator account.');
+            } elseif($deleteAccount->accType == '2') {
+                //if the account to be deleted is a Panel Member account
+         
+                $delete1 = DB::table('schedule_approval')
+                ->join('panel_group','panel_group.panelGroupNo','=','schedule_approval.schedPGroupNo')
+                ->where('panel_group.panelAccNo','=',$id)
+                ->delete();
+
+                $delete2 = DB::table('project_approval')
+                ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
+                ->where('panel_group.panelAccNo','=',$id)
+                ->delete();
+
+                $delete3 = DB::table('panel_group')
+                ->where('panel_group.panelAccNo','=',$id)
+                ->delete();
+                $this->deleteUpdateDependencies($id);
+                $delete4 = DB::table('account')->where('account.accNo','=',$id)->delete();
+            } elseif($deleteAccount->accType == '1') {
+                return redirect()->back()->with('error','Cannot delete capstone coordinator account.');
+            } else {
+                $deleteAccount->delete();
+                return redirect()->back()->with('success', 'Account Information has been Deleted!');
+            }
+            DB::commit();
+            return redirect()->back()->with('success',['Account Information has been Deleted!','Depedency of accounts has been successfully updated']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error',['Deletion of account failed.','Rolled back changes']);
+        }
+
+          
+    }
+
+    public function deleteUpdateDependencies($id) {
+        $update = DB::table('group')
+        ->where('group.groupCAdviserNo','=',$id)
+        ->update([
+            'group.groupCAdviserNo' => '1',
+        ]);
+        return 1;
     }
 }

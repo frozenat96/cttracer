@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
-use App\models\Project; 
+use App\User;
+use App\models\ProjectApproval;
+use App\models\Project;
+use App\models\Group;
 use Auth;
+use DB;
 use Illuminate\Support\Facades\Input;
 
 class ProjAppController extends Controller
@@ -17,53 +20,136 @@ class ProjAppController extends Controller
      */
     public function index()
     {
-        $user_id = Auth::id(); 
+        $user_id = Auth::id();
+        $ValidGroupStatus = ['Approved by Content Adviser'];
 
-        $proj = DB::table('project_approval')
+        $data = DB::table('project_approval')
         ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
-        ->join('group', 'group.groupNo', '=', 'panel_group.panelCGroupNo')
+        ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
         ->join('project','project.projGroupNo','=','group.groupNo')
-        ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
-        ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
-        ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*','panel_group.*')
+        ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
+        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->select('project_approval.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
         ->where('panel_group.panelAccNo','=',$user_id)
-        ->whereIn('group.groupStatus',['Submitted to Content Adviser'])
-        ->whereIn('project.projPVerdictNo',[2,3]) 
-        ->paginate(1);
-        $data = ['proj'=>$proj];
-        return view('pages.approve_projects.index')->with('data',$proj);
+        ->whereIn('group.groupStatus', $ValidGroupStatus)
+        ->whereIn('project.projPVerdictNo',['2','3'])
+        ->paginate(3); 
+        //return $this->calcSchedStatus($sched[0]->panelCGroupNo);
+        return view('pages.approve_projects.index')->with('data',$data);
     }
 
     
     public function search(Request $request)
     {
-        $user_id = Auth::id(); 
-
+        $user_id = Auth::id();
         $q = Input::get('q');
+      
+        $ValidGroupStatus = ['Approved by Content Adviser'];
         if($q != '') {
             $data = DB::table('project_approval')
             ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
-            ->join('group', 'group.groupNo', '=', 'panel_group.panelCGroupNo')
+            ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
             ->join('project','project.projGroupNo','=','group.groupNo')
-            ->join('panel_verdict', 'panel_verdict.panelVerdictNo', '=', 'project.projPVerdictNo')
-            ->join('stage', 'stage.stageNo', '=', 'project.projStageNo')
-            ->select('project.*','group.*','panel_verdict.*','stage.*','project_approval.*','panel_group.*','account.*')
-            ->where('project.projName','LIKE', "%".$q."%")
+            ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
+            ->join('account','account.accNo','=','panel_group.panelAccNo')
+            ->select('project_approval.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
             ->where('panel_group.panelAccNo','=',$user_id)
-            ->whereIn('group.groupStatus',['Approved by Content Adviser'])
-            ->whereIn('project.projPVerdictNo',[2,3])
-            ->paginate(1)
-            ->setpath('');
- 
-            $data->appends(array(
-                'q' => Input::get('q')
-            ));
-            return view('pages.approve_projects.index')->with('data',$data);
+            ->whereIn('group.groupStatus', $ValidGroupStatus)
+            ->whereIn('project.projPVerdictNo',['2','3'])
+            ->where('group.groupName','LIKE', "%".$q."%")
+            ->paginate(3); 
         } else {
             return redirect()->action('ProjAppController@index');
         }
+
+        $data->appends(array(
+            'q' => Input::get('q')
+        ));
+           
+        return view('pages.approve_projects.index')->with('data',$data);
     }
 
+    public function projApprovalStatus(Request $request) {
+        if (is_null($request->input('submit'))){
+            return redirect()->back()->with('error', 'Schedule approval failed.');
+        } 
+        $q = DB::table('project_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
+        ->join('group','group.groupNo','=','panel_group.panelCGroupNo')
+        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->select('project_approval.*','account.*','panel_group.*','group.*')
+        ->where('account.accNo','=',$request->input('acc'))
+        ->where('panel_group.panelCGroupNo','=',$request->input('grp'))
+        ->first();
+       
+        try{
+            DB::beginTransaction();
+            $approval = ProjectApproval::find($q->projAppNo);
+            if($request->input('opt')=='1') {
+                $approval->isApproved = 1;
+                $msg = 'The project of group : ' . $q->groupName . ' was approved.';
+            } else {
+                $approval->isApproved = 2;
+                $msg = 'The project of group : ' . $q->groupName . ' was disapproved.';
+            }
+
+            if($approval->save() && $this->calcProjAppStatus($request->input('grp'))) {
+                DB::commit();
+                return redirect()->back()->with('success', $msg);
+            } else {
+                DB::rollback();
+                return redirect()->back()->withError('Project approval failed.');
+            }
+
+        } catch (\Exception $e) { 
+            DB::rollback();
+            return redirect()->back()->withError('Project approval failed.');
+        }
+        
+        
+    }
+
+    public function calcProjAppStatus($groupNo){
+
+        $pMembers = DB::table('panel_group')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->count();
+
+        $pMembersCorrected = DB::table('project_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
+        ->select('project_approval.isApproved')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->where('project_approval.isApproved','=','2')
+        ->count();
+
+        $pMembersWaiting = DB::table('project_approval')
+        ->join('panel_group','panel_group.panelGroupNo','=','project_approval.projAppPGroupNo')
+        ->select('project_approval.isApproved')
+        ->where('panel_group.panelCGroupNo','=',$groupNo)
+        ->where('project_approval.isApproved','=','0')
+        ->count();
+
+        $proj = DB::table('project')
+        ->join('group','group.groupNo','=','project.projGroupNo')
+        ->select('project.*')
+        ->where('project.projGroupNo','=',$groupNo)
+        ->first();
+        $projStatus = Project::find($proj->projNo);
+        $group = Group::find($groupNo);
+
+        if(!$pMembersWaiting && $pMembersCorrected) {
+            $group->groupStatus = 'Corrected by Panel Members';
+        } elseif(!$pMembersWaiting && !$pMembersCorrected) {
+            $group->groupStatus = 'Ready for Next Stage';
+            $projStatus->projPVerdictNo = '5';
+        }
+
+        if($projStatus->save() && $group->save()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
     /**
      * Show the form for creating a new resource.

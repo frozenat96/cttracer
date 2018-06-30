@@ -74,12 +74,13 @@
                         data-toggle="popover" 
                         data-trigger="focus" 
                         title="<center><b>Panel Approval</b></center>" 
-                        data-content="
+                        data-content="<div style='max-width:430px;'>
                         <table class='table-sm table-hover table-striped'>
                             <thead>
                                 <tr>
                                     <th>Panel Member</th>
                                     <th>Status</th>
+                                    <th>Short Message</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -103,10 +104,15 @@
                                         </span>
                                      @endif 
                                 </td>
+                                <td>
+                                    <small>
+                                        {{$pmember->schedAppMsg}}
+                                    </small>
+                                </td>
                             </tr>
                             @endforeach
                             </tbody>
-                        </table>
+                        </table></div>
                         "><i class="far fa-question-circle"></i> Check Status</span>
                         </td></tr>
                         <tr><td>
@@ -115,7 +121,7 @@
                             @endif
                         </td></tr>
                         </table>
-                            </td>
+                            </td> <!-- End column 1 -->
                             
                             <td>
                                 <table class="table-sm table-hover table-striped">
@@ -135,11 +141,11 @@
                                     <td>
                                 </tr>
                                 <tr>
-                                    <td><small><b>Project Document : </b></small><a href="#" class="btn btn-link btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="View project document" data-placement="top"><span><i class="fas fa-project-diagram"></i></span> {{(substr($sched->projName, 0, 10) . '..')}}</a>
+                                    <td><small><b>Project Document : </b></small><a href="{{$sched->projDocumentLink}}" class="btn btn-link btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i>  {{(substr($sched->projName, 0, 10) . '..')}}</span></a>
                                     </td>
                                 </tr>
                                 </table>
-                            </td>
+                            </td> <!-- End column 2 -->
                             <td>
                                 <table class="table-sm table-hover table-striped">
                                 <tr>
@@ -163,7 +169,7 @@
                                     </td>
                                 </tr>
                                 </table>
-                            </td>
+                            </td> <!-- End column 3 -->
                             <td>
                                 <table class="table-sm table-hover table-striped">
                                     <tr>
@@ -177,46 +183,31 @@
                                         </td>
                                     </tr>
                                 </table>
-                            </td>
+                            </td> <!-- End column 4 -->
                             <td>
-                                <?php 
-                                 $acc = DB::table('panel_group')
-                                ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
-                                ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
-                                ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
-                                ->select('account.*','schedule_approval.*','panel_group.*')
-                                ->where('panel_group.panelCGroupNo','=',$sched->groupNo)
-                                ->where('account.accNo','=',Auth::id())
-                                ->get();
-                                ?>
                                 <table class="table-sm">
                                 <tr><td>     
 
-                                {!!Form::open(['action' => 'SchedAppController@approvalStatus', 'method' => 'POST']) !!}
+                                {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus', 'method' => 'POST']) !!}
                                 {{csrf_field()}}
-                                <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
-                                <input type="hidden" name="opt" value="1">
-                                <input type="hidden" name="grp" value="{{$sched->groupNo}}">
-                                <input type="hidden" name="acc" value="{{$sched->accNo}}">
-                                <input type="hidden" name="_method" value="PUT">
-                                {!!Form::close() !!}
-
+                                <button  type="submit" class="btn btn-success btn-sm" name="opt" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
                                 </td></tr>
                                 <tr><td>
-                                
-                                {!!Form::open(['action' => 'SchedAppController@approvalStatus', 'method' => 'POST']) !!}
-                                {{csrf_field()}}
-                                <button  type="submit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Dispprove schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Disapprove</span></button>
-                                <input type="hidden" name="opt" value="0">
+                                <button  type="submit" class="btn btn-danger btn-sm" name="opt" value="0" data-toggle="popover" data-content="Dispprove schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Disapprove</span></button>
                                 <input type="hidden" name="grp" value="{{$sched->groupNo}}">
                                 <input type="hidden" name="acc" value="{{$sched->accNo}}">
                                 <input type="hidden" name="_method" value="PUT">
+                                </td></tr> 
+                                <tr rowspan="2"><td> 
+                                    <label for="shortmsg" style="font-size:12px;">Short Message</label>
+                                    <textarea class="form-control" name="shortmsg" id="shortmsg" style="width:120px;border-radius:5px;color:black;" maxlength="150" placeholder="Short message.." autocomplete="Short Comment"></textarea>
+                                </td></tr>
                                 {!!Form::close() !!}
                                 
-                                </td></tr>
+                                
                                 </table>
-                            </td>
-                            </tr>
+                            </td> <!-- End column 5 -->
+                            </tr> <!-- End Row 1 -->
                         </tbody>
                         </table>
                     </div>  
