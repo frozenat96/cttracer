@@ -6,12 +6,20 @@
               <li class="nav-item">
                 <a class="nav-link" data-toggle="modal" data-target="#about_modal" href="#">About CT-Tracer</a>
               </li>
+              @if(Auth::user())
               <li class="nav-item">
-                <a class="nav-link" data-toggle="modal" data-target="#terms_modal" href="#">Terms</a>
+                <a class="nav-link" href="/terms">Terms and Conditions</a>
               </li>
+              @else
+                <li class="nav-item">
+                  <a class="nav-link" href="#" data-toggle="modal" data-target="#terms_modal">Terms and Conditions</a>
+                </li>
+              @endif
+              <!--
               <li class="nav-item">
                 <a class="nav-link" data-toggle="modal" data-target="#disclaimer_modal" href="#">Disclaimer</a>
               </li>
+              -->
               <li class="nav-item">
                 <a class="nav-link" data-toggle="modal" data-target="#contact_modal" href="#">Contact</a>
               </li>
@@ -58,13 +66,19 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Terms</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Terms and Conditions</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-      
+                <div class="row">
+                    <div class="col-md-12">
+                      @if(!Auth::user())
+                        @include('inc.terms-content')
+                      @endif
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

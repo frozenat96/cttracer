@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ScheduleApproval extends Model
 {
     protected $table = "schedule_approval";
-    public $primaryKey = "schedAppNo";
+    public $primaryKey = "schedAppID";
     public $timestamps = false;
+    public $incrementing = false;
 }

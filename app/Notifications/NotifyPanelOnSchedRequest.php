@@ -12,6 +12,7 @@ class NotifyPanelOnSchedRequest extends Notification
 {
     use Queueable;
     public $group;
+    
     /**
      * Create a new notification instance.
      *
@@ -51,7 +52,7 @@ class NotifyPanelOnSchedRequest extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'group' => $this->group
+            'message' => 'New Schedule Request'
         ];
     }
 

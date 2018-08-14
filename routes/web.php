@@ -13,14 +13,35 @@
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use App\Events\eventTrigger;
+use App\models\AccessControl;
+use App\models\RevisionHistory;
 
 Route::group(['middleware' => ['auth']], function() {
-    Route::get('/', [
-        'uses'=>'PagesController@index',
-    ]
-    );
+    //Access Control Switch
+    //Controls what the user can access in the back end.
+    $ac = new AccessControl;
+    $rv = new RevisionHistory;
+    $accesscontrols = $ac->status;
+    //
 
-    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+    $student = $panel = $coord = $coordpanel = [];
+    if($accesscontrols==true) {
+        $coordpanel = ['Capstone Coordinator','Panel Member'];
+        $coord = ['Capstone Coordinator'];
+        $panel = ['Panel Member','Capstone Coordinator'];
+        $student = ['Student'];
+    } else {
+        $all = ['Capstone Coordinator','Panel Member','Student'];
+        $student = $panel = $coord = $coordpanel = $all;
+    }
+    if($rv->status==true) {
+        $rvhist = ['Capstone Coordinator','Panel Member'];
+    } else {
+        $rvhist = ['Admin'];
+    }
+    
+
+    Route::group(['middleware' => 'roles', 'roles' => $coordpanel], function() {
         Route::resource('/projects', 'ProjectController')->parameters([
             ]);
             
@@ -28,22 +49,28 @@ Route::group(['middleware' => ['auth']], function() {
                 'uses'=>'ProjectController@search',
             ]
             ); 
-
-        Route::any('/accDelete/{id}', [
-            'uses'=>'AccountController@deleteUpdate',
-            'as' => 'accDelete',
-        ]
-        ); 
-
-        Route::any('/transferExecute', [
-            'uses'=>'AccountController@transferExecute',
-            'as' => 'transferExecute',
-        ]
-        ); 
     }); //End Route::Group Capstone Coordinator/Panel Members
 
+    Route::group(['middleware' => 'roles', 'roles' => $rvhist], function() {
+        Route::resource('/revision-history', 'RevHistoryController');
 
-    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+        Route::any('/revision-history-search-results/{search}', [
+            'uses'=>'RevHistoryController@search',
+        ]
+        );
+
+        Route::any('/revision-history-view', [
+            'uses'=>'RevHistoryController@view',
+        ]
+        );
+
+        Route::any('/revision-history-print', [
+            'uses'=>'RevHistoryController@print',
+        ]
+        );
+    }); //End Route::Group Capstone Coordinator/Panel Members
+
+    Route::group(['middleware' => 'roles', 'roles' => $coord], function() {
         Route::resource('/accounts', 'AccountController');
         Route::any('/acc-search-results', [
             'uses'=>'AccountController@search',
@@ -58,9 +85,16 @@ Route::group(['middleware' => ['auth']], function() {
             );
 
             Route::resource('/quick-view', 'QuickViewController');
-        
+
+            Route::any('/accDelete/{id}', [
+                'uses'=>'AccountController@deleteUpdate',
+                'as' => 'accDelete',
+            ]
+            ); 
+    
             Route::any('/quick-view-search-results', [
                 'uses'=>'QuickViewController@search',
+                'as' => 'quickViewSearch'
             ]
             ); 
         
@@ -75,6 +109,24 @@ Route::group(['middleware' => ['auth']], function() {
                 'as'=> 'modifyProjAppUpdate',
             ]
             );
+
+            Route::any('/next-stage', [
+                'uses'=>'QuickViewController@nextStage',
+                'as'=> 'nextstage',
+            ]
+            );
+
+            Route::any('/finalize-schedule', [
+                'uses'=>'QuickViewController@finalizeSchedule',
+                'as'=> 'finalizeSchedule',
+            ]
+            );
+
+            Route::any('/project-complete', [
+                'uses'=>'QuickViewController@setToProjComplete',
+                'as'=> 'projectComplete',
+            ]
+            );
     
             Route::resource('/stage-settings', 'StageController')->parameters([
             ]);
@@ -85,19 +137,71 @@ Route::group(['middleware' => ['auth']], function() {
             );
 
             Route::get('/transfer-role-index', [
-                'uses'=>'PagesController@transferRole',
+                'uses'=>'AccountController@transferRole',
             ]
             );
 
-            Route::any('/transfer-role-results', [
-                'uses'=>'AccountController@transfer',
+            Route::any('/transferExecute', [
+                'uses'=>'AccountController@transferExecute',
+                'as' => 'transferExecute',
             ]
             ); 
 
+            Route::any('/coordRequestForSched',[
+                'uses'=>'ScheduleController@coordRequestForSched'
+            ]);
+
+            Route::any('/coordRequestForSched-form/{id}',[
+                'uses'=>'ScheduleController@coordRequestForSchedForm',
+                'as'=>'request-schedule'
+            ]);
+
+            Route::resource('/project-archive', 'ProjSearchController')->except([
+                'index',
+            ]);
+
+            Route::any('/setPanelVerdictIndex/{groupNo}',[
+                'uses'=>'QuickViewController@setProjectVerdictIndex',
+                'as'=>'setPanelVerdictIndex'
+            ]);
+
+            Route::any('/setPanelVerdict',[
+                'uses'=>'QuickViewController@setProjectVerdict',
+                'as'=>'setPanelVerdict'
+            ]);
+
+            Route::any('/trn',[
+                'uses'=>'PagesController@truncateNotifications',
+            ]);
+
+            Route::any('/trv',[
+                'uses'=>'RevHistoryController@truncateRevHistory',
+            ]);
+
+            Route::any('/dap',[
+                'uses'=>'ProjectController@disableAllApprovals',
+            ]);
+
+            Route::any('/deleteFinishedGroups',[
+                'uses'=>'GroupController@deleteFinishedGroups',
+            ]); 
+
+            //folder settings
+            Route::any('/application-settings',[
+                'uses'=>'PagesController@appSettingsEdit',
+            ]); 
+            
+            Route::any('/application-settings-store',[
+                'uses'=>'PagesController@appSettingsStore',
+            ]); 
+            Route::any('/application-settings-update/{id}',[
+                'uses'=>'PagesController@appSettingsUpdate',
+            ]); 
+            
     }); //End Route::Group Capstone Coordinator
 
    
-    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+    Route::group(['middleware' => 'roles', 'roles' => $panel], function() {
         Route::resource('/advised-groups', 'AdvisedGroupsController')->parameters([
         ]);
     
@@ -112,11 +216,17 @@ Route::group(['middleware' => ['auth']], function() {
         ]
         ); 
     
-        Route::any('/contentAdvCorrectForSched', [
-            'uses'=>'AdvisedGroupsController@ContentAdvCorrectForSched',
-            'as' => 'ContentAdvCorrectForSched',
+        Route::any('/contentAdvApproval', [
+            'uses'=>'AdvisedGroupsController@contentAdvApproval',
+            'as' => 'contentAdvApproval',
         ]
-        ); 
+        );  
+        
+        Route::any('/contentAdvCorrections', [
+            'uses'=>'AdvisedGroupsController@contentAdvCorrections',
+            'as' => 'contentAdvCorrections',
+        ]
+        );  
 
         Route::resource('/approve-schedules', 'SchedAppController')->parameters([
         ]);
@@ -149,48 +259,61 @@ Route::group(['middleware' => ['auth']], function() {
 
     }); //End Route::Group Panel Member
 
-    Route::group(['middleware' => 'roles', 'roles' => ['Capstone Coordinator','Panel Member','Student']], function() {
+    Route::group(['middleware' => 'roles', 'roles' => $student], function() {
         Route::resource('/my-project', 'MyProjController')->parameters([
         ]);
     }); //End Route::Group Student
 
     //routes without roles needed
-    Route::resource('/project-archive', 'ProjSearchController')->parameters([
+    Route::get('/', [
+        'uses'=>'PagesController@index',
+        'as'=> 'home'
+    ]
+    );
+
+    Route::resource('/project-archive', 'ProjSearchController')->only([
+        'index',
     ]);
-    
+
     Route::any('/proj-archive-search-results', [
         'uses'=>'ProjSearchController@search',
+    ]
+    );
+
+    Route::resource('/final-schedule-list', 'ScheduleController')->parameters([
+        ]);
+
+
+    Route::any('/final-schedule-list-results', [
+        'uses'=>'ScheduleController@search',
     ]
     ); 
    
     //Notifications
+    
     Route::get('/alertBox',function(){
         return view('events.event-listener');
     });
 
     Route::get('/fireEvent', 'NotificationController@notifyFireSchedRequest');
-    /*
-    Route::get('/fireEvent',function(){
-        event(new eventTrigger('How Are You?'));
-        return 'Event fired';
-    });*/
-
-    Route::post('/NotifyPanelOnSchedRequest','NotificationController@NotifyPanelOnSchedRequest');
-    Route::any('/NotifyPanelOnSchedRequest_d','NotificationController@NotifyPanelOnSchedRequest_d');
-
-    Route::post('/NotifyPanelOnRevisions','NotificationController@NotifyPanelOnRevisions');
-    Route::any('/NotifyPanelOnRevisions_d','NotificationController@NotifyPanelOnRevisions_d');
-
-    Route::post('/NotifyAdviserOnSchedRequest','NotificationController@NotifyAdviserOnSchedRequest');
-    Route::any('/NotifyAdviserOnSchedRequest_d','NotificationController@NotifyAdviserOnSchedRequest_d');
-
-    Route::post('/NotifyAdviserOnRevisions','NotificationController@NotifyAdviserOnRevisions');
-    Route::any('/NotifyAdviserOnRevisions_d','NotificationController@NotifyAdviserOnRevisions_d');
-
+    
+    Route::post('/n/{name}',[
+        'uses'=> 'NotificationController@NotifyGet'
+    ]);
+    Route::any('/nd/{name}/{redirect}/{input}',[
+        'uses'=> 'NotificationController@NotifyDelete'
+    ]); 
 
     //For Email
     Route::any('/NotifyPanelOnSchedRequest_e','MailController@NotifyPanelOnSchedRequest_e');
     Route::any('/NotifyPanelOnSchedRequest_s','MailController@NotifyPanelOnSchedRequest_s');
+
+    Route::any('/NotifyCoordOnSchedRequest_e','MailController@NotifyCoordOnSchedRequest_e');
+
+    //misc
+    Route::get('/terms','PagesController@terms');
+    Route::get('/contact','PagesController@contact');
+    Route::get('/about','PagesController@about');
 
 });
 
@@ -200,14 +323,14 @@ Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::any('/approved-sched-via-email',function(){
     return view('events.approved-sched-via-email');
 });
-Route::any('/schedApprovalStatus_e', [
-    'uses'=>'SchedAppController@schedApprovalStatus_e',
-    'as' => 'sched-approve-status_e',
+Route::any('/schedApprovalStatus', [
+    'uses'=>'SchedAppController@schedApprovalStatus',
+    'as' => 'sched-approve-status',
 ]
 ); 
 
-Route::any('/email-config', function(){
-    return view('events.email')->with(['grp'=>'1','acc'=>'10']);
+Route::any('/testEmail', function(){
+    return view('email-notifications.test')->with(['grp'=>'1','acc'=>'10']);
 }); 
  
 Auth::routes();

@@ -5,17 +5,35 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Auth;
+use App\models\Stage;
+use App\models\Group;
 use App\models\Project;
 use App\models\ProjectApproval;
 use App\models\AccountGroup;
 use App\models\Schedule;
 use App\models\ScheduleApproval;
+use App\models\PanelVerdict;
+use App\models\Notification;
+use App\models\AccessControl;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Input;
+use Exception;
+use Illuminate\Validation\Rule;
+use Session;
 
 class QuickViewController extends Controller
 {
+    public function __construct()
+    {
+        $ac = new AccessControl;
+        $accesscontrol = $ac->status; 
+        if($accesscontrol == true) {
+            $this->middleware('auth');
+            $this->middleware('roles', ['roles'=> ['Capstone Coordinator']]);
+            //$this->middleware('permission:edit-posts',   ['only' => ['edit']]);
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,34 +41,44 @@ class QuickViewController extends Controller
      */
     public function index()
     {
-        $groups = DB::table('group')
-        ->join('project','project.projGroupNo','=','group.groupNo')
-        ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
-        ->join('stage','stage.stageNo','=','project.projStageNo')
-        ->join('account','group.groupCAdviserNo','=','account.accNo')
-        ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
-        ->paginate(3); 
+        $groups = $this->getIndex();                
         return view('pages.quick_view.index')->with('data',$groups);
     }
 
-    public function search()
+    private function getIndex() {
+        return $groups = DB::table('group')
+        ->join('project','project.projGroupID','=','group.groupID')
+        ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
+        ->join('stage','stage.stageNo','=','project.projStageNo')
+        ->join('account','group.groupCAdviserID','=','account.accID')
+        ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
+        ->orderBy('group.groupName')
+        ->paginate(5); 
+    }
+
+    public function search($query = null)
     {
         $q = Input::get('q');
-      
+        if(!is_null($query)) {
+        $q = $query;
+        }
+
         if($q != '') {
             $data = DB::table('group')
-            ->join('project','project.projGroupNo','=','group.groupNo')
+            ->join('project','project.projGroupID','=','group.groupID')
             ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
             ->join('stage','stage.stageNo','=','project.projStageNo')
-            ->join('account','group.groupCAdviserNo','=','account.accNo')
+            ->join('account','group.groupCAdviserID','=','account.accID')
             ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
             ->where('group.groupName','LIKE', "%".$q."%")
             ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
             ->orWhere('group.groupStatus','LIKE', "%".$q."%")
             ->orWhere('panel_verdict.pVerdictDescription','LIKE', "%".$q."%")
             ->orWhere('stage.stageName','LIKE', "%".$q."%")
-            ->paginate(3);
+            ->orderBy('group.groupName')
+            ->paginate(5);
         } else {
+            //return dd(0);
             return redirect()->action('QuickViewController@index');
         }
 
@@ -101,12 +129,12 @@ class QuickViewController extends Controller
     public function edit($id)
     {
         $data = DB::table('group')
-        ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
-        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-        ->join('schedule_approval','schedule_approval.schedPGroupNo','=','panel_group.panelGroupNo')
-        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->join('schedule','schedule.schedGroupID','=','group.groupID')
+        ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
+        ->join('schedule_approval','schedule_approval.schedPanelGroupID','=','panel_group.panelGroupID')
+        ->join('account','account.accID','=','panel_group.panelAccID')
         ->select('group.*','schedule.*','schedule_approval.*','panel_group.*','account.*')
-        ->where('group.groupNo','=',$id)
+        ->where('group.groupID','=',$id)
         ->first();
         //return dd($data);
         return view('pages.quick_view.modify-schedule')->with('data',$data);
@@ -114,12 +142,15 @@ class QuickViewController extends Controller
 
     public function modifyProjApp($id) 
     {
+        $stage = new Stage;
         $data = DB::table('group')
-        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-        ->join('project_approval','project_approval.projAppPGroupNo','=','panel_group.panelGroupNo')
-        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
+        ->join('project_approval','project_approval.projAppPanelGroupID','=','panel_group.panelGroupID')
+        ->join('account','account.accID','=','panel_group.panelAccID')
         ->select('account.*','project_approval.*','panel_group.*','group.*')
-        ->where('group.groupNo','=',$id)
+        ->where('account.isActivePanel','=','1')
+        ->where('panel_group.panelCGroupID','=',$id)
+        ->where('panel_group.panelGroupType','=',$stage->current($id))
         ->get();
         //return dd($data);
         return view('pages.quick_view.modify-projApp')->with('data',$data);
@@ -128,36 +159,211 @@ class QuickViewController extends Controller
     public function modifyProjAppUpdate(Request $request)
     {
         $data = DB::table('group')
-        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-        ->join('project_approval','project_approval.projAppPGroupNo','=','panel_group.panelGroupNo')
-        ->join('account','account.accNo','=','panel_group.panelAccNo')
+        ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
+        ->join('project_approval','project_approval.projAppPanelGroupID','=','panel_group.panelGroupID')
+        ->join('account','account.accID','=','panel_group.panelAccID')
         ->select('account.*','project_approval.*','panel_group.*','group.*')
-        ->where('group.groupNo','=',$request->input('groupNo'))
+        ->where('account.isActivePanel','=','1')
+        ->where('group.groupID','=',$request->input('groupID'))
         ->get();
 
         try {
             DB::beginTransaction();
             foreach($data as $pmembers) {
-                $pj1 = ProjectApproval::find($pmembers->projAppNo);
-                $x = 'proj_app_' . $pmembers->accNo;
-                $y = 'proj_rlink_' . $pmembers->accNo;
-                $v = $request->input($x);
-                $v2 = $request->input($y);
-                $pj1->isApproved = $v;
-                if(is_null($v2)) {
-                    $pj1->revisionLink = '';
-                } else {
-                    $pj1->revisionLink = $v2;
-                }        
+                $pj1 = ProjectApproval::find($pmembers->projAppID);
+                $approval = $request->input('proj_app_' . $pmembers->accID);
+                $documentLink = $request->input('proj_rlink_' . $pmembers->accID);
+                $comment = $request->input('proj_comment_' . $pmembers->accID);
+
+                $pj1->isApproved = !is_null($approval) ? $approval : '-1';      
+                if(!is_null($documentLink)) {
+                    $validator = Validator::make($request->all(), [
+                        "proj_rlink_{$pmembers->accID}" => ['max:150','active_url'],
+                    ]);
+                    if($validator->fails()) {
+                        return redirect()->back()->withInput($request->all)->withErrors($validator);
+                    }
+                }
+                $pj1->revisionLink = !is_null($documentLink) ? $documentLink : '';
+                $pj1->projAppComment = !is_null($comment) ? $comment : '';    
                 $pj1->save();
             }
             DB::commit();
             $request->session()->flash('alert-success', 'Project Approval Information was Updated!');
             return redirect()->back();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            return dd($e);
             DB::rollback();
-            return redirect()->back()->withInput()->with('error', 'Project Approval Information was not Updated!');
+            return redirect()->back()->withErrors( 'Project Approval Information was not Updated!');
         }
+    }
+
+    private function getNextStage($groupID) {
+            $stage = new Stage;
+            $group = Group::find($groupID);
+            $data = DB::table('group')
+            ->join('project','project.projGroupID','=','group.groupID')
+            ->join('schedule','schedule.schedGroupID','=','group.groupID')
+            ->join('stage','stage.stageNo','=','project.projStageNo')
+            ->where('group.groupID','=',$groupID)
+            ->first();
+            $schedule_approval = DB::table('schedule_approval')
+            ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
+            ->join('group','group.groupID','=','panel_group.panelCGroupID')
+            ->where('panel_group.panelCGroupID','=',$groupID)
+            ->update([
+                'schedule_approval.isApproved' => '-1'
+            ]); //Set the schedule approval to -1 (disabled)
+
+            $project_approval = DB::table('project_approval')
+            ->join('panel_group','panel_group.panelGroupID','=','project_approval.projAppPanelGroupID')
+            ->join('group','group.groupID','=','panel_group.panelCGroupID')
+            ->where('panel_group.panelCGroupID','=',$groupID)
+            ->update([
+                'project_approval.isApproved' => '-1'
+            ]); //Set the project approval to -1 (disabled)
+
+            $project = Project::find($data->projID);
+            $schedule = Schedule::find($data->schedID);
+            $maxStage = Stage::max('stageNo');
+            $msg ='';
+            $notify = new Notification;
+            if($data->projStageNo < $maxStage) {
+                $group->groupStatus = 'Waiting for Submission';
+                $project->projStageNo = $data->stageNo + 1;
+                $project->projPVerdictNo = '1';
+                $schedule->schedStatus = 'Not Ready';
+                $msg = 'The group of ' . $group->groupName . ' is now ready for the next stage.';
+                $notify->NotifyStudentOnNextStage($group);
+            } else {
+                $group->groupStatus = 'Waiting for Project Completion';
+                $project->projPVerdictNo = '7';
+                $schedule->schedStatus = 'Not Ready';
+                $msg = 'The group of ' . $group->groupName . ' is now waiting for project completion.'; 
+                $notify->NotifyStudentOnCompletion($group);         
+            }
+            $group->save();
+            $project->save();
+            $schedule->save();
+            return $msg;
+    }
+    public function nextStage(Request $request) {
+        try {
+            DB::beginTransaction();
+            $msg = $this->getNextStage($request->input('grp'));
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('The group information was not updated.');
+        }
+        //return dd($msg);
+        $g = $this->getIndex();
+        return view('pages.quick_view.index')->with('data',$g)->with('success2',['The group information was updated!',$msg]);
+        //return redirect()->back()->with('success',['The group information was updated!',$msg]);
+    }
+
+    public function setToProjComplete(Request $request) {
+        try {
+            DB::beginTransaction();
+            $group = Group::find($request->input('grp'));
+            $group->groupStatus = 'Finished';
+            $group->save();
+            $notify = new Notification;
+            $notify->NotifyStudentOnFinish($group);
+            DB::commit();
+        } catch(Exception $e) { 
+            DB::rollback();
+            return redirect()->back()->withErrors('The group information was not updated.');
+        }
+        $g = $this->getIndex();
+        return view('pages.quick_view.index')->with('data',$g)->with('success2',['The group information was updated.','The group of ' . $group->groupName . ' is now finished.']);
+        //return redirect()->back()->with('success',['The group information was updated.','The group of ' . $group->groupName . ' is now finished.']);
+    }
+
+    public function finalizeSchedule(Request $request) {
+        try {
+            DB::beginTransaction();   
+            $group = Group::find($request->input('grp'));
+            $group->groupStatus = 'Ready for Defense';
+            $group->save();
+            $notify = new Notification;
+            $notify->NotifyAllOnReady($group);
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('The group information was not updated.');
+        }
+        $g = $this->getIndex();
+        return view('pages.quick_view.index')->with('data',$g)->with('success2',['The group information was updated.','The group of ' . $group->groupName . ' is now ready for defense.']);
+        
+    }
+
+    public function setProjectVerdictIndex($groupID) {
+        $data = $this->getProjectVerdictIndex($groupID);
+        return view('pages.quick_view.set-panel-verdict')->with('data',$data);
+    }
+
+    private function getProjectVerdictIndex($groupID) {
+        $group = DB::table('group')
+        ->join('project','project.projGroupID','=','group.groupID')
+        ->join('account','account.accID','=','groupCAdviserID')
+        ->select('group.*','project.*','account.*')
+        ->where('group.groupID','=',$groupID)
+        ->first();
+        $pverdict = DB::table('panel_verdict')->get();
+        $data = [
+            'group'=>$group,
+            'panel_verdict'=>$pverdict
+        ];
+        return $data;
+    }
+
+    public function setProjectVerdict(Request $request) {
+        try {
+            $groupID = $request->input('grp');
+            DB::beginTransaction();
+            $validPanelVerdict = DB::table('panel_verdict')
+            ->pluck('panelVerdictNo');
+            $validator = Validator::make($request->all(), [
+                'panel_verdict' => ['required','Integer',Rule::In($validPanelVerdict->all())],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            } 
+            $group = Group::find($groupID);
+            $project = DB::table('project')
+            ->where('project.projGroupID','=',$groupID)
+            ->first();
+            $schedule = DB::table('schedule')
+            ->where('schedule.schedGroupID','=',$groupID)
+            ->first();
+            $msg = '';
+            $project = Project::find($project->projID);
+            $schedule = Schedule::find($schedule->schedID);
+            if(in_array($request->input('panel_verdict'),['1','2','3','4','5','6'])) {
+                $group->groupStatus = 'Waiting for Submission';
+                $project->projPVerdictNo = $request->input('panel_verdict');
+                $schedule->schedStatus = 'Finished';
+                $group->save();
+                $project->save();
+                $schedule->save();
+                DB::commit();
+                $pv = PanelVerdict::find($request->input('panel_verdict'));
+                $msg = 'The group\'s panel verdict is now set to \'' . $pv->pVerdictDescription . '\'.';
+                
+            } elseif(in_array($request->input('panel_verdict'),['7'])) {
+                $msg = $this->getNextStage($groupID);
+                $grp = Group::find($groupID);
+            }
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all)->withErrors('The group information was not updated!');
+        }
+        $d = $this->getProjectVerdictIndex($groupID);
+        return view('pages.quick_view.set-panel-verdict')->with('data',$d)->with('success2',['The group information was updated!',$msg]);
+        //return redirect()->back()->with('success2',['The group information was updated!',$msg]);
+        
     }
 
     /**
@@ -167,34 +373,37 @@ class QuickViewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    //Modify Schedule function
     public function update(Request $request, $id)
     {
-        //return dd($request->all());
- 
-        $validator = Validator::make($request->all(), [
-            'date' => ['required','date_format:Y-m-d'],
-            'starting_time' => ['required','date_format:H:i'],
-            'ending_time' => ['required','date_format:H:i'],
-            'place' => ['required','max:100'],
-            'schedule_type' => ['required','max:20'],
-            'schedule_status' => ['required','max:20'],
-        ]);
-        if ($validator->fails()) {
-			return redirect()->back()->withInput()->withErrors($validator);
-        } 
-
-        $data = DB::table('group')
-        ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
-        ->join('panel_group','panel_group.panelCGroupNo','=','group.groupNo')
-        ->join('schedule_approval','schedule_approval.schedPGroupNo','=','panel_group.panelGroupNo')
-        ->join('account','account.accNo','=','panel_group.panelAccNo')
-        ->select('group.*','schedule.*','schedule_approval.*','panel_group.*','account.*')
-        ->where('group.groupNo','=',$id)
-        ->get();
-        
         try {
-            DB::beginTransaction();
-            $sc0 = Schedule::find($data[0]->schedNo);
+            DB::beginTransaction();  
+            $validStatus = ['Ready','Not Ready','Finished'];
+            $validType = ['Oral Defense','Round Table'];
+            $validator = Validator::make($request->all(), [
+                'date' => ['required','date_format:Y-m-d'],
+                'starting_time' => ['required','date_format:H:i'],
+                'ending_time' => ['required','date_format:H:i','after:starting_time'],
+                'place' => ['required','max:100'],
+                'schedule_type' => ['required','max:20',Rule::In($validType)],
+                'schedule_status' => ['required','max:20',Rule::In($validStatus)],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            } 
+            $stg = new Stage;
+            $data = DB::table('group')
+            ->join('schedule','schedule.schedGroupID','=','group.groupID')
+            ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
+            ->join('schedule_approval','schedule_approval.schedPanelGroupID','=','panel_group.panelGroupID')
+            ->join('account','account.accID','=','panel_group.panelAccID')
+            ->select('group.*','schedule.*','schedule_approval.*','panel_group.*','account.*')
+            ->where('group.groupID','=',$id)
+            ->where('panel_group.panelGroupType','=',$stg->current($id))
+            ->get();
+
+            $sc0 = Schedule::find($data[0]->schedID);
             $sc0->schedDate = $request->input('date');
             $sc0->schedTimeStart = $request->input('starting_time');
             $sc0->schedTimeEnd = $request->input('ending_time');
@@ -203,17 +412,18 @@ class QuickViewController extends Controller
             $sc0->schedStatus = $request->input('schedule_status');
             $sc0->save();
             foreach($data as $pmembers) {
-                $sc1 = ScheduleApproval::find($pmembers->schedAppNo);
-                $x = 'sched_app_' . $pmembers->accNo;
-                $v = $request->input($x);
-                $sc1->isApproved = $v;
+                $sc1 = ScheduleApproval::find($pmembers->schedAppID);
+                $approval = $request->input('sched_app_' . $pmembers->accID);
+                $short_message = $request->input('sched_comment_' . $pmembers->accID);
+                $sc1->isApproved = !is_null($approval) ? $approval : '-1';
+                $sc1->schedAppMsg = !is_null($short_message) ? $short_message : '';
                 $sc1->save();
             }
             DB::commit();
             $request->session()->flash('alert-success', 'Schedule Information was Updated!');
             return redirect()->back();
-        } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Schedule Information was not Updated!');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput($request->all)->withErrors( 'Schedule Information was not Updated!');
             DB::rollback();
         }
     }

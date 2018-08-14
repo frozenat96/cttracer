@@ -13,25 +13,25 @@
     <div class="col-md-12 justify-align-center" id="index_content1">
         
         <div class="row justify-content-center">
-            <div class="col-md-9 bx2 jumbotron">
+            <div class="col-md-9 bx2 jumbotron"> 
                 @include('inc.messages')
                 @if(isset($data))
-                {!!Form::open(['action' => ['MyProjController@update',$data->projNo], 'method' => 'POST']) !!}
+                {!!Form::open(['action' => ['MyProjController@update',$data->projID], 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">SUBMIT DOCUMENT</span><hr class="my-4"></legend>
+                                <legend class="text-left"><span class="alert bg2">SUBMIT DOCUMENT TO CONTENT ADVISER</span><hr class="my-4"></legend>
                     
                             {{csrf_field()}} 
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="for_group">For Group Of : {{$data->groupName}}</label>
-                            <input type="hidden" name="groupNo" value="{{$data->groupNo}}">
-                            <p>Note : If you are submitting for revision of documents and has been corrected, you must include the files of all the panel members that has corrections and/or the minutes form in your zip file.</p>
+                            <input type="hidden" name="groupID" value="{{$data->groupID}}">
+                            <p>Note : The file to be submitted must be in pdf format or in zip format if there many files to be submitted.</p>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12" id="acc">
-                            <label for="document_link">Corrected Document Link</label>
-                            <input class="form-control" name="document_link" autocomplete="Document Link" required="yes" value="{{$data->projDocumentLink}}">
+                            <label for="document_link">Document Link</label>
+                            <input type="url" maxlength="150" class="form-control" name="document_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_link')) ? old('document_link') : $data->projDocumentLink}}">
                         </div>
                     </div>
                     <div class="form-group text-right">

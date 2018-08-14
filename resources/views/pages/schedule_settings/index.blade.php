@@ -35,7 +35,7 @@
             <?php 
             $model = new App\models\Group;
             ?>
-            <table class="table table-striped table-hover table-sm">
+            <table class="table table-striped table-hover table-sm table-responsive-sm">
                 <thead>
                     <tr>
                         <th scope="col">Date</th>

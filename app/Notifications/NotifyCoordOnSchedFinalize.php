@@ -11,7 +11,7 @@ use App\models\Group;
 class NotifyCoordOnSchedFinalize extends Notification
 {
     use Queueable;
-
+    public $group;
     /**
      * Create a new notification instance.
      *
@@ -51,7 +51,7 @@ class NotifyCoordOnSchedFinalize extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'group' => $this->group
+            'message' => 'New Schedule to be Finalized'
         ];
     }
     /**

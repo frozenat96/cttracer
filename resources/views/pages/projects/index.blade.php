@@ -32,14 +32,13 @@
             </div>
         <hr class="my-4">
         @if(isset($data) && count($data))
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover table-responsive-sm">
             <thead>
                 <tr>
                     <th scope="col">Project Name</th>
                     <th scope="col">Group Name</th>
                     <th scope="col">Project Status</th>
                     <th scope="col">Project view</th>
-                    <th scope="col">Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,11 +54,9 @@
                             <span tabindex="0" class="">{{$proj->pVerdictDescription}}</span>
                         </td>
                         <td>
-                        <a class="btn btn-warning" href="/projects/{{$proj->projGroupNo}}" data-toggle="popover" data-content="View project details" data-placement="top">
+                        <a class="btn btn-warning" href="/projects/{{$proj->projGroupID}}" data-toggle="popover" data-content="View project details" data-placement="top">
                                     <i class="far fa-eye"></i> View Project 
                             </a>     
-                        </td>
-                        <td><a href="#" class="btn btn-secondary" data-toggle="popover" data-content="Edit project details" data-placement="top"><span><i class="far fa-edit"></i> Edit</span></a>
                         </td>
                     </tr>
                 @endforeach

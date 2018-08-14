@@ -6,14 +6,27 @@ use Illuminate\Http\Request;
 use App\User;
 use App\models\Group;
 use App\models\Project;
+use App\models\Stage;
+use App\models\AccessControl;
 use DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Auth;
+use Session;
 
 class ProjectController extends Controller
 {
+    public function __construct()
+    {
+        $ac = new AccessControl;
+        $accesscontrol = $ac->status; 
+        if($accesscontrol == true) {
+            $this->middleware('auth');
+            $this->middleware('roles', ['except' => ['disableAllApprovals'], 'roles'=> ['Capstone Coordinator','Panel Member']]);
+            $this->middleware('roles', ['only' => ['disableAllApprovals'], 'roles'=> ['Capstone Coordinator']]);
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -22,9 +35,11 @@ class ProjectController extends Controller
     public function index()
     {
         $data = DB::table('group')
-        ->join('project','project.projGroupNo','=','group.groupNo')
+        ->join('project','project.projGroupID','=','group.groupID')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
         ->select('project.*','group.*','panel_verdict.*')
+        ->whereNotIn('group.groupStatus',['Finished'])
+        ->whereNotIn('project.projPVerdictNo',['7'])
         ->paginate(10);
         return view('pages.projects.index')->withData($data);
     }
@@ -34,10 +49,15 @@ class ProjectController extends Controller
         $q = Input::get('q');
         if($q != '') {
             $data = DB::table('group')
-            ->join('project','project.projGroupNo','=','group.groupNo')
+            ->join('project','project.projGroupID','=','group.groupID')
             ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
             ->select('project.*','group.*','panel_verdict.*')
-            ->where('project.projName','LIKE', "%".$q."%") 
+            ->whereNotIn('group.groupStatus',['Finished'])
+            ->whereNotIn('project.projPVerdictNo',['7'])
+            ->where(function ($query) use ($q){
+                $query->where('project.projName','LIKE', "%".$q."%") 
+                ->orWhere('group.groupName','LIKE', "%".$q."%");
+            })
             ->paginate(10)
             ->setpath('');
         } else {
@@ -80,7 +100,7 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        $user_id = Auth::id(); 
+        $user_id = Auth::user()->getId(); 
         $Projectmodel = new Project();
         $proj = $Projectmodel->projectInfoByGroup($id);
         if(is_null($proj)) {
@@ -88,28 +108,34 @@ class ProjectController extends Controller
         }
     
         $group = DB::table('account')
-            ->join('group', 'account.accGroupNo', '=', 'group.groupNo')
+            ->join('group', 'account.accgroupID', '=', 'group.groupID')
             ->select('account.*')
-            ->where('group.groupNo','=',$proj->groupNo)
+            ->where('group.groupID','=',$proj->groupID)
             ->get();
-        
+
+        $stage = new Stage;
         $pgroup = DB::table('panel_group')
-        ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
-        ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
-        ->join('project_approval', 'project_approval.projAppPGroupNo', '=', 'panel_group.panelGroupNo')
+        ->join('account', 'account.accID', '=', 'panel_group.panelAccID')
+        ->join('group', 'panel_group.panelCGroupID', '=', 'group.groupID')
+        ->join('project_approval', 'project_approval.projAppPanelGroupID', '=', 'panel_group.panelGroupID')
         ->select('account.*','project_approval.*','panel_group.*')
-        ->where('panel_group.panelCGroupNo','=',$proj->groupNo)
+        ->where('account.isActivePanel','=','1')
+        ->where('panel_group.panelCGroupID','=',$proj->groupID)
+        ->where('panel_group.panelGroupType','=',$stage->current($proj->groupID))
         ->get();
+        
         $schedApp = DB::table('panel_group')
-        ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
-        ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
-        ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
-        ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
+        ->join('account', 'account.accID', '=', 'panel_group.panelAccID')
+        ->join('group', 'panel_group.panelCGroupID', '=', 'group.groupID')
+        ->join('schedule_approval', 'schedule_approval.schedPanelGroupID', '=', 'panel_group.panelGroupID')
+        ->join('schedule','schedule.schedGroupID','=','group.groupID')
         ->select('account.*','schedule_approval.*','panel_group.*','schedule.*')
-        ->where('panel_group.panelCGroupNo','=',$proj->groupNo)
+        ->where('account.isActivePanel','=','1')
+        ->where('panel_group.panelCGroupID','=',$proj->groupID)
+        ->where('panel_group.panelGroupType','=',$stage->current($proj->groupID))
         ->get();
         $adviser = DB::table('account')
-        ->where('account.accNo','=',$proj->groupCAdviserNo)
+        ->where('account.accID','=',$proj->groupCAdviserID)
         ->first();
        
         $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'projApp'=>$pgroup,'schedApp'=>$schedApp];
@@ -148,5 +174,24 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function disableAllApprovals() {
+        try {
+        DB::beginTransaction();
+        $update = DB::table('project_approval')
+        ->update([
+            'project_approval.isApproved' => '3'
+        ]);
+        $update = DB::table('schedule_approval')
+        ->update([
+            'schedule_approval.isApproved' => '3'
+        ]);
+        DB::commit();
+        } catch(Exception $e) {
+        DB::rollback();
+        }
+        Session::flash('success','All approvals has been disabled!');
+        return view('pages.index')->with('success','All approvals has been disabled!');
     }
 }

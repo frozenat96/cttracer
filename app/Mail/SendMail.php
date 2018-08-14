@@ -30,8 +30,8 @@ class SendMail extends Mailable
      */
     public function build()
     {
-        $groupNo = '1';
-        $accNo = '10';
+        $groupID = '1';
+        $accID = '10';
         $to = 'carlparioste@su.edu.ph';
         return $this->view('events.email',['grp'=>$this->data['grp'],'acc'=>$this->data['acc']])->to($this->data['to']);
     }

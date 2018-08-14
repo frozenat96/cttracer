@@ -5,11 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use App\models\Project;
+use App\models\AccessControl;
 use Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Webpatser\Uuid\Uuid;
+use Exception;
 
 class ProjSearchController extends Controller
 {
+    public function __construct()
+    {
+        $ac = new AccessControl;
+        $accesscontrol = $ac->status; 
+        if($accesscontrol == true) {
+            $this->middleware('auth');
+            $this->middleware('roles', ['roles'=> ['Panel Member','Capstone Coordinator','Student']]);
+            //$this->middleware('permission:edit-posts',   ['only' => ['edit']]);
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +35,7 @@ class ProjSearchController extends Controller
     {
         $data = DB::table('project')
         ->select('project.*')
+        ->where('project.projPVerdictNo','=','7')
         ->paginate(10);
         return view('pages.project_search.index')->withData($data);
     }
@@ -42,6 +58,7 @@ class ProjSearchController extends Controller
         if($q != '') {
             $data = DB::table('project')
             ->select('project.*')
+            ->where('project.projPVerdictNo','=','7')
             ->where('project.projName','LIKE', "%".$q."%") 
             ->paginate(10)
             ->setpath('');
@@ -63,7 +80,7 @@ class ProjSearchController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.project_search.create');
     }
 
     /**
@@ -74,7 +91,33 @@ class ProjSearchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(), [
+                'project_name' => ['required','max:150'],
+                'document_link' => ['required','max:150','active_url'],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            } 
+            
+            $project = new Project;
+            $project->projID = Uuid::generate()->string;
+            $project->projName = $request->input('project_name');
+            $project->projDocumentLink = $request->input('document_link');
+            $project->projCAdvCorrectionLink = '';
+            $project->projStageNo = '1';
+            $project->projGroupID = '1';
+            $project->projPVerdictNo = '7';
+            $project->minProjPanel = '1';
+            $project->requireChairProj = '1';
+            $project->save();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('The project archive was not added!');
+        }
+        return redirect()->back()->with('success','The project archive has been added successfully!');
     }
 
     /**
@@ -83,14 +126,6 @@ class ProjSearchController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id,$input)
-    {
-        switch($id) {
-            case 1:
-            case '1': $data=Project::where('projName','LIKE','%'.$input."%")->paginate(1);
-        }
-        return view('pages.project_search.index')->with('data', $id);
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -100,7 +135,8 @@ class ProjSearchController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = Project::find($id);
+        return view('pages.project_search.edit')->with('data',$data);
     }
 
     /**
@@ -112,7 +148,26 @@ class ProjSearchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(), [
+                'project_name' => ['required','max:150'],
+                'document_link' => ['required','max:150','active_url'],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            } 
+
+            $project = Project::find($id); 
+            $project->projName = $request->input('project_name');
+            $project->projDocumentLink = $request->input('document_link');
+            $project->save();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('The project archive was not updated!');
+        }
+        return redirect()->back()->with('success','The project archive has been updated successfully!');
     }
 
     /**
@@ -123,12 +178,16 @@ class ProjSearchController extends Controller
      */
     public function destroy($id)
     {
-        /*
-           <ul>
-            <li v-for="n in pagination.total">{{ n }}>
-                <a v-on:click="fetchPaginateProjects(pagination.path+'?search='+search+'&page='+n)">{{n}}</a>
-            </li>
-        </ul>
-        */
+        try {
+            DB::beginTransaction();
+            DB::table('project')
+            ->where('project.projID','=',$id)
+            ->delete();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('Project Information was not deleted.');
+        }
+        return redirect()->back()->with('success','Project Information was deleted.');
     }
 }

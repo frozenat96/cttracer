@@ -14,29 +14,17 @@
     <div class="col-md-12 justify-align-center" id="index_content1">
         <div class="container">
             
-        @include('inc.messages')
+        
         <div class="row">
         
         </div>
 
         <div class="jumbotron bx2">
+                @include('inc.messages')
                 <legend class="text-left"><span class="alert bg2">MY PROJECT</span><hr class="my-4"></legend>
         @if(isset($data) && count($data))
-        <div class="row">
-            <!--
-            <div class="col-md-12">
-                <h5 id="font2">Project Name : </h5><ul class="list1"><li>{{$data['proj']->projName}}
-                        <a href="/my-project/{{$data['proj']->projNo}}/edit" class="">Edit title</a></li></ul><br>
-            </div>
-            -->
-        </div>
-        <div class="row">
+        <div class="row"> <!-- Group Information -->
             <div class="col-md-4">
-                    
-                 
-            
-        
-
             <section>
             <h5>Content Adviser</h5>
             <ul class="list1">
@@ -54,47 +42,101 @@
                 @endforeach
                 </ul>
             </section>
+            <section>
+                 <!-- Options -->
+                 <?php $ValidStatus = ['Waiting for Submission','Corrected by Panel Members','Corrected by Content Adviser']; ?>
+                 @if(in_array($data['proj']->groupStatus,$ValidStatus))
+                 <h5>Options</h5>
+                 <a href="/my-project/{{$data['proj']->groupID}}/edit" class="btn btn-primary">Submit Document</a>
+                 @elseif(in_array($data['proj']->groupStatus,['Submitted to Content Adviser']))
+                 <h5>Status</h5>
+                 <span>Waiting for content adviser's approval</span>
+                 @endif
+                 <!-- Options -->
+            </section>
             </div>
 
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <section>
                     <h5>Project Information</h5> 
                         <ul class="list1">
                             <li>
-                        <h6>Stage : {{$data['proj']->projStageNo}} ({{$data['proj']->stageName}})</h6>
+                            <h6>Title :  <span tabindex="0" class="" data-toggle="popover" data-content="{{$data['proj']->projName}}" data-placement="top">{{(substr($data['proj']->projName, 0, 20) . '..')}}</span></h6>
+                            </li>
+
+                            <li>
+                            <h6>Stage : {{$data['proj']->projStageNo}} ({{$data['proj']->stageName}})</h6>
+                            </li>
+
+                            @if(($data['proj']->stageRefLink)!='') 
+                            <li> 
+                                <a class="text-info" href="{{($data['proj']->stageRefLink)}}" target="_blank" data-content="View the stage instructions" data-toggle="popover" data-placement="top"><i class="far fa-question-circle"></i> View Stage Instructions</a>
+                            </li>
+                            @endif
+
+                            <li>
+                            <h6>Group Status : {{$data['proj']->groupStatus}}</h6>
                             </li>
                             <li>
-                        <h6>Group Status : {{$data['proj']->groupStatus}}</h6>
+
+                            <h6>Project Panel Verdict : {{$data['proj']->pVerdictDescription}}</h6>
                             </li>
-                            <li>
-                        <h6>Project Panel Verdict : {{$data['proj']->pVerdictDescription}}</h6>
+
+                            <li> 
+                            <h6>Project Document : </h6>
+                            <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download the file" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> download</a>
                             </li>
-                            <li>
-                        <h6>Project Document : 
-                        <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download project document" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> download</a>
-                            </li></h6>
+                            @if(in_array($data['proj']->groupStatus,['Corrected by Content Adviser'])) 
+
+                            <li> 
+                            <h6>Content Adviser's Corrections : </h6>
+                            <a href="{{($data['proj']->projCAdvCorrectionLink)}}" target="_blank" data-content="Download the file" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> download</a>
+                            </li>
+                            @endif
                         </ul>
                 </section>
+           
             </div>
-            <div class="col-md-3">
-                @if(in_array($data['proj']->groupStatus,['Waiting','Corrected by Content Adviser']))
-                <h5>Options</h5>
-                <a href="/my-project/{{$data['proj']->groupNo}}/edit" class="btn btn-primary">Submit Document</a>
-                @elseif($data['proj']->groupStatus == 'Submitted to Content Adviser')
-                <h5>Status</h5>
-                <span>Waiting for content adviser's approval</span>
-                @elseif($data['proj']->groupStatus == 'Submitted to Panel Members')
-                <h5>Status</h5>
-                <span>Waiting for panel members' approval</span>
-                @endif
-            </div>
-        </div>
-        @if((in_array($data['proj']->projPVerdictNo,['2','3'])) && (in_array($data['proj']->groupStatus,['Approved by Content Adviser','Submitted to Panel Members','Corrected by Panel Members'])) )
+
+            <div class="col-md-4"><!-- Schedule Information -->
+            @if(!(in_array($data['proj']->projPVerdictNo,['2','3'])) && (in_array($data['proj']->groupStatus,['Waiting for Schedule Approval','Waiting for Final Schedule','Ready for Defense'])))            
+            <section>
+            <div class="col-md-12">
+                <h5>Schedule Information</h5>
+                <ul class="list1">
+                        <li>
+                    <h6>Date : {{date_format(new Datetime($data['schedApp'][0]->schedDate),"F j, Y")}}</h6>
+                        </li>
+                        <li>
+                    <h6>Starting Time : {{date_format(new Datetime($data['schedApp'][0]->schedTimeStart),"g:i A")}}</h6>
+                        </li>
+                        <li>
+                    <h6>Ending Time : {{date_format(new Datetime($data['schedApp'][0]->schedTimeEnd),"g:i A")}}</h6>
+                        </li>
+                        <li>
+                    <h6>Place : {{$data['schedApp'][0]->schedPlace}}</h6>
+                        </li>
+                        <li>
+                    <h6>Type of schedule : {{$data['schedApp'][0]->schedType}}</h6>
+                        </li>
+                        <li>
+                    <h6>Status : {{$data['schedApp'][0]->schedStatus}}</h6> 
+                            </li>
+                </ul>
+                </div>
+            </section>
+                
+            @endif
+            </div> <!-- End ofSchedule Information -->
+        </div> <!-- End of Group Information -->
+
+        <!-- Project Revision Approval -->
+        @if((in_array($data['proj']->projPVerdictNo,['2','3'])) && (in_array($data['proj']->groupStatus,['Waiting for Project Approval','Corrected by Panel Members'])))
         <hr class="my-4">
         <div class="row">
             <div class="col-md-12">
             <h5>Project Revisions Approval</h5>
-            <table class="table table-striped table-hover table-hover">
+            <table class="table table-striped table-hover table-hover table-responsive-sm">
                 <thead>
                     <tr class="">
                         <th>Position</th>
@@ -130,7 +172,7 @@
                 </tbody>
             </table>
             </div>
-        </div>
+        </div> 
 
         <!-- comment section -->
         <div class="form-row">
@@ -145,47 +187,25 @@
                         (Chair panel member) @endif
                         </span>
                 </label>
-                <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accNo}}" class="form-control" readonly="readonly">{{$pmember->projAppComment}}</textarea>
+                <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accID}}" class="form-control" readonly="readonly">{{$pmember->projAppComment}}</textarea>
                 </div>
                 @endforeach
-        </div> 
-        <!-- End of comment section -->
+        </div> <!-- End of comment section -->
+        <!-- End of Project Revision Approval -->
 
-        @elseif((!in_array($data['proj']->projPVerdictNo,['2','3'])) && (in_array($data['proj']->groupStatus,['Approved by Content Adviser','Submitted to Panel Members','Corrected by Panel Members'])))
+        <!-- Schedule Approval Information -->
+        @elseif(!in_array($data['proj']->projPVerdictNo,['2','3']) && (in_array($data['proj']->groupStatus,['Waiting for Schedule Approval','Waiting for Final Schedule','Ready for Defense'])) )
         <hr class="my-4">
         <div class="row">
-            <div class="col-md-4">
-            <h5>Schedule Information</h5>
-            <br>
-            <ul class="list1">
-                    <li>
-                <h6>Date : {{date_format(new Datetime($data['schedApp']->schedDate),"F j, Y")}}</h6>
-                    </li>
-                    <li>
-                <h6>Starting Time : {{date_format(new Datetime($data['schedApp']->schedTimeStart),"g:i A")}}</h6>
-                    </li>
-                    <li>
-                <h6>Ending Time : {{date_format(new Datetime($data['schedApp']->schedTimeEnd),"g:i A")}}</h6>
-                    </li>
-                    <li>
-                <h6>Place : {{$data['schedApp']->schedPlace}}</h6>
-                    </li>
-                    <li>
-                <h6>Type of schedule : {{$data['schedApp']->schedType}}</h6>
-                    </li>
-                    <li>
-                <h6>Status : {{$data['schedApp']->schedStatus}}</h6>
-                     </li>
-            </ul>
-            </div>
-            <div class="col-md-8">
+            <div class="col-md-12">
             <h5>Schedule Approval</h5>
-            <table class="table table-striped table-hover table-hover">
+            <table class="table table-striped table-hover table-hover table-responsive-sm">
                 <thead>
                     <tr class="">
                         <th>Position</th>
                         <th>Name</th>
                         <th>Approval Status</th>
+                        <th>Short Message</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -211,15 +231,21 @@
                                 <span class="badge badge-secondary badge-pill">  Waiting </span>
                                 @endif  
                             </td>
+                            <td>
+                                <div class="form-group">
+                                <textarea class="form-control">{{$pmembers->schedAppMsg}}</textarea>
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
             </div>
-        </div>
+        </div><!-- End of Schedule Approval Information -->
+
         @endif
-        </div>
-        </div>
+        </div> <!-- End of div jumbotron -->
+        </div> <!-- End of div container -->
         @else
         <span>No results found.</span>
         @endif

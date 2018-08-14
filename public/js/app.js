@@ -404,12 +404,6 @@ module.exports = g;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(16);
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
@@ -507,7 +501,7 @@ module.exports = defaults;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -614,6 +608,12 @@ module.exports = function normalizeComponent (
   }
 }
 
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(16);
 
 /***/ }),
 /* 5 */
@@ -1095,7 +1095,7 @@ module.exports = __webpack_require__(48);
 __webpack_require__(13);
 
 window.Vue = __webpack_require__(36);
-window.axios = __webpack_require__(2);
+window.axios = __webpack_require__(4);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -1142,8 +1142,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(2);
-
+window.axios = __webpack_require__(4);
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
@@ -1155,9 +1154,9 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 var token = document.head.querySelector('meta[name="csrf-token"]');
 
 if (token) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+  window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 } else {
-    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
+  console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
 /**
@@ -1170,10 +1169,10 @@ if (token) {
 window.Pusher = __webpack_require__(35);
 
 window.Echo = new __WEBPACK_IMPORTED_MODULE_0_laravel_echo___default.a({
-    broadcaster: 'pusher',
-    key: 'fc969fb9f8baec9ce168',
-    cluster: 'ap1',
-    encrypted: true
+  broadcaster: 'pusher',
+  key: 'fc969fb9f8baec9ce168',
+  cluster: 'ap1',
+  encrypted: true
 });
 
 /***/ }),
@@ -18327,7 +18326,7 @@ module.exports = function(module) {
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(5);
 var Axios = __webpack_require__(18);
-var defaults = __webpack_require__(3);
+var defaults = __webpack_require__(2);
 
 /**
  * Create an instance of Axios
@@ -18410,7 +18409,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(3);
+var defaults = __webpack_require__(2);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(27);
 var dispatchRequest = __webpack_require__(28);
@@ -18951,7 +18950,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(29);
 var isCancel = __webpack_require__(9);
-var defaults = __webpack_require__(3);
+var defaults = __webpack_require__(2);
 var isAbsoluteURL = __webpack_require__(30);
 var combineURLs = __webpack_require__(31);
 
@@ -35561,7 +35560,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(40)
 /* template */
@@ -35680,7 +35679,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(43)
 /* template */
@@ -35728,8 +35727,6 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
 //
 //
 //
@@ -35750,100 +35747,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
-            projects: {},
-            search: '',
-            url: '/project-search-r',
-            searchurl: '/project-search-r',
-            pagination: []
+            notifications: {}
         };
     },
-    mounted: function mounted() {
-        //this.getDataProject();
-        console.log('Component mounted.');
+    created: function created() {
+        this.getNotifications();
     },
 
-    created: function created() {},
     methods: {
-        getDataProject: function getDataProject() {
+        getNotifications: function getNotifications() {
             var _this = this;
 
-            var $this = this;
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(this.url).then(function (response) {
-                console.log(response);
-                _this.projects = response.data;
-                $this.makePagination(response.data);
+            axios.post('/notify-sched-request').then(function (response) {
+                _this.notifications = response.data;
+                console.log(_this.notifications.length);
+            }).catch(function (error) {
+                console.log(error.message);
             });
-        },
-        hasSearched: function hasSearched() {
-            this.url = this.searchurl;
-            this.fetchDataProject();
-        },
-        fetchDataProject: function fetchDataProject() {
-            var _this2 = this;
-
-            var $this = this;
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(this.url + '?search=' + this.search).then(function (response) {
-                console.log(response);
-                _this2.projects = response.data;
-                $this.makePagination(response.data);
-            });
-        },
-        makePagination: function makePagination(data) {
-            var pagination = {
-                current_page: data.current_page,
-                last_page: data.last_page,
-                next_page_url: data.next_page_url,
-                prev_page_url: data.prev_page_url,
-                path: data.path,
-                total: data.total
-            };
-
-            this.pagination = pagination;
-        },
-        fetchPaginateProjects: function fetchPaginateProjects(url) {
-            this.url = url;
-            this.getDataProject();
-        },
-        pages: function pages(p) {
-            var total = Math.ceil(p.total / 10);
-            var arr = [],
-                i = 1;
-            while (total--) {
-                arr.push(i);
-                i++;
-            }
-            var min = this.page() - this.page() % 10;
-            if (p.current_page() % 10 == 0) {
-                if (p.current_page - 10 > 0) {
-                    min -= 10;
-                }
-            }
-            var max = min + 10;
-
-            var arr = slice(arr, min, max);
-            this.minPage = min;
-            this.maxPage = max;
-
-            return arr;
         }
     }
 });
@@ -35856,131 +35781,54 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("h2", [_vm._v("Hello world")]),
-    _vm._v(" "),
-    _c("input", {
-      directives: [
-        {
-          name: "model",
-          rawName: "v-model",
-          value: _vm.search,
-          expression: "search"
-        }
-      ],
-      staticClass: "form-control",
-      attrs: { type: "text", name: "search" },
-      domProps: { value: _vm.search },
-      on: {
-        input: function($event) {
-          if ($event.target.composing) {
-            return
-          }
-          _vm.search = $event.target.value
-        }
-      }
-    }),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
-        staticClass: "btn btn-danger",
-        on: {
-          click: function($event) {
-            _vm.hasSearched()
-          }
-        }
-      },
-      [_vm._v("Search")]
-    ),
-    _vm._v(" "),
-    _c("table", [
-      _vm._m(0),
-      _vm._v(" "),
-      _c(
-        "tbody",
-        _vm._l(_vm.projects.data, function(project) {
-          return _c("tr", [
-            _c("td", [_vm._v(_vm._s(project.projNo))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(project.projName))])
-          ])
-        })
-      )
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "pagination" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-default",
-          attrs: { disabled: !_vm.pagination.prev_page_url },
-          on: {
-            click: function($event) {
-              _vm.fetchPaginateProjects(_vm.pagination.prev_page_url)
-            }
-          }
-        },
-        [_vm._v("previous")]
-      ),
-      _vm._v(" "),
-      _c("span", [
-        _vm._v(
-          "Page " +
-            _vm._s(_vm.pagination.current_page) +
-            " of " +
-            _vm._s(_vm.pagination.last_page)
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-default",
-          attrs: { disabled: !_vm.pagination.next_page_url },
-          on: {
-            click: function($event) {
-              _vm.fetchPaginateProjects(_vm.pagination.next_page_url)
-            }
-          }
-        },
-        [_vm._v("next")]
-      )
-    ]),
-    _vm._v(" "),
-    _c(
-      "ul",
-      _vm._l(_vm.pagination.total, function(n) {
-        return _c("li", [
-          _vm._v(_vm._s(n) + ">\n            "),
-          _c(
-            "a",
-            {
-              on: {
-                click: function($event) {
-                  _vm.fetchPaginateProjects(
-                    _vm.pagination.path + "?search=" + _vm.search + "&page=" + n
-                  )
-                }
-              }
-            },
-            [_vm._v(_vm._s(n))]
-          )
-        ])
-      })
-    )
-  ])
+  return _vm._m(0)
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", [_vm._v("Project No.")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Project Name")])
+    return _c("div", [
+      _c(
+        "a",
+        {
+          staticClass: "nav-link dropdown-toggle",
+          attrs: {
+            href: "#",
+            id: "navbarDropdownMenuLink4",
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false"
+          }
+        },
+        [
+          _c("span", { staticClass: "badge badge-pill badge-success" }),
+          _vm._v(" "),
+          _c("i", { staticClass: "fas fa-project-diagram" }),
+          _vm._v(" Notifications")
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "form",
+          {
+            attrs: {
+              method: "post",
+              action: "/approve-schedules-search-results"
+            }
+          },
+          [
+            _c("label"),
+            _vm._v(" "),
+            _c("input", { attrs: { type: "hidden", name: "q", value: "am" } }),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "btn btn-link",
+              attrs: { type: "submit", value: "View" }
+            })
+          ]
+        )
       ])
     ])
   }
@@ -35999,7 +35847,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(46)
 /* template */

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectApproval extends Model
 {
     protected $table = "project_approval";
-    public $primaryKey = "projAppNo";
+    public $primaryKey = "projAppID";
     public $timestamps = false;
+    public $incrementing = false;
 }

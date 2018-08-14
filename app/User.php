@@ -19,8 +19,10 @@ class User extends Authenticatable
      */
 
     protected $table = "account";
-    protected $primaryKey = 'accNo';
-
+    protected $primaryKey = 'accID';
+    public $timestamps = false;
+    public $incrementing = false;
+    
     protected $fillable = [
         'name', 'email', 'password',
     ];
@@ -45,11 +47,11 @@ class User extends Authenticatable
     }
 
     public function hasRole($role) {
-        $user_id = Auth::id(); 
+        $user_id = Auth::user()->getId(); 
         $user = DB::table('account')
         ->join('account_type','account_type.accTypeNo','=','account.accType')
         ->select('account.*','account_type.*')
-        ->where('account.accNo','=',$user_id)
+        ->where('account.accID','=',$user_id)
         ->first();
         $x = $this->roles()->where('accTypeDescription',$role)->first();
         if($user->accTypeDescription == $role) {
@@ -69,19 +71,19 @@ class User extends Authenticatable
     ];
 
     public function group() {
-        return $this->belongsToMany('App\models\Group','account_group','accNo','grpNo');
+        return $this->belongsToMany('App\models\Group','account_group','accID','grpNo');
     }
 
     public function current() {
-        $user = DB::table('account')
+        return $user = DB::table('account')
         ->join('account_type','account_type.accTypeNo','=','account.accType')
         ->select('account.*','account_type.*')
-        ->where('account.accNo','=',Auth::id())->get();  
-        if(count($user)) {
-            return $user;
-        } else {
-            return 0;
-        }
+        ->where('account.accEmail','=',Auth::user()->accEmail)->get();  
+    }
 
+    public function getId()
+    {
+        $user = $this->current();
+        return $user[0]->accID;
     }
 }

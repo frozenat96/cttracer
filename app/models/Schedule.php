@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Schedule extends Model
 {
     protected $table = "schedule";
-    public $primaryKey = "schedNo";
+    public $primaryKey = "schedID";
     public $timestamps = false;
+    public $incrementing = false;
 }

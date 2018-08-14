@@ -1,12 +1,19 @@
 <?php
+    $ac = new App\models\AccessControl;
+    $accesscontrols = $ac->status;
     if(session_id() == '' || !isset($_SESSION)) {
     session_start();
     }
-    if(Auth::user()){
+    if(!is_null(Auth::user()) && isset($_SESSION['user'])){
+        
     $user = DB::table('account')
     ->join('account_type','account_type.accTypeNo','=','account.accType')
     ->select('account.*','account_type.*')
-    ->where('account.accNo','=',Auth::id())->get();
+    ->where('account.accID','=',Auth::user()->getId())->get();
+    } else {
+        Auth::logout();
+        unset($_SESSION['user']);
+        return view('/')->with('error','Something went wrong on loading the page.');
     }
 ?>
 <!doctype html>
@@ -48,15 +55,22 @@
         </style>
     </head>
     <body>
+        <div id="pageloader">
+            <img src="{{asset('img/ajax-loader.gif')}}" alt="processing..." />
+        </div>
+        @if($accesscontrols == true)
+        @include('inc.navbar')
+        @else
         @include('inc.navbar2')
+        @endif
         <wrapper class="d-flex flex-column" >
                 <main class="flex-fill"> 
                     <div class="container" id="cont1">
-        
+                    
             @yield('content')
     
 
-            @include('inc.confirm');  
+            @include('inc.confirm')  
                     </div>
                 </main>
         @yield('paginator')
@@ -74,10 +88,30 @@ $.ajaxSetup({
     }
 });
 
+$('notificationMenuList1').hide();
+function btnConfirm2(f) {
+    if(confirm('Are you sure?')) {
+        f.submit();
+        $("#pageloader").show();
+    }
+}
+
 $(document).ready(function () {
-    $('.popover-dismiss').popover({
+   
+$(".form1").on("submit", function(){
+    $("#pageloader").show();
+});
+
+function btnConfirm() {
+    if(confirm('Are you sure?')) {
+        $("#pageloader").show();
+    }
+}
+
+$('.popover-dismiss').popover({
   trigger: 'focus'
 });
+
 $(function () {
   $('[data-toggle="popover"]').popover();
 })

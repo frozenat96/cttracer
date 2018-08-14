@@ -15,7 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-9 jumbotron bx2">
                 @include('inc.messages')
-                {!!Form::open(['action' => 'QuickViewController@modifyProjAppUpdate', 'method' => 'POST','id'=>'form1']) !!}
+                {!!Form::open(['action' => 'QuickViewController@modifyProjAppUpdate', 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
                             <legend class="text-left"><span class="alert bg2">MODIFY PROJECT APPROVAL</span><hr class="my-4"></legend>
                             
@@ -47,15 +47,16 @@
                                         </span>
                                         </td>
                                         <td>
-                                        <select id="proj_app" class="form-control proj_app" name="proj_app_{{$pmember->accNo}}" autocomplete="Project Approval">
-                                                <option value="0" @if(($pmember->isApproved)=='0') selected @endif>Waiting</option>
-                                                <option value="1" @if(($pmember->isApproved)=='1') selected @endif>Approved</option>
-                                                <option value="2" @if(($pmember->isApproved)=='2') selected @endif>Corrected</option>
+                                        <select id="proj_app" class="form-control proj_app" name="proj_app_{{$pmember->accID}}" autocomplete="Project Approval">
+                                                <option value="3" @if(!is_null(old('proj_app_{{$pmember->accID}}')) && old('proj_app_{{$pmember->accID}}')=='3') selected @elseif(($pmember->isApproved)=='3') selected @endif>Disabled</option>
+                                                <option value="0" @if(!is_null(old('proj_app_{{$pmember->accID}}')) && old('proj_app_{{$pmember->accID}}')=='0') selected @elseif(($pmember->isApproved)=='0') selected @endif>Waiting</option>
+                                                <option value="1" @if(!is_null(old('proj_app_{{$pmember->accID}}')) && old('proj_app_{{$pmember->accID}}')=='1') selected @elseif(($pmember->isApproved)=='1') selected @endif>Approved</option>
+                                                <option value="2" @if(!is_null(old('proj_app_{{$pmember->accID}}')) && old('proj_app_{{$pmember->accID}}')=='2') selected @elseif(($pmember->isApproved)=='2') selected @endif>Corrected</option>
                                         </select>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control" name="proj_rlink_{{$pmember->accNo}}" maxlength="255" autocomplete="Corrected Document Link" value="{{$pmember->revisionLink}}">
-                                        </td>
+                                            <input type="url" class="form-control" name="proj_rlink_{{$pmember->accID}}" maxlength="150" autocomplete="Corrected Document Link" value="{{!is_null(old('proj_rlink_' . $pmember->accID)) ? old('proj_rlink_'. $pmember->accID) : $pmember->revisionLink}}">
+                                        </td> 
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -73,9 +74,7 @@
                                     (Chair panel member) @endif
                                     </span>
                             </label>
-                            <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accNo}}" class="form-control" maxlength="1600" value="{{$pmember->projAppComment}}">
-                                
-                            </textarea>
+                            <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accID}}" class="form-control" maxlength="1600">{{!is_null(old('proj_comment_' . $pmember->accID)) ? old('proj_comment_' . $pmember->accID) : $pmember->projAppComment}}</textarea>
 
                             @endforeach
                         </div>
@@ -91,7 +90,7 @@
                                 <button id="sub2" type="submit" style="display:none;"></button>
                             </div>
                         </fieldset>
-                        <input type="hidden" name="groupNo" value="{{$data[0]->groupNo}}">
+                        <input type="hidden" name="groupID" value="{{$data[0]->groupID}}">
                         <input type="hidden" name="_method" value="PUT">
                 {!!Form::close() !!}
             </div>

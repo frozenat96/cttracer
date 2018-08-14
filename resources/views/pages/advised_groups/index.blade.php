@@ -42,7 +42,7 @@
                 @foreach($data as $sched)
                 <div class="form-row card bx2 card1 jumbotron">
                     <div class="col-md-12"> 
-                        <table class="table">
+                        <table class="table table-responsive-sm">
                             <thead>
                                 <tr class="">
                                     <th>Group Details</th>
@@ -58,11 +58,11 @@
                             </thead>
                         <?php
                         $pgroup = DB::table('panel_group')
-                        ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
-                        ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
-                        ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
+                        ->join('account', 'account.accID', '=', 'panel_group.panelAccID')
+                        ->join('group', 'panel_group.panelCGroupID', '=', 'group.groupID')
+                        ->join('schedule_approval', 'schedule_approval.schedPanelGroupID', '=', 'panel_group.panelGroupID')
                         ->select('account.*','schedule_approval.*','panel_group.*')
-                        ->where('panel_group.panelCGroupNo','=',$sched->groupNo)
+                        ->where('panel_group.panelCGroupID','=',$sched->groupID)
                         ->get();
                         ?>
                         <tbody>
@@ -77,7 +77,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <small><b>Group Type : {{$sched->grpType}}</b></small>
+                                        <small><b>Group Type : {{$sched->groupType}}</b></small>
                                     <td>
                                 </tr>
                                 <tr>
@@ -109,22 +109,22 @@
                                 <table class="table-sm table-hover table-striped">
                                 <tr>
                                     <td>
-                                        <small><b>Date : {{date_format(new Datetime($sched->schedDate),"F j, Y")}}</b></small>
+                                        <small><b>Date : --</b></small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <small><b>Starting Time : {{date_format(new Datetime($sched->schedTimeStart),"g:i A")}}</b></small>
+                                        <small><b>Starting Time : --</b></small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <small><b>Ending Time : {{date_format(new Datetime($sched->schedTimeEnd),"g:i A")}}</b></small>
+                                        <small><b>Ending Time : --</b></small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <small><b>Place : {{$sched->schedPlace}}</b></small>
+                                        <small><b>Place : --</b></small>
                                     </td>
                                 </tr>
                                 </table>
@@ -133,7 +133,7 @@
                                 <table class="table-sm table-hover table-striped">
                                     <tr>
                                         <td>
-                                            <small><b>Status : {{$sched->schedStatus}}</b></small>
+                                            <small><b>Status : </b></small><span class="badge badge-pill badge-danger">{{$sched->schedStatus}}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -167,26 +167,26 @@
                             <td>
                                 <?php 
                                  $acc = DB::table('panel_group')
-                                ->join('account', 'account.accNo', '=', 'panel_group.panelAccNo')
-                                ->join('group', 'panel_group.panelCGroupNo', '=', 'group.groupNo')
-                                ->join('schedule_approval', 'schedule_approval.schedPGroupNo', '=', 'panel_group.panelGroupNo')
+                                ->join('account', 'account.accID', '=', 'panel_group.panelAccID')
+                                ->join('group', 'panel_group.panelCGroupID', '=', 'group.groupID')
+                                ->join('schedule_approval', 'schedule_approval.schedPanelGroupID', '=', 'panel_group.panelGroupID')
                                 ->select('account.*','schedule_approval.*','panel_group.*')
-                                ->where('panel_group.panelCGroupNo','=',$sched->groupNo)
-                                ->where('account.accNo','=',Auth::id())
+                                ->where('panel_group.panelCGroupID','=',$sched->groupID)
+                                ->where('account.accID','=',Auth::user()->getId())
                                 ->get();
                                 ?>
                                 <table class="table-sm">
                                 <tr><td>     
 
-                                {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvAppForSched', 'method' => 'POST']) !!}
+                                {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvApproval', 'method' => 'POST','class'=>'form1']) !!} 
                                 <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
-                                <input type="hidden" name="groupNo" value="{{$sched->groupNo}}">
+                                <input type="hidden" name="groupID" value="{{$sched->groupID}}">
                                 <input type="hidden" name="_method" value="PUT">
                                 {!!Form::close() !!}
 
                                 </td></tr>
                                 <tr><td>
-                                <a href="/advised-groups/{{$sched->groupNo}}/edit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Make corrections" data-placement="top"><span><i class="fas fa-times"></i> Make Corrections</span>
+                                <a href="/advised-groups/{{$sched->groupID}}/edit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Make corrections" data-placement="top"><span><i class="fas fa-times"></i> Make Corrections</span>
                                 </a>
                                 </td></tr>
                                 </table>

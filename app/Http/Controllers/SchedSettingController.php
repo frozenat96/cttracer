@@ -7,6 +7,7 @@ use App\User;
 use Auth;
 use DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Validation\Rule;
 
 class SchedSettingController extends Controller
 {
@@ -17,25 +18,25 @@ class SchedSettingController extends Controller
      */
     public function index()
     {
-        $user_id = Auth::id();
+        $user_id = Auth::user()->getId();
         $datetime_settings = DB::table('datetime_setting')
-        ->join('account','account.accNo','=','datetime_setting.dtsAccNo')
+        ->join('account','account.accID','=','datetime_setting.dtsAccNo')
         ->select('datetime_setting.*','account.*')
-        ->where('account.accNo','=',$user_id)
+        ->where('account.accID','=',$user_id)
         ->paginate(10); 
         return view('pages.schedule_settings.index')->with('data',$datetime_settings);
-    }
+    } 
 
     public function search()
     {
         $q = Input::get('q');
-        $user_id = Auth::id();
+        $user_id = Auth::user()->getId();
 
         if($q != '') {
             $data = DB::table('datetime_setting')
-            ->join('account','account.accNo','=','datetime_setting.dtsAccNo')
+            ->join('account','account.accID','=','datetime_setting.dtsAccNo')
             ->select('datetime_setting.*','account.*')
-            ->where('account.accNo','=',$user_id)
+            ->where('account.accID','=',$user_id)
             ->where(function ($query) use ($q){
                 $query->where('datetime_setting.dtsDate','LIKE', "%".$q."%")
                 ->orWhere('datetime_setting.dtsStartTime','LIKE', "%".$q."%")

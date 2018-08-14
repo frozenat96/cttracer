@@ -7,7 +7,7 @@ use Socialite;
 use Auth;
 use App\User;
 use DB;
-
+use Session;
 if(session_id() == '' || !isset($_SESSION)) {
     session_start();
 }
@@ -32,7 +32,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -63,17 +63,21 @@ class LoginController extends Controller
         $newUser->save();
 
         return $user->token;*/
+       
+
         $authuser = $this->findUser($user,$provider);
-        if($authuser != false) {
+        if(!is_null($authuser)) {
             Auth::login($authuser,true);
             $_SESSION['user'] = [
-                'id' => $authuser,
+                'id' => Auth::user()->getId(),
                 'avatar' => $user->getAvatar(),
             ];
-            return redirect('/');
+            return redirect('/')->with('success','Hi ' . $authuser->accFName . ', welcome to CT-Tracer');
         } else {
             Auth::logout();
-            return redirect('/login')->withErrors(['Unauthorized access. Please log in using a different account.']);
+            unset($_SESSION['user']);
+            Session::flush();
+            return view('auth.login')->withErrors('Unauthorized access. Please log in using a different account.');
         }
     }
 
@@ -87,6 +91,7 @@ class LoginController extends Controller
     public function logout(Request $request) {
         Auth::logout();
         unset($_SESSION['user']);
+        Session::flush();
         return redirect('/login');
     }
 }

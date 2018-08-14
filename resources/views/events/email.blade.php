@@ -7,13 +7,13 @@
     <body>
         <?php
             $data = DB::table('group')
-            ->join('schedule','schedule.schedGroupNo','=','group.groupNo')
-            ->join('project','project.projGroupNo','=','group.groupNo')
-            ->where('group.groupNo','=',$grp)
+            ->join('schedule','schedule.schedGroupID','=','group.groupID')
+            ->join('project','project.projGroupID','=','group.groupID')
+            ->where('group.groupID','=',$grp)
             ->first();
             $panel = DB::table('account')
-            ->where('account.accNo','=',$acc)
-            ->first();
+            ->where('account.accID','=',$acc)
+            ->first(); 
         ?>
 
         <div style="padding:20px;color:black;font-size:1.1em;width:100%;">
@@ -54,7 +54,7 @@
             </section>
 
 
-            {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus_e', 'method' => 'POST', 'target'=>'_blank']) !!}
+            {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus_e', 'method' => 'POST', 'target'=>'_blank','class'=>'form1']) !!}
             <ul style="list-style-type: none;">
                
                 

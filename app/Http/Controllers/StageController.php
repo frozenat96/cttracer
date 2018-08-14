@@ -6,14 +6,26 @@ use Illuminate\Http\Request;
 use App\User;
 use App\models\Group;
 use App\models\Stage;
+use App\models\AccessControl;
 use DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Auth;
+use Exception;
 
 class StageController extends Controller
 {
+    public function __construct()
+    {
+        $ac = new AccessControl;
+        $accesscontrol = $ac->status; 
+        if($accesscontrol == true) {
+            $this->middleware('auth');
+            $this->middleware('roles', ['roles'=> ['Capstone Coordinator']]);
+            //$this->middleware('permission:edit-posts',   ['only' => ['edit']]);
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -60,7 +72,11 @@ class StageController extends Controller
         } else {
             $next = 1;
         }
-        $data = ['next'=> $next];
+        $pgroup = DB::table('account')
+        ->where('account.accType','=','2')
+        ->get();
+
+        $data = ['next'=> $next,'pgroup'=>$pgroup];
         return view('pages.stages.create')->with('data',$data);
     }
 
@@ -72,31 +88,54 @@ class StageController extends Controller
      */
     public function store(Request $request)
     {
+        try {
+        DB::beginTransaction();
         $validStagePanel = ['All','Custom'];
         $validator = Validator::make($request->all(), [
-            'stage_number' => ['required','unique:stage,stageNo'],
+            'stage_number' => ['required','unique:stage,stageNo','min:1','max:9','Integer'],
             'stage_name' => ['required','max:50'],
             'stage_defense_duration' => ['Integer','required'],
             'stage_panel' => ['required',Rule::In($validStagePanel)],
-            'stage_link' => ['max:255'],
+          	'minimum_panel_members_for_schedule_approval' => ['required','Integer','min:1'],
         ]);
-        
+        if($validator->fails()) {
+            return redirect()->back()->withInput($request->all)->withErrors($validator);
+        }
         $stage = new Stage;        
         $stage->stageNo = $request->input('stage_number');
         $stage->stageName = trim(ucwords(strtolower($request->input('stage_name'))));
         $stage->stageDefDuration = $request->input('stage_defense_duration');
         $stage->stagePanel = $request->input('stage_panel');
         if($request->input('stage_link') != '') {
+            $validator = Validator::make($request->all(), [
+                'stage_link' => ['max:150','active_url'],
+            ]);
+            if($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            }
             $stage->stageRefLink = $request->input('stage_link');
         } else {
             $stage->stageRefLink = '';
         }
-        if($stage->save()) {
-            $request->session()->flash('alert-success', 'Stage Information was Updated!');
+          
+        if(!is_null($request->input('EditGroupPanel'))) {
+          $stage->requireChairSched = '1';
         } else {
-            $request->session()->flash('alert-danger', 'Stage Information was not Updated!');
+          $stage->requireChairSched = '0';
         }
-        return redirect()->back();
+        if(!is_null($request->input('minimum_panel_members_for_schedule_approval'))) {
+          $stage->minSchedPanel = $request->input('minimum_panel_members_for_schedule_approval');
+        } else {
+          $stage->minSchedPanel = '1';
+        }
+        $stage->save();
+        DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+          	//return dd($e);
+            return redirect()->back()->withInput($request->all)->withErrors('Stage Information was not Updated!');
+        }
+        return redirect()->back()->withInput($request->all)->with('success','Stage Information was Updated!');
     }
 
     /**
@@ -119,7 +158,10 @@ class StageController extends Controller
     public function edit($id)
     {
         $stage = Stage::find($id);
-        $data = ['stage'=>$stage];
+        $pgroup = DB::table('account')
+        ->where('account.accType','=','2')
+        ->get();
+        $data = ['stage'=>$stage,'pgroup'=>$pgroup];
         return view('pages.stages.edit')->with('data',$data); 
     }
 
@@ -132,41 +174,65 @@ class StageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validStagePanel = ['All','Custom'];
-        $validator = Validator::make($request->all(), [
-            'stage_number' => ['required'],
-            'stage_name' => ['required','max:50'],
-            'stage_defense_duration' => ['Integer','required'],
-            'stage_panel' => ['required',Rule::In($validStagePanel)],
-            'stage_link' => ['max:255'],
-        ]);
-        
-        $stage = Stage::find($id);
-        if($stage->stageNo != $request->input('stage_number')) {
+        try {
+            DB::beginTransaction();
+            $validCount = DB::table('account')->where('account.accType','=','2')->count();
+            $validStagePanel = ['All','Custom'];
             $validator = Validator::make($request->all(), [
-                'stage_number' => ['unique:stage,stageNo'],
+                'stage_number' => ['required','min:1','max:9','Integer'],
+                'stage_name' => ['required','max:50'],
+                'stage_defense_duration' => ['Integer','required'],
+                'stage_panel' => ['required',Rule::In($validStagePanel)],
+                'minimum_panel_members_for_schedule_approval' => ['required',"max:{$validCount}"]
             ]);
-            $stage->stageNo = $request->input('stage_number');
-        }
-        if ($validator->fails()) {
-			return redirect()->back()->withInput()->withErrors($validator);
-        } 
-        $stage->stageName = trim(ucwords(strtolower($request->input('stage_name'))));
-        $stage->stageDefDuration = $request->input('stage_defense_duration');
-        $stage->stagePanel = $request->input('stage_panel');
-        if($request->input('stage_link') != '') {
-            $stage->stageRefLink = $request->input('stage_link');
-        } else {
-            $stage->stageRefLink = '';
-        }
-        if($stage->save()) {
-            $request->session()->flash('alert-success', 'Stage Information was Updated!');
-            } else {
-            $request->session()->flash('alert-danger', 'Stage Information was not Updated!');
+            if(is_null($request->input('EditGroupPanel'))) {
+                $request['EditGroupPanel'] = 'off';
             }
-        return redirect()->action(
-            'StageController@edit', ['id' => $id]
-        );
+
+            $stage = Stage::find($id);
+            if($stage->stageNo != $request->input('stage_number')) {
+                $validator = Validator::make($request->all(), [
+                    'stage_number' => ['unique:stage,stageNo','min:1','max:9','Integer'],
+                ]);
+                $stage->stageNo = $request->input('stage_number');
+            }
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            } 
+            $stage->stageName = trim(ucwords(strtolower($request->input('stage_name'))));
+            $stage->stageDefDuration = $request->input('stage_defense_duration');
+            $stage->stagePanel = $request->input('stage_panel'); 
+            if($request->input('stage_link') != '') {
+                $validator = Validator::make($request->all(), [
+                    'stage_link' => ['max:150','active_url'],
+                ]);
+                if($validator->fails()) {
+                    return redirect()->back()->withInput($request->all)->withErrors($validator);
+                }
+                $stage->stageRefLink = $request->input('stage_link');
+            } else {
+                $stage->stageRefLink = '';
+            }
+            if(!is_null($request->input('EditGroupPanel'))) {
+              $stage->requireChairSched = '1';
+            } else {
+              $stage->requireChairSched = '0';
+            }
+            if(!is_null($request->input('minimum_panel_members_for_schedule_approval'))) {
+              $stage->minSchedPanel = $request->input('minimum_panel_members_for_schedule_approval');
+            } else {
+              $stage->minSchedPanel = '1';
+            }
+            $stage->save();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+          	//return dd($e);
+            return redirect()->back()->withInput($request->all)->withErrors('Stage Information was not Updated!');
+        }
+        return redirect()->action('StageController@edit',[
+            'id'=>$stage->stageNo
+        ])->with('success','Stage Information was Updated!');
     }
 
     /**

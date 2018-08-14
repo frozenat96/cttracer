@@ -6,7 +6,7 @@
     $user = DB::table('account')
     ->join('account_type','account_type.accTypeNo','=','account.accType')
     ->select('account.*','account_type.*')
-    ->where('account.accNo','=',Auth::id())->get();
+    ->where('account.accID','=',Auth::user()->getId())->get();
     }
 ?>
 <!doctype html>
@@ -56,7 +56,7 @@
             @yield('content')
     
 
-            @include('inc.confirm');  
+            @include('inc.confirm')  
                     </div>
                 </main>
         @yield('paginator')
