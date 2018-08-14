@@ -97,7 +97,7 @@ $account_types = DB::table('account_type')->get();
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="group_project_name">Group Project Name</label>
-                            <input name="group_project_name" type="text" disabled maxlength="150" class="form-control" id="group_project_name" placeholder="Group Project Name" required="yes" autocomplete="given-name" value="{{!is_null(old('group_project_name')) ? old('group_project_name') : $data['group']->projName}}">
+                            <input name="group_project_name" type="text" readonly aria-readonly="true" maxlength="150" class="form-control" id="group_project_name" placeholder="Group Project Name" required="yes" autocomplete="given-name" value="{{!is_null(old('group_project_name')) ? old('group_project_name') : $data['group']->projName}}">
                             </div>    
                     </div>
                     <div class="form-row">

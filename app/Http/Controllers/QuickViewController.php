@@ -354,6 +354,19 @@ class QuickViewController extends Controller
             } elseif(in_array($request->input('panel_verdict'),['7'])) {
                 $msg = $this->getNextStage($groupID);
                 $grp = Group::find($groupID);
+            } elseif(in_array($request->input('panel_verdict'),['8'])) {
+                //check the stage if equal to 1
+                if($project->projStageNo == 1) {
+
+                } elseif($project->projStageNo > 1) {
+                    //decrement
+                    $project->projStageNo = $project->projStageNo - 1;
+                }
+                $group->groupStatus = 'Waiting for Submission';
+                $project->projPVerdictNo = '1';
+                $project->save();
+                $group->save();
+                //store in group history
             }
             DB::commit();
         } catch(Exception $e) {

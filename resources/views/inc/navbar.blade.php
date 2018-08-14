@@ -75,7 +75,7 @@
           @if(in_array($user[0]->accType,['1']))
         <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> Search groups</a>
           @endif
-          @if(in_array($user[0]->accType,['2']))
+          @if(in_array($user[0]->accType,['1','2']))
         <a class="dropdown-item" href="/advised-groups"><i class="fas fa-chalkboard-teacher"></i> Advised Groups</a>
           @endif
       </div>
@@ -87,7 +87,7 @@
         <i class="fas fa-calendar"></i> Schedule
       </a>
       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink3">
-          @if(in_array($user[0]->accType,['2']))
+        @if(in_array($user[0]->accType,['1','2']))
         <a class="dropdown-item" href="/approve-schedules"><i class="far fa-calendar-check"></i> Approve Schedules</a>
           @endif
         <a class="dropdown-item" href="/final-schedule-list"><i class="far fa-calendar-alt"></i> Final Schedule List</a>
@@ -119,7 +119,7 @@
       <a class="dropdown-item" href="/nd/NotifyCoordOnSchedFinalize/QuickViewController@search/Waiting for Final Schedule"> Schedules to be Finalized <span class="badge badge-pill badge-success" data-bind="text: NotifyCoordOnSchedFinalize().length"></span></a>
       <!-- /ko -->
 
-      @elseif(in_array($user[0]->accType,['2']))
+      @elseif(in_array($user[0]->accType,['1','2']))
         <!-- ko if: NotifyPanelOnSchedRequest().length -->
           <a class="dropdown-item" href="/nd/NotifyPanelOnSchedRequest/SchedAppController@search/null"> Schedule Approvals (Panel) <span class="badge badge-pill badge-success" data-bind="text: NotifyPanelOnSchedRequest().length"></span></a>
         <!-- /ko -->
@@ -179,7 +179,7 @@
         <a class="dropdown-item" href="/my-project"><i class="far fa-object-group"></i> My Project</a>
         @endif
 
-        @if(in_array($user[0]->accType,['2']))
+        @if(in_array($user[0]->accType,['1','2']))
         <a class="dropdown-item" href="/approve-projects"><i class="fas fa-unlock-alt"></i> Approve Projects</a>
         @endif
       </div>

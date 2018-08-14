@@ -325,3 +325,11 @@ html, body {
 	overflow-y: scroll;
 
 }
+
+.bg-orange {
+	background-color: orange;
+}
+
+.text-orange {
+	color:orange;
+}

@@ -165,7 +165,7 @@ class AccountController extends Controller
 			return redirect()->back()->withInput($request->all)->withErrors($validator);
 		} else {
             $acc->save();
-            if($request->input('role')=='2') {
+            if(in_array($request->input('role'),['1','2'])) {
                 $this->addpanel($accID1);
             }
             DB::commit();
@@ -330,12 +330,14 @@ class AccountController extends Controller
         	}
             
             $acc->accLName = trim(ucwords(strtolower($request->input('last_name'))));
+            /* //should allow many capstone coordinator accounts
             if($request->input('role')=='1' && $acc->accType!='1') {
                 $x = DB::table('account')->where('account.accType','=','1')->count();
                 if($x) {
                     return redirect()->back()->withErrors( ['Account Information was not Updated.','Only one (1) Capstone Coordinator account is allowed.']);
                 }
             }
+            */
             if(in_array($request->input('role'),['1','2'])) {
                 if($request->input('title') != '') {
                     $acc->accTitle = $request->input('title');
@@ -359,12 +361,12 @@ class AccountController extends Controller
                 $acc->isChairPanelAll = '0';
                 $acc->isActivePanel = '0';
             }
-            if($request->input('role')=='2' && $acc->accType!='2') {
+            if(in_array($request->input('role'),['1','2']) && !in_array($acc->accType,['1','2'])) {
                 $this->addpanel($acc->accID);
-            } elseif($request->input('role')!='2' && $acc->accType=='2') {
+            } elseif(!in_array($request->input('role'),['1','2']) && in_array($acc->accType,['1','2'])) {
                 $this->deletepaneldependencies($acc->accID);
             }
-            if(($request->input('role')=='3') && ($acc->accType=='2')) {
+            if(($request->input('role')=='3') && in_array($acc->accType,['1','2'])) {
                 DB::table('project')
                 ->join('group','group.groupID','=','project.projGroupID')
                 ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')

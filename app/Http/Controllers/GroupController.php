@@ -106,7 +106,7 @@ class GroupController extends Controller
         DB::beginTransaction();
         $valid_group_types = ["Capstone","Thesis"];
         $valid_panel_members= DB::table('account')
-        ->whereIn('account.accType','=',['1','2'])
+        ->whereIn('account.accType',['1','2'])
         ->pluck('accID');
 
         $validator = Validator::make($request->all(), [
@@ -167,6 +167,7 @@ class GroupController extends Controller
             $sched->save();
             DB::commit();
         } catch(Exception $e){
+            return dd($e);
             DB::rollback();
             return redirect()->back()->withInput($request->all)->withErrors('Cannot save information.');
         }
@@ -248,7 +249,7 @@ class GroupController extends Controller
 
         $panel_members = DB::table('account')
         ->where('account.isActivePanel','=','1')
-        ->where('account.accType','=','2')
+        ->whereIn('account.accType',['1','2'])
         ->get();
 
         $stage = DB::table('stage')->get();
@@ -274,7 +275,7 @@ class GroupController extends Controller
     public function update(Request $request, $id)
     {
         if(!is_null($request->input('EditGroupPanel')) ) {
-            if(is_null($request->input('panel_select')) || !count($request->input('panel_select'))) {
+            if(is_null($request->input('panel_select'))) {
                 //return dd($request->input('panel_select'));
                 return redirect()->back()->withInput($request->all)->withErrors('No panel members selected');
             } else {
@@ -287,7 +288,7 @@ class GroupController extends Controller
 
         $valid_group_types = ["Capstone","Thesis"];
         $valid_panel_members= DB::table('account')
-        ->whereIn('account.accType','=',['1','2'])
+        ->whereIn('account.accType',['1','2'])
         ->pluck('accID');
         $valid_stages = DB::table('stage')->pluck('stageNo');
         $valid_panel_verdict = DB::table('panel_verdict')
@@ -379,6 +380,17 @@ class GroupController extends Controller
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
             }
             $group->groupName = $request->input('group_name');
+        }
+        if(in_array($request->input('panel_verdict'),['8'])) {
+            //check the stage if equal to 1
+            if($project->projStageNo == 1) {
+
+            } elseif($project->projStageNo > 1) {
+                //decrement
+                $project->projStageNo = $project->projStageNo - 1;
+            }
+            $group->groupStatus = 'Waiting for Submission';
+            $project->projPVerdictNo = '1';
         }
         /* This field cannot be edited
         if($project->projName != $request->input('group_project_name')) {

@@ -51,7 +51,7 @@ class AdvisedGroupsController extends Controller
         ->join('schedule','schedule.schedGroupID','=','group.groupID')
         ->join('account','account.accID','=','group.groupCAdviserID')
         ->select('schedule.*','account.*','project.*','group.*','panel_verdict.*')
-        ->where('account.accType','=','2')
+        ->whereIn('account.accType',['1','2'])
         ->where('group.groupCAdviserID','=',$user_id)
         ->whereIn('group.groupStatus',$substatus)
         ->paginate(5); 
@@ -69,7 +69,7 @@ class AdvisedGroupsController extends Controller
             ->join('schedule','schedule.schedGroupID','=','group.groupID')
             ->join('account','account.accID','=','group.groupCAdviserID')
             ->select('schedule.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
-            ->where('account.accType','=','2')
+            ->whereIn('account.accType',['1','2'])
             ->where('group.groupCAdviserID','=',$user_id)
             ->whereIn('group.groupStatus', ['Submitted To Content Adviser'])
             ->where('group.groupName','LIKE', "%".$q."%")
