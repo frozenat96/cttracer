@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Input;
 use Exception;
 use Illuminate\Validation\Rule;
 use Session;
+use Spatie\GoogleCalendar\Event;
+use Carbon\Carbon;
 
 class QuickViewController extends Controller
 {
@@ -424,6 +426,14 @@ class QuickViewController extends Controller
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = $request->input('schedule_status');
             $sc0->save();
+            //update the google calendar
+            $event = Event::find($sc0->schedGCalendarID);
+            $event->name = "{$sc0->schedType} for the group of {$data[0]->groupName}";
+            $event->addLocation($sc0->schedPlace);
+            $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
+            $event->endDateTime = $tend = new Carbon("{$sc0->schedDate} {$sc0->schedTimeEnd}");
+            $event->save();
+
             foreach($data as $pmembers) {
                 $sc1 = ScheduleApproval::find($pmembers->schedAppID);
                 $approval = $request->input('sched_app_' . $pmembers->accID);
@@ -436,6 +446,7 @@ class QuickViewController extends Controller
             $request->session()->flash('alert-success', 'Schedule Information was Updated!');
             return redirect()->back();
         } catch (Exception $e) {
+            return dd($e);
             return redirect()->back()->withInput($request->all)->withErrors( 'Schedule Information was not Updated!');
             DB::rollback();
         }

@@ -20,6 +20,8 @@ use Mail;
 use App\Notifications\NotifyCoordOnSchedFinalize;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Spatie\GoogleCalendar\Event;
+use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
@@ -202,15 +204,22 @@ class ScheduleController extends Controller
             $sc0->schedPlace = $request->input('place');
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = 'Not Ready';
-            $sc0->save(); 
+            
 
             $stage = new Stage;
             $group = Group::find($id);
             $group->groupStatus = 'Waiting for Schedule Approval';
             $group->save(); 
             $notify = new Notification;
-            $notify->NotifyPanelOnSchedRequest($group);
+           // $notify->NotifyPanelOnSchedRequest($group);
 
+            //add the event on google calendar
+            $event = new Event;
+            $event->name = "{$sc0->schedType} for the group of {$group->groupName}, {$sc0->schedPlace}";
+            $event->addLocation($sc0->schedPlace);
+            $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
+            $event->endDateTime = $tend = $tstart->addHour(2);
+            $event->save();
             $update = DB::table('schedule_approval')
             ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
             ->where('panel_group.panelCGroupID','=',$group->groupID)
@@ -218,7 +227,11 @@ class ScheduleController extends Controller
                 'schedule_approval.isApproved' => '0',
                 'schedule_approval.schedAppMsg' => ''
             ]);
+            $calendarId = Event::get()->last()->id;
+            $eventid = Event::find($calendarId);
 
+            $sc0->schedGCalendarID = $calendarId;
+            $sc0->save(); 
             DB::commit();    
             } catch (Exception $e) {
                 DB::rollback();
