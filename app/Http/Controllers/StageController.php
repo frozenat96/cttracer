@@ -90,6 +90,9 @@ class StageController extends Controller
     {
         try {
         DB::beginTransaction();
+        if(is_null($request->input('EditGroupPanel'))) {
+            $request['EditGroupPanel'] = 'off';
+        }
         $validStagePanel = ['All','Custom'];
         $validator = Validator::make($request->all(), [
             'stage_number' => ['required','unique:stage,stageNo','min:1','max:9','Integer'],
@@ -117,12 +120,13 @@ class StageController extends Controller
         } else {
             $stage->stageRefLink = '';
         }
-          
-        if(!is_null($request->input('EditGroupPanel'))) {
-          $stage->requireChairSched = '1';
+
+        if(is_null($request->input('EditGroupPanel')) || $request->input('EditGroupPanel')=='off') {
+            $stage->requireChairSched = '0';
         } else {
-          $stage->requireChairSched = '0';
-        }
+            $stage->requireChairSched = '1';
+        } 
+       
         if(!is_null($request->input('minimum_panel_members_for_schedule_approval'))) {
           $stage->minSchedPanel = $request->input('minimum_panel_members_for_schedule_approval');
         } else {
@@ -176,6 +180,9 @@ class StageController extends Controller
     {
         try {
             DB::beginTransaction();
+            if(is_null($request->input('EditGroupPanel'))) {
+                $request['EditGroupPanel'] = 'off';
+            }
             $validCount = DB::table('account')->where('account.accType','=','2')->count();
             $validStagePanel = ['All','Custom'];
             $validator = Validator::make($request->all(), [
@@ -213,11 +220,11 @@ class StageController extends Controller
             } else {
                 $stage->stageRefLink = '';
             }
-            if(!is_null($request->input('EditGroupPanel'))) {
-              $stage->requireChairSched = '1';
+            if(is_null($request->input('EditGroupPanel')) || $request->input('EditGroupPanel')=='off') {
+                $stage->requireChairSched = '0';
             } else {
-              $stage->requireChairSched = '0';
-            }
+                $stage->requireChairSched = '1';
+            } 
             if(!is_null($request->input('minimum_panel_members_for_schedule_approval'))) {
               $stage->minSchedPanel = $request->input('minimum_panel_members_for_schedule_approval');
             } else {

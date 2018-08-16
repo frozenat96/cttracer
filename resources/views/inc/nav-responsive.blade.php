@@ -16,17 +16,22 @@
             <a class="dropdown-item" href="/accounts"><i class="fas fa-user-cog"></i> Manage Account Settings</a>
             <a class="dropdown-item" href="/groups"><i class="fas fa-users-cog"></i> Manage Group Settings</a>
             <a class="dropdown-item" href="/transfer-role-index"><i class="fas fa-exchange-alt"></i> Transfer Role</a>
+            <a class="dropdown-item" href="/application-settings"><i class="fas fa-sliders-h"></i> Application Settings</a>
             <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> Search groups</a>
-          @elseif(in_array($user[0]->accType,['2']))
+            <a class="dropdown-item" href="/group-history"><i class="fas fa-history"></i> Group History</a>
+          @endif
+          <hr>
+          @if(in_array($user[0]->accType,['1','2']))
             <a class="dropdown-item d1l1" href="/advised-groups"><i class="fas fa-chalkboard-teacher"></i> Advised Groups</a>
             <a class="dropdown-item d1l1" href="/approve-schedules"><i class="far fa-calendar-check"></i> Approve Schedules</a>
             <a class="dropdown-item d1l1" href="/approve-projects"><a class="dropdown-item" href="/approve-projects"><i class="fas fa-unlock-alt"></i> Approve Projects</a>
-          
-          @elseif(in_array($user[0]->accType,['3']))
+          @endif
+          @if(in_array($user[0]->accType,['3']))
             <a class="dropdown-item" href="/my-project"><i class="far fa-object-group"></i> My Project</a>
           @endif
           <hr>
             <a class="dropdown-item" href="/final-schedule-list"><i class="far fa-calendar-alt"></i> Final Schedule List</a>
+            <a class="dropdown-item" href="https://calendar.google.com/calendar/embed?src=3kimjs5576ib3r9js5qvm9d0to%40group.calendar.google.com&ctz=Asia%2FManila" target="_blank"><i class="far fa-calendar"></i> View Calendar</a>
             <a class="dropdown-item" href="/project-archive"><i class="fas fa-archive"></i> Project Archive</a>
             @if(in_array($user[0]->accType,['1','2']))
             <a class="dropdown-item" href="/projects"><i class="fas fa-search"></i> Project Search</a>
@@ -54,8 +59,8 @@
     <!-- ko if: NotifyCoordOnSchedFinalize().length -->
     <a class="dropdown-item" href="/nd/NotifyCoordOnSchedFinalize/QuickViewController@search/Waiting for Final Schedule"> Schedules to be Finalized <span class="badge badge-pill badge-success" data-bind="text: NotifyCoordOnSchedFinalize().length"></span></a>
     <!-- /ko -->
-
-    @elseif(in_array($user[0]->accType,['2']))
+    @endif
+    @if(in_array($user[0]->accType,['1','2']))
         <!-- ko if: NotifyPanelOnSchedRequest().length -->
         <a class="dropdown-item" href="/nd/NotifyPanelOnSchedRequest/SchedAppController@search/null"> Schedule Approvals (Panel) <span class="badge badge-pill badge-success" data-bind="text: NotifyPanelOnSchedRequest().length"></span></a>
         <!-- /ko -->
@@ -65,7 +70,8 @@
         <!-- ko if: NotifyPanelOnProjectApproval().length -->
         <a class="dropdown-item" href="/nd/NotifyPanelOnProjectApproval/ProjAppController@search/null">Project Approvals <span class="badge badge-pill badge-success" data-bind="text: NotifyPanelOnProjectApproval().length"></span></a>
         <!-- /ko --> 
-    @elseif(in_array($user[0]->accType,['3']))
+    @endif
+    @if(in_array($user[0]->accType,['3']))
     <!-- ko if: NotifyStudentOnAdvCorrected().length -->
     <a class="dropdown-item" href="/nd/NotifyStudentOnAdvCorrected/MyProjController@index/null">Your Content Adviser has correcttions to your submission</a>
     <!-- /ko -->

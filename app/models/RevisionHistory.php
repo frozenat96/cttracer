@@ -10,5 +10,5 @@ class RevisionHistory extends Model
     public $primaryKey = "revID";
     public $timestamps = false;
     public $incrementing = false;
-    public $status = false;
+    public $status = true;
 }

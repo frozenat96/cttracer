@@ -112,14 +112,8 @@ class ProjAppController extends Controller
             $approval->isApproved = 1;
             $approval->projAppComment = '';
             $msg = 'The project of group : ' . $q->groupName . ' was approved.';
-        } else {
-            $validator = Validator::make($request->all(), [
-                'document_link' => ['required','max:150','active_url'],
-            ]);
-            if ($validator->fails()) {
-                return redirect()->back()->withInput($request->all)->withErrors($validator);
-            } 
-            $approval->revisionLink = $request->input('document_link');
+        } else { 
+            //$approval->revisionLink = $request->input('document_link');
             $approval->isApproved = 2;
             $msg = 'The project of group : ' . $q->groupName . ' was given corrections.';
         }
@@ -365,6 +359,7 @@ class ProjAppController extends Controller
         $data = DB::table('group')
         ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
         ->join('project_approval','project_approval.projAppPanelGroupID','panel_group.panelGroupID')
+        ->join('project','project.projGroupID','=','group.groupID')
         ->where('group.groupID','=',$id)
         ->where('panel_group.panelAccID','=',$user_id)
         ->where('panel_group.panelGroupType','=',$stage->current($id))

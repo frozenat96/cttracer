@@ -29,7 +29,7 @@
             $model = new App\models\Group;
             ?> 
             <div class="row">
-                <div class="col-md-4"> <!-- card -->
+                <div class="col-lg-4 col-md-12"> <!-- card -->
                     <div class="card my-card1">
                         <div class="card-body">
                             <div class="row bg-danger text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">
@@ -60,7 +60,7 @@
                     </div>
                 </div> <!-- End of card -->
 
-                <div class="col-md-4"> <!-- card -->
+                <div class="col-lg-4 col-md-12"> <!-- card -->
                     <div class="card my-card1">
                         <div class="card-body">
                             <div class="row bg-success text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">
@@ -91,7 +91,7 @@
                     </div>
                 </div> <!-- End of card -->
 
-                <div class="col-md-4"> <!-- card -->
+                <div class="col-lg-4 col-md-12"> <!-- card -->
                     <div class="card my-card1">
                         <div class="card-body">
                             <div class="row bg-primary text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">
@@ -122,7 +122,7 @@
                     </div>
                 </div> <!-- End of card -->
 
-                <div class="col-md-4"> <!-- card -->
+                <div class="col-lg-4 col-md-12"> <!-- card -->
                     <div class="card my-card1">
                         <div class="card-body">
                             <div class="row bg-info text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">
@@ -153,7 +153,7 @@
                     </div>
                 </div> <!-- End of card -->
 
-                <div class="col-md-4"> <!-- card -->
+                <div class="col-lg-4 col-md-12"> <!-- card -->
                     <div class="card my-card1">
                         <div class="card-body">
                             <div class="row bg-orange text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">
@@ -184,7 +184,7 @@
                     </div>
                 </div> <!-- End of card -->
 
-                <div class="col-md-4"> <!-- card -->
+                <div class="col-lg-4 col-md-12"> <!-- card -->
                     <div class="card my-card1">
                         <div class="card-body">
                             <div class="row bg-secondary text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">

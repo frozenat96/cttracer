@@ -128,10 +128,13 @@ class MyProjController extends Controller
         ->select('project.*','group.*')
         ->where('group.groupID','=',$id)
         ->first();
+        $settings = DB::table('application_setting')->first();
         if(!in_array($group->groupStatus,['Waiting for Submission','Corrected by Panel Members','Corrected by Content Adviser'])) {
             return redirect()->action('MyProjController@index');
         }
-        return view('pages.my_project.edit')->with('data', $group);
+
+        $data = ['group'=>$group,'settings'=>$settings];
+        return view('pages.my_project.edit')->with('data', $data);
     }
 
     /**

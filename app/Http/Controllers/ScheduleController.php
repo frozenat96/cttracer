@@ -219,7 +219,7 @@ class ScheduleController extends Controller
             $event->addLocation($sc0->schedPlace);
             $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
             $event->endDateTime = $tend = $tstart->addHour(2);
-            $event->save();
+            $calendarEvent = $event->save();
             $update = DB::table('schedule_approval')
             ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
             ->where('panel_group.panelCGroupID','=',$group->groupID)
@@ -227,10 +227,9 @@ class ScheduleController extends Controller
                 'schedule_approval.isApproved' => '0',
                 'schedule_approval.schedAppMsg' => ''
             ]);
-            $calendarId = Event::get()->last()->id;
-            $eventid = Event::find($calendarId);
-
-            $sc0->schedGCalendarID = $calendarId;
+            //$calendarId = Event::get()->last()->id;
+            //$eventid = Event::find($calendarId);
+            $sc0->schedGCalendarID = $calendarEvent->id;
             $sc0->save(); 
             DB::commit();    
             } catch (Exception $e) {

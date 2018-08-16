@@ -91,6 +91,21 @@ function NotificationsVM() {
             self.NotifyCoordOnNextStage(response.data);
             }
         });
+        axios.post('/n/NotifyAdviserOnSubmission').then(response => {
+            if(response) {
+            self.NotifyAdviserOnSubmission(response.data);
+            }
+        });
+        axios.post('/n/NotifyPanelOnSchedRequest').then(response => {
+            if(response) {
+            self.NotifyPanelOnSchedRequest(response.data);
+            }
+        });
+        axios.post('/n/NotifyPanelOnProjectApproval').then(response => {
+            if(response) {
+            self.NotifyPanelOnProjectApproval(response.data);
+            }
+        });
         
 	}.bind(this);
 
@@ -138,11 +153,12 @@ function NotificationsVM() {
 }
 
 $(document).ready(function () {
+    $('notificationMenuList1').hide();
 	ViewModels.Notifications = new NotificationsVM();
     ko.applyBindings(ViewModels.Notifications);
     let role = $('meta[name="role"]').attr('content');
     switch(role) {
-        case '1': ViewModels.Notifications.callToServerForCoordinator();ViewModels.Notifications.callToServerForPanel();break;
+        case '1': ViewModels.Notifications.callToServerForCoordinator();
         case '2': ViewModels.Notifications.callToServerForPanel();break;
         case '3': ViewModels.Notifications.callToServerForStudent();break;
     }
@@ -150,7 +166,7 @@ $(document).ready(function () {
     .listen('eventTrigger', (e) => {
         let role = $('meta[name="role"]').attr('content');
         switch(role) {
-            case '1': ViewModels.Notifications.callToServerForCoordinator();ViewModels.Notifications.callToServerForPanel();break;
+            case '1': ViewModels.Notifications.callToServerForCoordinator();
             case '2': ViewModels.Notifications.callToServerForPanel();break;
             case '3': ViewModels.Notifications.callToServerForStudent();break;
         }

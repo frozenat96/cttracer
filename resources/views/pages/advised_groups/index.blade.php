@@ -39,7 +39,7 @@
             <?php 
             $model = new App\models\Group;
             ?> 
-                @foreach($data as $sched)
+                @foreach($data as $sched) 
                 <div class="form-row card bx2 card1 jumbotron">
                     <div class="col-md-12"> 
                         <table class="table table-responsive-sm">
@@ -96,12 +96,7 @@
                                         </b></small>
                                     <td>
                                 </tr>
-                                @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
-                                <tr>
-                                    <td><small><b>Project Document : </b></small><a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-link btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i> {{(substr($sched->projName, 0, 10) . '..')}}</span></a>
-                                    </td>
-                                </tr>
-                                @endif
+                                
                                 </table>
                             </td>
                             @if(in_array($sched->projPVerdictNo,['1','4','5','6']))
@@ -151,11 +146,7 @@
                                             <small title="{{$sched->projName}}" data-toggle="popover" data-content="View project document" data-placement="top"> <b>Project Title : {{(substr($sched->projName, 0, 20) . '..')}}</b></small>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>
-                                            <small><b>Project Document : <a href="{{$sched->projDocumentLink}}" target="_blank" class="btn btn-link btn-sm" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i> {{(substr($sched->projName, 0, 10) . '..')}}</span></a></b></small>
-                                        </td>
-                                    </tr>
+                                    
                                     <tr>
                                         <td>
                                             <small><b>Panel Verdict : {{$sched->pVerdictDescription}}</b></small>
@@ -176,17 +167,9 @@
                                 ->get();
                                 ?>
                                 <table class="table-sm">
-                                <tr><td>     
-
-                                {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvApproval', 'method' => 'POST','class'=>'form1']) !!} 
-                                <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
-                                <input type="hidden" name="groupID" value="{{$sched->groupID}}">
-                                <input type="hidden" name="_method" value="PUT">
-                                {!!Form::close() !!}
-
-                                </td></tr>
+                    
                                 <tr><td>
-                                <a href="/advised-groups/{{$sched->groupID}}/edit" class="btn btn-danger btn-sm" name="submit" value="1" data-toggle="popover" data-content="Make corrections" data-placement="top"><span><i class="fas fa-times"></i> Make Corrections</span>
+                                <a href="/advised-groups/{{$sched->groupID}}/edit" class="btn btn-warning btn-sm" name="submit" value="1" data-toggle="popover" data-content="Make corrections or approve the document submitted" data-placement="top"><span><i class="far fa-question-circle"></i> Correct/Approve Document</span>
                                 </a>
                                 </td></tr>
                                 </table>

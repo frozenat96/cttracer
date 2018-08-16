@@ -362,11 +362,11 @@ class GroupController extends Controller
         } else {
             $project->projCAdvCorrectionLink = '';
         }
-        if(!is_null($request->input('EditGroupPanelApp'))) {
-            $project->requireChairProj = '1';
-        } else {
+        if(is_null($request->input('EditGroupPanelApp')) || $request->input('EditGroupPanelApp')=='off') {
             $project->requireChairProj = '0';
-        }
+        } else {
+            $project->requireChairProj = '1';
+        } 
         if(!is_null($request->input('minimum_panel_members_for_project_approval'))) {
             $project->minProjPanel = $request->input('minimum_panel_members_for_project_approval');
         } else {

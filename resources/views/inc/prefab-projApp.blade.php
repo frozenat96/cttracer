@@ -118,7 +118,7 @@
 
                     {!!Form::open(['action' => 'ProjAppController@projApprovalStatus', 'method' => 'POST','class'=>'form1']) !!}
                     {{csrf_field()}}
-                    <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
+                    <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve revision" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
                     <input type="hidden" name="opt" value="1">
                     <input type="hidden" name="grp" value="{{$data1->groupID}}">
                     <input type="hidden" name="acc" value="{{$data1->accID}}">
@@ -127,8 +127,9 @@
 
                     </td></tr>
                     <tr><td>
-                    <a class="btn btn-danger btn-sm" href="/approve-projects/{{$data1->groupID}}/edit" data-toggle="popover" data-content="Make corrections to the document submitted" data-placement="top">
-                        <span><i class="fas fa-times"></i> Make Corrections</span>
+               
+                    <a class="btn btn-primary btn-sm" href="/approve-projects/{{$data1->groupID}}/edit" data-toggle="popover" data-content="Make corrections or approve the document submitted" data-placement="top">
+                        <span><i class="far fa-question-circle"></i> Correct/Approve Document</span>
                     </a>
                     </td></tr>
                     </table>

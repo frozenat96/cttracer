@@ -194,13 +194,7 @@ class AdvisedGroupsController extends Controller
     public function contentAdvCorrections(Request $request){
         try{
         DB::beginTransaction(); 
-        $validator = Validator::make($request->all(), [
-            'document_link' => ['required','max:150','active_url'],
-        ]);
-        if ($validator->fails()) {
-			return redirect()->back()->withInput($request->all)->withErrors($validator);
-        } 
-
+     
         $group = Group::find($request->input('groupID'));
         $project = DB::table('project')->where('project.projGroupID','=',$group->groupID)
         ->first();
@@ -211,7 +205,6 @@ class AdvisedGroupsController extends Controller
             return redirect()->back()->withErrors( 'The document of group : ' . $group->groupName . ' was not corrected.');
         }     
             $group->groupStatus = 'Corrected by Content Adviser'; 
-            $project->projCAdvCorrectionLink = $request->input('document_link');
             $group->save();
             $project->save();
             $notify = new Notification;
@@ -221,7 +214,7 @@ class AdvisedGroupsController extends Controller
             return redirect()->back()->with('success', 'The document of group : ' . $group->groupName . ' was corrected.');
             
         } catch (Exception $e) {
-            
+            //return dd($e);
             DB::rollback();
             return redirect()->back()->withInput($request->all)->withErrors( 'The document of group : ' . $group->groupName . ' was not corrected.');
         }

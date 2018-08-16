@@ -16,9 +16,8 @@
             <div class="col-md-9 bx2 jumbotron">
                 @include('inc.messages')
                 @if(isset($data) && !is_null($data))
-                {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvCorrections', 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">CORRECT DOCUMENT</span><hr class="my-4"></legend>
+                                <legend class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></legend>
                     
                             {{csrf_field()}} 
                     <div class="form-row">
@@ -28,23 +27,52 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-md-12" id="acc">
-                            <label for="document_link">Corrected Document Link</label>
-                            <input type="url" maxlength="150" class="form-control" name="document_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_link')) ? old('document_link') : $data->projCAdvCorrectionLink}}"> 
+                        @if(!is_null($data->projPCorrectionLink) && trim($data->projPCorrectionLink)!='')
+                        <div class="form-group col-md-12">
+                            <a class="btn btn-secondary" href="{{$data->projPCorrectionLink}}"><i class="far fa-eye"></i> View Panel Member's Corrections
+                            </a>
+                        </div>
+                        @endif
+                        @if(!is_null($data->projCAdvCorrectionLink) && trim($data->projCAdvCorrectionLink)!='')
+                        <div class="form-group col-md-12">
+                            <a class="btn btn-dark" href="{{$data->projCAdvCorrectionLink}}"><i class="far fa-eye"></i> View Old Document
+                            </a>
+                        </div>
+                        @endif
+                        <div class="form-group col-md-12">
+                            <a class="btn btn-primary" href="{{$data->projDocumentLink}}"><i class="far fa-eye"></i> View Submitted Document
+                            </a>
                         </div>
                     </div>
-                    <div class="form-group text-right">
-                            <hr class="my-4">
-                            <button type="reset" class="btn btn-info btn-lg">
-                              <span><i class="fas fa-recycle"></i> Reset Values</span>
-                            </button>
-                            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
-                                <span><i class="far fa-edit"></i> Save Changes</span>
-                            </button>
-                            <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
+                    <!-- options -->
+                    <hr class="my-4">
+                    <div class="form-row">
+                        <div class="col-md-12 text-right">
+                        <table class="table-responsive-md" style="float:right;">
+                        <tr>
+                            <td style="padding-right:3px;">
+                                <a class="btn btn-secondary btn-lg" href="/advised-groups"><i class="fas fa-arrow-left"></i> Back to Advised Groups</a>
+                            </td>
+                            <td style="padding-right:3px;">    
+                                {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvCorrections', 'method' => 'POST','class'=>'form1']) !!} 
+                                <button  type="submit" class="btn btn-danger btn-lg" name="submit" value="2" data-toggle="popover" data-content="Make corrections to the document" data-placement="top" onclick="return confirm('Are you sure?');"><span><i class="far fa-edit"></i> Set as Corrected</span></button>
+                                <input type="hidden" name="groupID" value="{{$data->groupID}}">
+                                <input type="hidden" name="_method" value="PUT">
+                                {!!Form::close() !!}
+                            </td>
+                            <td>
+                                {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvApproval', 'method' => 'POST','class'=>'form1']) !!} 
+                                <button  type="submit" class="btn btn-success btn-lg" name="submit" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are you sure?');"><span><i class="fas fa-check"></i> Approve</span></button>
+                                <input type="hidden" name="groupID" value="{{$data->groupID}}">
+                                <input type="hidden" name="_method" value="PUT">
+                                {!!Form::close() !!}
+                            </td>
+                        </tr>
+                        </table>
                         </div>
-                    <input type="hidden" name="_method" value="PUT">
-                {!!Form::close() !!}
+                    </div>
+                    <!-- options -->
+
                 @else
                 <p>No results found.</p>
                 @endif

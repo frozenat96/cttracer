@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Events\eventTrigger;
 use App\models\AccessControl;
 use App\models\RevisionHistory;
+use Illuminate\Support\Facades\Artisan;
 
 Route::group(['middleware' => ['auth']], function() {
     //Access Control Switch
@@ -66,6 +67,13 @@ Route::group(['middleware' => ['auth']], function() {
 
         Route::any('/revision-history-print', [
             'uses'=>'RevHistoryController@print',
+        ]
+        );
+
+        Route::resource('/group-history', 'GrpHistoryController');
+
+        Route::any('/group-history-search-results', [
+            'uses'=>'GrpHistoryController@search',
         ]
         );
     }); //End Route::Group Capstone Coordinator/Panel Members
@@ -170,23 +178,28 @@ Route::group(['middleware' => ['auth']], function() {
                 'as'=>'setPanelVerdict'
             ]);
 
-            Route::any('/trn',[
-                'uses'=>'PagesController@truncateNotifications',
-            ]);
-
-            Route::any('/trv',[
-                'uses'=>'RevHistoryController@truncateRevHistory',
-            ]);
-
-            Route::any('/dap',[
-                'uses'=>'ProjectController@disableAllApprovals',
-            ]);
-
             Route::any('/deleteFinishedGroups',[
                 'uses'=>'GroupController@deleteFinishedGroups',
             ]); 
 
-            //folder settings
+            //secret routes
+            Route::any('/trn',[ //Delete all notifications
+                'uses'=>'PagesController@truncateNotifications',
+            ]);
+
+            Route::any('/trv',[ //Delete all revision history
+                'uses'=>'RevHistoryController@truncateRevHistory',
+            ]);
+
+            Route::any('/dap',[ //Disable all group approvals
+                'uses'=>'ProjectController@disableAllApprovals',
+            ]);
+
+            Route::any('/trg',[ //Disable all group history
+                'uses'=>'GrpHistoryController@deleteAll',
+            ]);
+
+            //general settings
             Route::any('/application-settings',[
                 'uses'=>'PagesController@appSettingsEdit',
             ]); 
@@ -334,5 +347,3 @@ Route::any('/testEmail', function(){
 }); 
  
 Auth::routes();
-
-
