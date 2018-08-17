@@ -1,11 +1,5 @@
 @extends('layouts.app')
 
-@section('style')
-    #btnAdd {
-        padding-left:10px;
-    }
-@endsection
-
 @section('content')
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
@@ -18,7 +12,7 @@
             <form method="post" action="/group-history-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
+                <input type="text" class="form-control" name="q" value="{{isset($q) ? $q : ''}}" placeholder="Search Groups"> 
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
@@ -35,11 +29,13 @@
             ->join('account_type','account_type.accTypeNo','=','account.accType')
             ->select('account.*','account_type.*')
             ->where('account.accID','=',Auth::user()->getId())->first();?>
-            <table class="table table-striped table-hover table-sm table-responsive-sm">
+
+            <table class="table table-striped table-hover table-sm table-responsive-sm table-responsive-md">
                 <thead>
                     <tr>
                         <th scope="col"><small>Group name</small></th>
-                        <th scope="col"><small>Project Name.</small></th>
+                        <th scope="col"><small>Project Name</small></th>
+                        <th scope="col"><small>Project Type</small></th>
                         <th scope="col"><small>Activity</small></th>
                         <th scope="col"><small>Timestamp</small></th>
                         <th scope="col"><small>Added by</small></th>
@@ -53,7 +49,8 @@
                         <tr scope="row">
                             <td><small><span data-content="{{$d->groupHGroupName}}" data-toggle="popover" data-placement="top">{{(substr($d->groupHGroupName, 0, 16) . '..')}}</span></small></td>
                             <td><small><span data-content="{{$d->groupHProjName}}" data-toggle="popover" data-placement="top">{{(substr($d->groupHProjName, 0, 16) . '..')}}</span></small></td>
-                            <td><textarea style="font-size:12px;" rows="2" cols="50">{{$d->groupHActivity}}</textarea></td>
+                            <td><small>{{$d->groupHProjType}}</small></td>
+                            <td><textarea style="font-size:12px;" rows="2" cols="50" readonly>{{$d->groupHActivity}}</textarea></td>
                             <td>
                                 <small>{{date_format(new Datetime($d->groupHTimestamp),"Y-m-d")}}</small><br><small>{{date_format(new Datetime($d->groupHTimestamp),"g:i A")}}</small>
                             </td>
@@ -81,6 +78,4 @@
     </div>
 </div>
 @endsection
-@section('includes2')
 
-@endsection

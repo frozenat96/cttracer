@@ -417,58 +417,35 @@ class AccountController extends Controller
 
     public function transferExecute(Request $request) {
         try {
-        DB::beginTransaction();
-        $valid_panel_members= DB::table('account')
-        ->where('account.accType','=','2')
-        ->pluck('accID');
-        $validator = Validator::make($request->all(), [
-            'transferee_account' => ['required',Rule::In($valid_panel_members->all())],
-        ]);
-        if ($validator->fails()) {
-			return redirect()->back()->withInput($request->all)->withErrors($validator);
-        }
+            $user_id = Auth::user()->getId(); 
+            DB::beginTransaction();
+            $valid_panel_members= DB::table('account')
+            ->whereIn('account.accType',['1','2'])
+            ->pluck('accID');
+            $validator = Validator::make($request->all(), [
+                'transferee_account' => ['required',Rule::In($valid_panel_members->all())],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            }
+            
+            $transferer = User::find($user_id);
+            $transferee = User::find($request->input('transferee_account'));
 
-        $cc = DB::table('account')->where('account.accType','=','1')->first();
-        
-        $transferer = User::find($cc->accID);
-        $transferee = User::find($request->input('transferee_account'));
-
-        if($transferee->accType!='2') {
-            return redirect()->back()->withErrors( ['Transfer of account information failed!','The account to be transfered to is not a Panel Member.']);
-        }
-        $temp = User::find($transferer->accID);
-        $temp2 = User::find($transferee->accID);
-    
-        $email1 = $transferer->accEmail;
-        $email2 = $transferee->accEmail;
-            $transferer->accFName = $transferee->accFName;
-            $transferee->accFName = $temp->accFName;
-
-            $transferer->accMInitial = $transferee->accMInitial;
-            $transferee->accMInitial = $temp->accMInitial;
-
-            $transferer->accLName = $transferee->accLName;
-            $transferee->accLName = $temp->accLName;
-
-            $transferer->accTitle = $transferee->accTitle;
-            $transferee->accTitle = $temp->accTitle;
-
-            $transferer->accEmail = $transferer->accEmail . '!';
-            $transferee->accEmail = $transferee->accEmail . '!';
-
+            if($transferee->accType!='2') {
+                return redirect()->back()->withErrors( ['Transfer of account information failed!','The account to be transfered to is not a Panel Member.']);
+            }
+            $transferer->accType = '2';
+            $transferee->accType = '1';
+            
             $transferee->save();
             $transferer->save();
-
-            $transferer->accEmail = $email2;
-            $transferee->accEmail = $email1;
-            $transferee->save();
-            $transferer->save();
-
             DB::commit();
             Auth::logout();
             return view('auth.login')->with('success2','Transfer of account information was successful!');
         } catch (Exception $e) {
             DB::rollback();
+            return dd($e);
             return redirect()->back()->withErrors( 'Transfer of account information failed!');
         }
 

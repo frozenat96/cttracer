@@ -18,7 +18,19 @@
             <form method="post" action="/acc-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Accounts"> 
+                    <input type="text" class="form-control" name="q" list="accounts1" placeholder="Search Accounts"> 
+                    <?php 
+                    $a1 = DB::table('account')->get();
+                    $at1 = DB::table('account_type')->pluck('accTypeDescription');
+                    ?>
+                    <datalist id="accounts1" class="datalist scrollable">
+                        @foreach($a1 as $a2)
+                            <option value="{{$a2->accFName}} {{$a2->accMInitial}} {{$a2->accLName}}">
+                        @endforeach
+                        @foreach($at1 as $at2)
+                            <option value="{{$at2}}">
+                        @endforeach
+                    </datalist>
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
@@ -34,7 +46,7 @@
             </div>
             <hr class="my-4">
             @if(isset($data) && count($data))
-            <table class="table table-striped table-hover table-sm table-responsive-sm">
+            <table class="table table-striped table-hover table-sm table-responsive-sm table-responsive-md">
                 <thead>
                     <tr>
                         <th scope="col">Name</th>

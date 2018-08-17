@@ -93,7 +93,7 @@
         </div> <!-- End of comment section -->
         <!-- End of Project Revision Approval -->
         <span class="text-right">
-        {!!Form::open(['action' => ['RevHistoryController@print'], 'method' => 'POST']) !!}
+        {!!Form::open(['action' => ['RevHistoryController@print'], 'method' => 'POST', 'target'=>'_blank']) !!}
         <button  type="submit" class="btn btn-warning btn-lg" name="submit" data-toggle="popover" data-content="View revision for printing" data-placement="top"><span><i class="fas fa-print"></i> View for Printing</span></button>
         <input type="hidden" name="grp" value="{{$data['projApp'][0]->groupID}}">
         <input type="hidden" name="stg" value="{{$data['projApp'][0]->stageNo}}">

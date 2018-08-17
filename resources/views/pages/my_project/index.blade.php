@@ -51,6 +51,9 @@
                  @elseif(in_array($data['proj']->groupStatus,['Submitted to Content Adviser']))
                  <h5>Status</h5>
                  <span>Waiting for content adviser's approval</span>
+                 @elseif(in_array($data['proj']->groupStatus,['Waiting for Project Completion']))
+                 <h5>Options</h5>
+                 <a href="/my-project/{{$data['proj']->groupID}}/submit-project-archive" class="btn btn-primary">Submit Project Archive</a>
                  @endif
                  <!-- Options -->
             </section>

@@ -9,6 +9,7 @@ function NotificationsVM() {
     this.NotifyCoordOnSchedRequest = ko.observableArray([]).extend({ notify: 'always' });
     this.NotifyCoordOnNextStage = ko.observableArray([]).extend({ notify: 'always' });
     this.NotifyCoordOnSchedFinalize = ko.observableArray([]).extend({ notify: 'always' });
+    this.NotifyCoordOnProjectArchive = ko.observableArray([]).extend({ notify: 'always' });
     
     this.NotifyStudentOnAdvCorrected = ko.observableArray([]).extend({ notify: 'always' });
     this.NotifyStudentOnCompletion = ko.observableArray([]).extend({ notify: 'always' });
@@ -27,7 +28,8 @@ function NotificationsVM() {
             this.NotifyCoordOnSchedRequest().length +
             this.NotifyPanelOnSchedRequest().length +
             this.NotifyPanelOnProjectApproval().length +
-            this.NotifyAdviserOnSubmission().length;
+            this.NotifyAdviserOnSubmission().length +
+            this.NotifyCoordOnProjectArchive().length;
             break;
             case '2': 
             x = this.NotifyPanelOnSchedRequest().length +
@@ -106,6 +108,11 @@ function NotificationsVM() {
             self.NotifyPanelOnProjectApproval(response.data);
             }
         });
+        axios.post('/n/NotifyCoordOnProjectArchive').then(response => {
+            if(response) {
+            self.NotifyCoordOnProjectArchive(response.data);
+            }
+        });
         
 	}.bind(this);
 
@@ -158,7 +165,7 @@ $(document).ready(function () {
     ko.applyBindings(ViewModels.Notifications);
     let role = $('meta[name="role"]').attr('content');
     switch(role) {
-        case '1': ViewModels.Notifications.callToServerForCoordinator();
+        case '1': ViewModels.Notifications.callToServerForCoordinator();break;
         case '2': ViewModels.Notifications.callToServerForPanel();break;
         case '3': ViewModels.Notifications.callToServerForStudent();break;
     }
@@ -166,7 +173,7 @@ $(document).ready(function () {
     .listen('eventTrigger', (e) => {
         let role = $('meta[name="role"]').attr('content');
         switch(role) {
-            case '1': ViewModels.Notifications.callToServerForCoordinator();
+            case '1': ViewModels.Notifications.callToServerForCoordinator();break;
             case '2': ViewModels.Notifications.callToServerForPanel();break;
             case '3': ViewModels.Notifications.callToServerForStudent();break;
         }

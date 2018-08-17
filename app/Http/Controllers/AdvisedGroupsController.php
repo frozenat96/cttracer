@@ -174,12 +174,15 @@ class AdvisedGroupsController extends Controller
             $notify = new Notification;
             $notify->NotifyPanelOnProjectApproval($group);
         } elseif($group->groupStatus=='Submitted to Content Adviser') {
-            $group->groupStatus = 'Waiting for Schedule Request';
+            $group->groupStatus = 'Waiting for Schedule Request';     
             $pRes->resetSchedApp($group->groupID,'0',1);
-            $group->save();
+            $group->save();  
             $notify = new Notification;
             $notify->NotifyCoordOnSchedRequest($group);
         }
+            $proj2 = Project::find($project->projID);
+            $proj2->projCAdvCorrectionLink = ''; //Set content adviser's correction link to empty string when the group's document is approved
+            $proj2->save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -206,6 +209,8 @@ class AdvisedGroupsController extends Controller
         }     
             $group->groupStatus = 'Corrected by Content Adviser'; 
             $group->save();
+            //when given corrections the submitted document link will be stored in the adviser's corrected document link
+            $project->projCAdvCorrectionLink = $project->projDocumentLink;
             $project->save();
             $notify = new Notification;
             $notify->NotifyStudentOnAdvCorrected($group);

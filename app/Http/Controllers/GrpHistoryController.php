@@ -19,17 +19,16 @@ class GrpHistoryController extends Controller
     
     public function index()
     {
-        $groups = GroupHistory::
+        $data = GroupHistory::
         orderBy('group_history.groupHGroupName')
         ->orderBy('group_history.groupHProjName')
         ->paginate(10); 
-        return view('pages.group_history.index')->with('data',$groups);
+        return view('pages.group_history.index')->with('data',$data);
     }
 
     public function search()
     {
         $q = Input::get('q');
-      
         if($q != '') {
             $data = DB::table('group_history')
             ->where('group_history.groupHGroupName','LIKE', "%".$q."%")
@@ -45,7 +44,7 @@ class GrpHistoryController extends Controller
             'q' => Input::get('q')
         ));
            
-        return view('pages.group_history.index')->withData($data);
+        return view('pages.group_history.index')->with('data',$data)->with('q',$q);
     }
 
 

@@ -104,6 +104,11 @@ class GroupController extends Controller
     {
         try {
         DB::beginTransaction();
+        $user_id = Auth::user()->getId();
+        $user = User::find($user_id);
+        if($user->accType!='1') {
+            return redirect()->back()->withInput($request->all)->withErrors(['Cannot save information.','Only Capstone Coordinators can create groups.']);
+        }
         $valid_group_types = ["Capstone","Thesis"];
         $valid_panel_members= DB::table('account')
         ->whereIn('account.accType',['1','2'])
@@ -114,7 +119,7 @@ class GroupController extends Controller
             'group_type' => ['required',Rule::In($valid_group_types)],
             'content_adviser' => ['required',Rule::In($valid_panel_members->all())],
             'group_project_name' => ['required','max:150','unique:project,projName','regex:/^[A-Za-z: -]+$/'],
-          	'minimum_panel_members_for_schedule_approval' => ['required'],
+          	'minimum_panel_members_for_project_approval' => ['required'],
         ]);
         if ($validator->fails()) {
 			return redirect()->back()->withInput($request->all)->withErrors($validator);
@@ -127,13 +132,14 @@ class GroupController extends Controller
             $group->groupStatus = 'Waiting for Submission';
             $group->groupType = $request->input('group_type');
             $group->groupCAdviserID = $request->input('content_adviser');
+            $group->groupCAdviserID = $user_id;
             $group->save(); 
             $project->projID = Uuid::generate()->string;
             $project->projName = $request->input('group_project_name');
             $project->projGroupID = $grpID;
             $project->projStageNo = '1';
             $project->projPVerdictNo = '1';
-          	$project->minProjPanel = $request->input('minimum_panel_members_for_schedule_approval');
+          	$project->minProjPanel = $request->input('minimum_panel_members_for_project_approval');
           	if(!is_null($request->input('EditGroupPanelApp'))) {
               $project->requireChairProj = '1';
             } else {
@@ -161,6 +167,7 @@ class GroupController extends Controller
             $sched->schedTimeStart = date('H:i:s');
             $sched->schedTimeEnd = date('H:i:s');
             $sched->schedPlace = '';
+            $sched->schedEventID = null;
             $sched->schedGroupID = $grpID;
             $sched->schedType = 'Oral Defense';
             $sched->schedStatus = 'Not Ready';
@@ -252,6 +259,10 @@ class GroupController extends Controller
         ->whereIn('account.accType',['1','2'])
         ->get();
 
+        $capstone_coordinator = DB::table('account')
+        ->whereIn('account.accType',['1'])
+        ->get();
+
         $stage = DB::table('stage')->get();
         $pverdict = DB::table('panel_verdict')->get();
         $data = [
@@ -259,7 +270,8 @@ class GroupController extends Controller
             'panel_members'=>$panel_members,
             'pgroup'=>$pgroup,
             'stage'=>$stage,
-            'panel_verdict'=>$pverdict
+            'panel_verdict'=>$pverdict,
+            'capstone_coordinator'=>$capstone_coordinator
         ];    
         //return(dd($data));
         return view('pages.groups.edit')->with('data',$data);

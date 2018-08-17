@@ -229,7 +229,7 @@ class ScheduleController extends Controller
             ]);
             //$calendarId = Event::get()->last()->id;
             //$eventid = Event::find($calendarId);
-            $sc0->schedGCalendarID = $calendarEvent->id;
+            $sc0->schedEventID = $calendarEvent->id;
             $sc0->save(); 
             DB::commit();    
             } catch (Exception $e) {

@@ -23,6 +23,15 @@ $account_types = DB::table('account_type')->get();
                             <legend class="text-left"><span class="alert bg2">EDIT ACCOUNT FORM</span><hr class="my-4"></legend>
                     
                             {{csrf_field()}} 
+                    <!-- required fields note -->
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <span><b>
+                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- required fields note -->
                     <div class="form-row">
                             <div class="form-group col-md-5">
                               <label for="given_name">Given Name<span class="text-danger">*</span></label>
@@ -93,15 +102,6 @@ $account_types = DB::table('account_type')->get();
                                     </div>
                                 </div>
                           </div>
-                          <!-- required fields note -->
-                          <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <span><b>
-                                    Note : fields with <span class="text-danger">*</span> are required fields.</b>
-                                </span>
-                            </div>
-                        </div>
-                        <!-- required fields note -->
                           <div class="form-group text-right">
                               <hr class="my-4">
                               <button type="reset" class="btn btn-info btn-lg">
@@ -167,7 +167,7 @@ function groupAllow(v) {
       $('#grp').hide();
       $('#for_panel1').show();
       $('#for_panel2').hide();
-      $('#for_panel3').hide();
+      $('#for_panel3').show();
     }
   }
 </script>

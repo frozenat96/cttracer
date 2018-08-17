@@ -20,7 +20,15 @@
                                 <legend class="text-left"><span class="alert bg2">CREATE APPLICATION SETTINGS FORM</span><hr class="my-4"></legend>
                     
                             {{csrf_field()}} 
-           
+                    <!-- required fields note -->
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <span><b>
+                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- required fields note -->
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="document_folder_link">Documents Folder Link<span class="text-danger">*</span></label>
@@ -33,17 +41,6 @@
                             <input type="url" maxlength="150" class="form-control" placeholder="URL link" name="project_archive_folder_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('project_archive_folder_link')) ? old('project_archive_folder_link') : ''}}"> 
                         </div>
                     </div>
-
-                    <!-- required fields note -->
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <span><b>
-                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
-                            </span>
-                        </div>
-                    </div>
-                    <!-- required fields note -->
-                    
                     <div class="form-group text-right">
                             <hr class="my-4">
                             <button type="reset" class="btn btn-info btn-lg">

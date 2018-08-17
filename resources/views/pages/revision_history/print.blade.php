@@ -61,77 +61,61 @@
             <h6>Stage : {{$data['projApp'][0]->stageNo}} - {{$data['projApp'][0]->stageName}}</h6>
             <h6>Revision {{$data['projApp'][0]->revNo}}</h6>
             <hr>
-            <h5>Project Approval Details : </h5>
-            <table class="table table-striped table-hover table-hover">
-                <thead>
-                    <tr class="">
-                        <th>Position</th>
-                        <th>Name</th>
-                        <th>Approval Status</th>
-                        <th>Date Reviewed</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($data['projApp'] as $rev)
-                        <tr class="">
-                            <td>
-                                @if($rev->panelIsChair)
-                                    Chair panel member
-                                @else
-                                    Panel member
-                                @endif
-                            </td>
-                            <td>
-                                {{$rev->accTitle}}
-                                {{$rev->accFName}} {{$rev->accMInitial}} {{$rev->accLName}}
-                            </td>
-                            <td>
-                                @if($rev->revStatus == 1)
-                                Approved
-                                @elseif($rev->revStatus == 2)
-                                Returned with Corrections
-                                @else
-                                <span class="badge badge-secondary badge-pill">  Waiting </span>
-                                @endif  
-                            </td>
-                            <td>
-                                {{date_format(new Datetime($rev->revTimestamp),"Y-m-d g:i A")}}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
             </div>
         </div> 
-        <hr>
         <!-- comment section -->
-        <div class="form-row">
+        <h5>Project Approval Details : </h5>
+        <div class="row justify-content-center">
             <?php $grpModel = new App\models\Group; ?>
-            <h5>Comments</h5>
+               <div class="col-md-12">
+                <table class="table table-hover table-responsive-sm">
+                <thead>
+                    <th style="border-bottom:1px solid #ccc;">Panel Member</th>
+                    <th style="border-bottom:1px solid #ccc;">Comment</th>
+                </thead>
+                <tbody>
                 @foreach($data['projApp'] as $rev)
-                <div class="form-group col-md-12 align-self-center">
-                
-                <label for="proj_approval_comment">
+                <tr style="border:1px solid #ccc;">
+                    <td style="width:30%;border-bottom:1px solid #ccc!important;">
                     <span title='{{$rev->accTitle}} {{$rev->accFName}} {{$rev->accMInitial}} {{$rev->accLName}}'>
                             {{$rev->accTitle}} {{$rev->accFName}} {{$rev->accMInitial}} {{$rev->accLName}}@if($rev->panelIsChair)
                         (Chair panel member) @endif
-                        </span>
-                </label>
-                <div style="border:1px solid #ccc;border-radius:5px;padding:10px;">{{$rev->revComment}}</div>
-                </div>
+                        </span><br>
+                        <small>
+                        @if($rev->revStatus == 1)
+                        Approved
+                        @elseif($rev->revStatus == 2)
+                        Returned with Corrections
+                        @else
+                        <span class="badge badge-secondary badge-pill">  Waiting </span>
+                        @endif  
+                        </small>
+                        <br>
+                        <small>
+                        {{date_format(new Datetime($rev->revTimestamp),"M-d-Y -- g:i A")}}
+                        </small>
+                    </td>
+                    <td style="border-bottom:1px solid #ccc!important;">
+                        <textarea class="auto-fit-textarea" style="font-size:1em;width:100%;overflow: visible;">{{$rev->revComment}}</textarea>
+                    </td>
+                </tr>
                 @endforeach
+                </tbody>
+                </table>
+               </div>
+               
         </div> <!-- End of comment section -->
         <div class="form-row" style="margin-top:50px;">
-            <!--
+            
             <div class="form-group col-md-4">
             <?php $cc = DB::table('account')->where('accType','=','1')->first(); ?>
             <u>{{$cc->accTitle}} {{$cc->accFName}} {{$cc->accMInitial}} {{$cc->accLName}}</u>
             <br>
             Capstone Coordinator
-            </div> -->
+            </div> 
             <div class="form-group col-md-4">
-            <?php $adv = DB::table('account')
-            ->join('group','groupCAdviserID','=','accID')
+            <?php $adv = DB::table('group')
+            ->join('account','account.accID','=','group.groupCAdviserID')
             ->where('group.groupID','=',$data['projApp'][0]->groupID)->first(); ?>
             <u>{{$adv->accTitle}} {{$adv->accFName}} {{$adv->accMInitial}} {{$adv->accLName}}</u>
             <br>
@@ -152,7 +136,13 @@
 </div>
 @endsection
 @section('includes2')
-    <script type="text/javascript">
-       
-    </script>
+<script type="text/javascript">
+$(document).ready(function () {
+    $("textarea").each(function(textarea) {
+        if($(this).val().length > 250) {
+            $(this).height( $(this)[0].scrollHeight);
+        }
+    });
+});  
+</script>
 @endsection

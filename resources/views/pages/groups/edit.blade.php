@@ -23,6 +23,15 @@ $account_types = DB::table('account_type')->get();
                             
                             {{csrf_field()}}
                     <section> 
+                    <!-- required fields note -->
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <span><b>
+                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- required fields note -->
                     <div class="form-row" style="height:50px;">
                     <div class="form-group col-md-12">
                     <h6 class=""><span class="alert bg2">GROUP DETAILS</span></h6>
@@ -30,24 +39,35 @@ $account_types = DB::table('account_type')->get();
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-10">
-                            <label for="group_name">Group Name<span class="text-danger">*</span></label>
+                            <label for="group_name">Group Name (Family names of group members)<span class="text-danger">*</span></label>
                             <input name="group_name" type="text" maxlength="100" class="form-control" id="group_name" placeholder="Group Name" required="yes" autocomplete="given-name" value="{{!is_null(old('group_name')) ? old('group_name') : $data['group']->groupName}}">
                         </div>     
                     </div>  
                     <div class="form-row">
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-4 col-sm-12">
                             <label for="group_type">Group Type<span class="text-danger">*</span></label>
                                 <select id="group_type" class="form-control" name="group_type" autocomplete="Group Type" required="yes">
                                 <option value="Capstone">Capstone</option>
                                 <option value="Thesis">Thesis</option>
                                 </select>
                         </div>
-
-                        <div class="form-group col-md-4" id="grp">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6 col-sm-12" id="grp">
                             <label for="content_adviser">Group Content Adviser<span class="text-danger">*</span></label>
                             <?php $model = new App\models\Group; ?>
                             <select id="content_adviser" class="form-control" name="content_adviser" autocomplete="Content Adviser" required="yes">
                                 @foreach($data['panel_members'] as $acc)
+                                <option value="{{$acc->accID}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" 
+                                    ><span>{{$acc->accLName}}, {{$model->initials($acc->accFName)}}</span></option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6 col-sm-12" id="">
+                            <label for="capstone_coordinator">Group Capstone Coordinator<span class="text-danger">*</span></label>
+                            <?php $model = new App\models\Group; ?>
+                            <select id="capstone_coordinator" class="form-control" name="capstone_coordinator" autocomplete="Content Adviser" required="yes">
+                                @foreach($data['capstone_coordinator'] as $acc)
                                 <option value="{{$acc->accID}}" title="{{$acc->accTitle}} {{$acc->accFName}} {{$acc->accMInitial}} {{$acc->accLName}}" 
                                     ><span>{{$acc->accLName}}, {{$model->initials($acc->accFName)}}</span></option>
                                 @endforeach
@@ -183,7 +203,7 @@ $account_types = DB::table('account_type')->get();
                         </div>
                         <?php $selectMinPanel = count($data['pgroup']);?>
                         <div class="form-group col-md-12">
-                        <input type="number" min="1" max="9" name="minimum_panel_members_for_project_approval" class="form-control" autocomplete="Minimum Panel For Project Approval" required="yes" style="width:100px;" value="{{!is_null(old('minimum_panel_members_for_schedule_approval')) ? old('minimum_panel_members_for_schedule_approval') : $data['group']->minProjPanel}}">         
+                        <input type="number" min="1" max="9" name="minimum_panel_members_for_project_approval" class="form-control" autocomplete="Minimum Panel For Project Approval" required="yes" style="width:100px;" value="{{!is_null(old('minimum_panel_members_for_project_approval')) ? old('minimum_panel_members_for_project_approval') : $data['group']->minProjPanel}}">         
                         </div>
                         
                         <div class="form-group col-md-6 my-1">          
@@ -196,17 +216,6 @@ $account_types = DB::table('account_type')->get();
                     </div>
                     </section>
                     @endif
-
-                    <!-- required fields note -->
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <span><b>
-                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
-                            </span>
-                        </div>
-                    </div>
-                    <!-- required fields note -->
-
                     <div class="form-group text-right">
                         <hr class="my-4">
                         <button type="reset" class="btn btn-info btn-lg">
@@ -233,6 +242,7 @@ $account_types = DB::table('account_type')->get();
 $('#group_status').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#group_type').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#content_adviser').select2({allowClear:true,selectOnClose:true,width:'resolve'});
+$('#capstone_coordinator').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#minProjApp').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 var vals = [];
 var count = $('#minProjApp > option').length;
@@ -250,6 +260,9 @@ $(document).ready(function () {
 
     var $content_adviser = $('#content_adviser').select2();
     $content_adviser.val("{{!is_null(old('content_adviser')) ? old('content_adviser') : $data['group']->groupCAdviserID}}").trigger("change");
+
+    var $capstone_coordinator = $('#capstone_coordinator').select2();
+    $capstone_coordinator.val("{{!is_null(old('capstone_coordinator')) ? old('capstone_coordinator') : $data['group']->groupCoordID}}").trigger("change");
 
 });
 

@@ -333,3 +333,8 @@ html, body {
 .text-orange {
 	color:orange;
 }
+
+.datalist { 
+	display:none;
+	max-height: 50px;
+}

@@ -9,12 +9,16 @@ use App\models\Group;
 use App\models\Stage;
 use App\models\Notification;
 use App\models\AccessControl;
+use App\models\ApplicationSetting;
 use App\User;
 use Auth;
 use Illuminate\Validation\Rule;
 use App\Events\eventTrigger;
 use Mail;
 use Exception;
+use Session;
+use Illuminate\Support\Facades\Validator;
+
 
 class MyProjController extends Controller
 {
@@ -83,6 +87,42 @@ class MyProjController extends Controller
         return $data = ['proj' => $proj, 'group' => $group,'adviser'=>$adviser,'projApp'=>$pgroup,'schedApp'=>$schedApp];
     }
 
+    public function submitProjectArchive($id) {
+        $data = Group::find($id);
+        $settings = ApplicationSetting::first();
+        return view('pages.my_project.project-archive')
+        ->with('data',$data)
+        ->with('settings',$settings);
+    }
+
+    public function submitProjectArchiveStore($id,Request $request) {
+        try {
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(), [
+                'document_link' => ['required','max:255','active_url'],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput($request->all)->withErrors($validator);
+            }
+            $group = Group::find($id);
+            $project = DB::table('project')
+            ->where('project.projGroupID','=',$group->groupID)
+            ->first();
+            $project = Project::find($project->projID);
+            $project->projDocumentLink = $request->input('document_link');
+            $project->save();
+            $notify = new Notification;
+            $notify->NotifyCoordOnProjectArchive($group);
+            DB::commit();
+            Session::flash('success', 'The document was submitted to your Capstone Coordinator!' ); 
+        } catch(Exception $e) {
+            DB::rollback();
+            //return dd($e);
+            return redirect()->back()->withInput($request->all)->withErrors('The document was not submitted!');
+        }
+        $data = $this->getIndexData();
+        return view('pages.my_project.index')->with('data',$data);      
+    }
     /** 
      * Show the form for creating a new resource.
      *
@@ -169,7 +209,7 @@ class MyProjController extends Controller
             DB::rollback();
             return redirect()->back()->withInput($request->all)->withErrors( 'The document was not submitted to your Content Adviser!');
         }
-        \Session::flash('success', 'The document was submitted to your Content Adviser!' );  
+        Session::flash('success', 'The document was submitted to your Content Adviser!' );  
         $data = $this->getIndexData();
         return view('pages.my_project.index')->with('data',$data);
     }

@@ -35,7 +35,7 @@
             ->join('account_type','account_type.accTypeNo','=','account.accType')
             ->select('account.*','account_type.*')
             ->where('account.accID','=',Auth::user()->getId())->first();?>
-            <table class="table table-striped table-hover table-sm table-responsive-sm">
+            <table class="table table-striped table-hover table-sm table-responsive-sm table-responsive-md">
                 <thead>
                     <tr>
                         <th scope="col"><small>Group name</small></th>

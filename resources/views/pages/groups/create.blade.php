@@ -23,6 +23,15 @@ $account_types = DB::table('account_type')->get();
                             
                             {{csrf_field()}}
                     <section> 
+                    <!-- required fields note -->
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <span><b>
+                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- required fields note -->
                     <div class="form-row" style="height:50px;">
                     <h6 class=""><span class="alert bg2">GROUP DETAILS</span></h6>
                     </div>
@@ -86,15 +95,9 @@ $account_types = DB::table('account_type')->get();
                             ->where('account.accType','=','2')
                             ->pluck('account.accID');
                             ?>
+                         
                             <div class="form-group col-md-12">
-                                <select name="minimum_panel_members_for_schedule_approval" class="form-control" id="minProjApp" autocomplete="Minimum Panel For Schedule Approval" required="yes" style="width:100px;"> 
-            
-                                    @foreach($selectMinPanel as $key => $value)
-                                    <option value="{{$key+1}}"  id="mps_{{$key+1}}" @if(!is_null(old('minimum_panel_members_for_schedule_approval')) && old('minimum_panel_members_for_schedule_approval')==$key+1) selected @endif>
-                                        {{$key+1}}
-                                    </option>
-                                    @endforeach
-                                </select>   
+                                    <input type="number" min="1" max="9" name="minimum_panel_members_for_project_approval" class="form-control" autocomplete="Minimum Panel For Project Approval" required="yes" style="width:100px;" value="{{!is_null(old('minimum_panel_members_for_project_approval')) ? old('minimum_panel_members_for_project_approval') : '3'}}">         
                             </div>
                             
                             <div class="form-group col-md-6 my-1">          
@@ -137,8 +140,7 @@ $account_types = DB::table('account_type')->get();
 $('#group_type').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $('#content_adviser').select2({allowClear:true,selectOnClose:true,width:'resolve'});
 $(document).ready(function(){
-    var $minProjApp = $("#minProjApp").select2();
-    $minProjApp.val("{{!is_null(old('minimum_panel_members_for_schedule_approval')) ? old('minimum_panel_members_for_schedule_approval') : ceil(count($data['panel_members']) * 7 / 10)  }}").trigger("change");
+
 });
 </script>
 @endsection

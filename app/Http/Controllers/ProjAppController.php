@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Webpatser\Uuid\Uuid;
 use Exception;
+use Carbon\Carbon;
 
 class ProjAppController extends Controller
 {
@@ -107,15 +108,22 @@ class ProjAppController extends Controller
         ->where('panel_group.panelCGroupID','=',$request->input('grp'))
         ->where('panel_group.panelGroupType','=',$stage->current($request->input('grp')))
         ->first();
+        $project = DB::table('project')
+        ->where('project.projGroupID','=',$request->input('grp'))
+        ->first();
+        $project = Project::find($project->projID);
+
         $approval = ProjectApproval::find($q->projAppID);
         if($request->input('opt')=='1') {
             $approval->isApproved = 1;
             $approval->projAppComment = '';
-            $msg = 'The project of group : ' . $q->groupName . ' was approved.';
+            $approval->projAppTimestamp = Carbon::now();
+            $msg = 'The project document of group : ' . $q->groupName . ' was approved.';
         } else { 
-            //$approval->revisionLink = $request->input('document_link');
+            //When a panel member has given a correction, the current document link of the group will be stored to the revision link of the current project approval
+            $approval->revisionLink = $project->projDocumentLink;
             $approval->isApproved = 2;
-            $msg = 'The project of group : ' . $q->groupName . ' was given corrections.';
+            $msg = 'The project document of group : ' . $q->groupName . ' was given corrections.';
         }
 
         $approval->projAppComment = !is_null($request->input('comments')) ? $request->input('comments') : '';
@@ -156,6 +164,7 @@ class ProjAppController extends Controller
         $revHistory->revStatus = $approval->isApproved;
         $revHistory->revTimestamp = date('Y-m-d H:i:s');
         }
+
         try{
             DB::beginTransaction();
             $approval->save();
@@ -302,6 +311,13 @@ class ProjAppController extends Controller
     private function disapprove_proj(Group $group,$type) {
         $group->groupStatus = 'Corrected by Panel Members';
         //$this->resetProjApp($group->groupID,$type);
+        $project = DB::table('project')
+        ->where('project.projGroupID','=',$group->groupID)
+        ->first();
+        $project = Project::find($project->projID);
+        //When all panel members are done evaluating a project approval and atleast one (1) panel members gave corrections, the group's current submitted document link will be stored to the panel member's correction link
+        $project->projPCorrectionLink = $project->projDocumentLink;
+        $project->save();
         $notify = new Notification;
         $notify->NotifyStudentOnPanelCorrected($group);
         $group->save();
@@ -309,6 +325,13 @@ class ProjAppController extends Controller
 
     private function approve_proj(Group $group) {
         $group->groupStatus = 'Ready for Next Stage';
+        $project = DB::table('project')
+        ->where('project.projGroupID','=',$group->groupID)
+        ->first();
+        $project = Project::find($project->projID);
+        //When all panel members are done evaluating a project approval and no panel members gave corrections, the panel member's correction link will be set to an empty string
+        $project->projPCorrectionLink = '';
+        $project->save();
         $notify = new Notification;
         $notify->NotifyCoordOnNextStage($group);
         $group->save();

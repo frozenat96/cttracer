@@ -21,20 +21,61 @@
         <br class="my-4">
             <div class="row">
                 <div class="col-md-12">
-            <form method="post" action="/quick-view-search-results" accept-charset="UTF-8" role="search">
+            <form method="post" action="/quick-view-search-results" accept-charset="UTF-8" role="search" id="form-search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
+                    <input type="text" class="form-control" id="query" name="q" list="groups1" placeholder="Search Groups"> 
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
                         </button>
                     </span>
+                    <?php 
+                    $g1 = DB::table('group')->pluck('group.groupName');
+                    $p1 = DB::table('project')->pluck('project.projName'); 
+                    ?>
+                    <datalist id="groups1" class="datalist scrollable">
+                        @foreach($g1 as $g2)
+                            <option value="{{$g2}}">
+                        @endforeach
+                        @foreach($p1 as $p2)
+                            <option value="{{$p2}}">
+                        @endforeach
+                    </datalist>
                     
                 </div>
             </form>
                 </div>
                 
+            </div>
+            <div class="row justify-content-left">
+                <div class="form-group col-sm-12 col-md-6">
+                    <table class="table-responsive-sm table-responsive-md" style="margin-top:10px;">
+                        <tr>
+                            <td>
+                    <span style="font-size:1em;padding-right:5px;">Select Group Status</span>
+                            </td>
+                            <td>
+                    <select id="search1" class="form-control">
+                        <option value="" style="visibility:0;"></option>
+                        <option value="">None</option>
+                        <option value="Waiting for Submission">Waiting for Submission</option>
+                        <option value="Submitted to Content Adviser">Submitted to Content Adviser</option>
+                        <option value="Corrected by Content Adviser">Corrected by Content Adviser</option>
+                        <option value="Waiting for Schedule Request">Waiting for Schedule Request</option>
+                        <option value="Waiting for Schedule Approval">Waiting for Schedule Approval</option>
+                        <option value="Waiting for Final Schedule">Waiting for Final Schedule</option>
+                        <option value="Ready for Defense">Ready for Defense</option>
+                        <option value="Waiting for Project Approval">Waiting for Project Approval</option>
+                        <option value="Corrected by Panel Members">Corrected by Panel Members</option>
+                        <option value="Ready for Next Stage">Ready for Next Stage</option>
+                        <option value="Waiting for Project Completion">Waiting for Project Completion</option>
+                        <option value="Finished">Finished</option>
+                    </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <hr class="my-4">
             @if(isset($data) && count($data))
@@ -44,7 +85,7 @@
              @foreach($data as $grp)
                 <div class="form-row card bx2 card1 jumbotron">
                     <div class="col-md-12"> 
-                        <table class="table table-sm table-responsive-sm">
+                        <table class="table table-sm table-responsive-sm table-responsive-md">
                                 <thead>
                                     <tr>
                                         <th scope="col">Group Details</th>
@@ -170,4 +211,17 @@
         </div>
     </div>
 </div>
+@endsection
+@section('includes2')
+<script type="text/javascript">
+$('#search1').select2();
+$(document).ready(function () {
+    $('#search1').change(function () {
+        x = $('#search1').val();
+        $('#query').val(x);
+        $('#form-search').submit();
+    });
+});
+
+</script>
 @endsection

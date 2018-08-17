@@ -36,6 +36,7 @@ class GroupHistory extends Model
             $grpHist->groupHGroupName = $group->groupName;
             $grpHist->groupHProjName = $proj->projName;
             $grpHist->groupHActivity = $activity;
+            $grpHist->groupHProjType = $group->groupType;
             $grpHist->groupHTimestamp = Carbon::now();
             $grpHist->groupHAddedBy = "{$acc->accTitle} {$acc->accLName}, {$grp1->initials($acc->accFName)}";
             $grpHist->save();

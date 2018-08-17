@@ -16,7 +16,15 @@
             <form method="post" action="/stage-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Stages"> 
+                    <input type="text" class="form-control" name="q" placeholder="Search Stages" list="stage1"> 
+                    <?php 
+                    $s1 = DB::table('stage')->pluck('stageName');
+                    ?>
+                    <datalist id="stage1" class="datalist scrollable">
+                        @foreach($s1 as $s2)
+                            <option value="{{$s2}}">
+                        @endforeach
+                    </datalist>
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
@@ -30,9 +38,10 @@
                         <a href="/stage-settings/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new stage" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
                 </div>
             </div>
+            
             <hr class="my-4">
             @if(isset($data) && count($data))
-            <table class="table table-striped table-hover table-sm table-responsive-sm">
+            <table class="table table-striped table-hover table-sm table-responsive-sm table-responsive-md">
                 <thead>
                     <tr>
                         <th scope="col">Stage No.</th>

@@ -74,14 +74,6 @@ class PagesController extends Controller
         return view('pages.misc.contact');
     }
 
-    public function folderSettingsCreate() {
-        $user_id = Auth::user()->getId();
-        $application_settings = DB::table('application_setting')
-        ->where('settingCoordID','=',$user_id)
-        ->first();
-        return view('pages.application_settings.edit')->with('data',$application_settings);
-    }
-
     public function appSettingsStore(Request $request) {
         try {   
             $validator = Validator::make($request->all(), [
@@ -92,25 +84,21 @@ class PagesController extends Controller
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
             }
             DB::beginTransaction();
-            $user_id = Auth::user()->getId();
             $app = new ApplicationSetting;
             $app->settingID = Uuid::generate()->string;
-            $app->settingCoordID = $user_id;
             $app->settingDocLink = $request->input('document_folder_link');
             $app->settingProjArcLink = $request->input('project_archive_folder_link');
             $app->save();
             DB::commit();
-            return redirect()->back()->withInput($request->all)->withSuccess('Folder settings was created successfully.');
+            return redirect()->back()->withInput($request->all)->withSuccess('Application settings was created successfully.');
         } catch(Exception $e) {
             DB::rollback();
-            return redirect()->back()->withInput($request->all)->withErrors('Folder settings was not created.');
+            return redirect()->back()->withInput($request->all)->withErrors('Application settings was not created.');
         }        
     }
 
     public function appSettingsEdit() {
-        $user_id = Auth::user()->getId();
         $application_settings = DB::table('application_setting')
-        ->where('settingCoordID','=',$user_id)
         ->first();
         if(is_null($application_settings)) {
             return view('pages.application_settings.create');
@@ -132,10 +120,10 @@ class PagesController extends Controller
             $app->settingProjArcLink = $request->input('project_archive_folder_link');
             $app->save();
             DB::commit();
-            return redirect()->back()->withInput($request->all)->withSuccess('Folder settings was updated successfully.');
+            return redirect()->back()->withInput($request->all)->withSuccess('Application settings was updated successfully.');
         } catch(Exception $e) {
             DB::rollback();
-            return redirect()->back()->withInput($request->all)->withErrors('Folder settings was not updated.');
+            return redirect()->back()->withInput($request->all)->withErrors('Application settings was not updated.');
         }
         return view('pages.application_settings.edit')->with('data',$application_settings);
     }

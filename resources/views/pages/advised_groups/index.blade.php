@@ -42,7 +42,7 @@
                 @foreach($data as $sched) 
                 <div class="form-row card bx2 card1 jumbotron">
                     <div class="col-md-12"> 
-                        <table class="table table-responsive-sm">
+                        <table class="table table-responsive-sm table-responsive-md">
                             <thead>
                                 <tr class="">
                                     <th>Group Details</th>

@@ -20,27 +20,36 @@
                                 <legend class="text-left"><span class="alert bg2">CREATE STAGE FORM</span><hr class="my-4"></legend>
                     
                             {{csrf_field()}} 
+                    <!-- required fields note -->
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <span><b>
+                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- required fields note -->
                     <div class="form-row">
                         <div class="form-group col-md-2">
-                                <label for="stage_number">Stage No.</label>
+                                <label for="stage_number">Stage No.<span class="text-danger">*</span></label>
                         <input name="stage_number" type="number" min="1" class="form-control" id="stage_number" placeholder="Stage Number" maxlength="3" required="yes" autocomplete="stage-number" value="{{!is_null(old('stage_number')) ? old('stage_number') : $data['next']}}">
                         </div>
                         
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <label for="stage_name">Stage Name</label>
+                            <label for="stage_name">Stage Name<span class="text-danger">*</span></label>
                             <input name="stage_name" type="text" class="form-control" id="stage_name" placeholder="Stage Name" required="yes" autocomplete="stage-name" maxlength="50" value="{{old('stage_name')}}">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                        <label for="stage_defense_duration" data-toggle="popover" data-content="Specifies how long a presentation is being executed in minutes." data-placement="top">Stage Defense Duration</label>
+                        <label for="stage_defense_duration" data-toggle="popover" data-content="Specifies how long a presentation is being executed in minutes." data-placement="top">Stage Defense Duration<span class="text-danger">*</span></label>
                         <input type="number" min="0" name="stage_defense_duration" class="form-control" id="stage_defense_duration" placeholder="number of minutes" required="yes" style="max-width:200px;"autocomplete="stage-defense-duration" value="{{old('stage_defense_duration')}}">
                         </div>
 
                         <div class="form-group col-md-5">
-                            <label for="stage_panel" data-toggle="popover" data-content="Specifies the type panel members required for a presentation." data-placement="top">Stage Panel Members Required</label>
+                            <label for="stage_panel" data-toggle="popover" data-content="Specifies the type panel members required for a presentation." data-placement="top">Stage Panel Members Required<span class="text-danger">*</span></label>
                                 <select id="stage_panel" class="form-control" name="stage_panel" autocomplete="stage-panel" required="yes">
                                     <option value="All">All</option>
                                     <option value="Custom">Custom</option>
@@ -53,7 +62,7 @@
                     <hr>
                     <div class="form-row justify-content-start">
                         <div class="form-group col-md-6">     
-                            <label for="minSchedApp">Minimum Panel Members Required for Schedule Approval</label>
+                            <label for="minSchedApp">Minimum Panel Members Required for Schedule Approval<span class="text-danger">*</span></label>
                             <select name="minimum_panel_members_for_schedule_approval" class="form-control" id="minSchedApp" autocomplete="Minimum Panel For Schedule Approval" style="width:100px;">     
                                 @foreach($data['pgroup'] as $key => $value)
                                 <option value="{{$key+1}}"  id="mps_{{$key+1}}" @if(!is_null(old('minimum_panel_members_for_schedule_approval')) && (($key+1) == old('minimum_panel_members_for_schedule_approval') )) selected @endif>

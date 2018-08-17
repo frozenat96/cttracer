@@ -49,18 +49,24 @@ class QuickViewController extends Controller
     }
 
     private function getIndex() {
+        $user_id = Auth::user()->getId();
+        $user = User::find($user_id);
         return $groups = DB::table('group')
         ->join('project','project.projGroupID','=','group.groupID')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
         ->join('stage','stage.stageNo','=','project.projStageNo')
         ->join('account','group.groupCAdviserID','=','account.accID')
-        ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
+        ->when(($user->accType == 1), function ($query) use ($user_id) {
+            return $query->where('group.groupCoordID','=',$user_id);
+        })
         ->orderBy('group.groupName')
         ->paginate(5); 
     }
 
     public function search($query = null)
     {
+        $user_id = Auth::user()->getId();
+        $user = User::find($user_id);
         $q = Input::get('q');
         if(!is_null($query)) {
         $q = $query;
@@ -73,11 +79,17 @@ class QuickViewController extends Controller
             ->join('stage','stage.stageNo','=','project.projStageNo')
             ->join('account','group.groupCAdviserID','=','account.accID')
             ->select('group.*','project.*','account.*','stage.*','panel_verdict.*')
-            ->where('group.groupName','LIKE', "%".$q."%")
-            ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
-            ->orWhere('group.groupStatus','LIKE', "%".$q."%")
-            ->orWhere('panel_verdict.pVerdictDescription','LIKE', "%".$q."%")
-            ->orWhere('stage.stageName','LIKE', "%".$q."%")
+            ->where(function ($query) use ($q){
+                $query->where('group.groupName','LIKE', "%".$q."%")
+                ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
+                ->orWhere('group.groupStatus','LIKE', "%".$q."%")
+                ->orWhere('project.projName','LIKE', "%".$q."%")
+                ->orWhere('panel_verdict.pVerdictDescription','LIKE', "%".$q."%")
+                ->orWhere('stage.stageName','LIKE', "%".$q."%");
+            })
+            ->when(($user->accType == 1), function ($query) use ($user_id) {
+                return $query->where('group.groupCoordID','=',$user_id);
+            })
             ->orderBy('group.groupName')
             ->paginate(5);
         } else {
@@ -161,12 +173,14 @@ class QuickViewController extends Controller
 
     public function modifyProjAppUpdate(Request $request)
     {
+        $stage = new Stage;
         $data = DB::table('group')
         ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
         ->join('project_approval','project_approval.projAppPanelGroupID','=','panel_group.panelGroupID')
         ->join('account','account.accID','=','panel_group.panelAccID')
         ->select('account.*','project_approval.*','panel_group.*','group.*')
         ->where('account.isActivePanel','=','1')
+        ->where('panel_group.panelGroupType','=',$stage->current($request->input('groupID')))
         ->where('group.groupID','=',$request->input('groupID'))
         ->get();
 
@@ -178,7 +192,7 @@ class QuickViewController extends Controller
                 $documentLink = $request->input('proj_rlink_' . $pmembers->accID);
                 $comment = $request->input('proj_comment_' . $pmembers->accID);
 
-                $pj1->isApproved = !is_null($approval) ? $approval : '-1';      
+                $pj1->isApproved = !is_null($approval) ? $approval : '3';      
                 if(!is_null($documentLink)) {
                     $validator = Validator::make($request->all(), [
                         "proj_rlink_{$pmembers->accID}" => ['max:150','active_url'],
@@ -215,16 +229,16 @@ class QuickViewController extends Controller
             ->join('group','group.groupID','=','panel_group.panelCGroupID')
             ->where('panel_group.panelCGroupID','=',$groupID)
             ->update([
-                'schedule_approval.isApproved' => '-1'
-            ]); //Set the schedule approval to -1 (disabled)
+                'schedule_approval.isApproved' => '3'
+            ]); //Set the schedule approval to 3 (disabled)
 
             $project_approval = DB::table('project_approval')
             ->join('panel_group','panel_group.panelGroupID','=','project_approval.projAppPanelGroupID')
             ->join('group','group.groupID','=','panel_group.panelCGroupID')
             ->where('panel_group.panelCGroupID','=',$groupID)
             ->update([
-                'project_approval.isApproved' => '-1'
-            ]); //Set the project approval to -1 (disabled)
+                'project_approval.isApproved' => '3'
+            ]); //Set the project approval to 3 (disabled)
 
             $project = Project::find($data->projID);
             $schedule = Schedule::find($data->schedID);
@@ -433,7 +447,7 @@ class QuickViewController extends Controller
             $sc0->schedStatus = $request->input('schedule_status');
             $sc0->save();
             //update the google calendar
-            $event = Event::find($sc0->schedGCalendarID);
+            $event = Event::find($sc0->schedEventID);
             $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
             $event->endDateTime = $tend = new Carbon("{$sc0->schedDate} {$sc0->schedTimeEnd}");
             $event->name = "{$sc0->schedType} for the group of {$data[0]->groupName}, {$sc0->schedPlace} -- {$sc0->schedTimeStart} - {$sc0->schedTimeEnd}";

@@ -119,6 +119,7 @@
                         <th>Position</th>
                         <th>Name</th>
                         <th>Approval Status</th>
+                        <th>Reviewed On</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,6 +144,9 @@
                                 @else
                                 <span class="badge badge-secondary badge-pill">  Waiting </span>
                                 @endif  
+                            </td>
+                            <td>
+                                {{date_format(new Datetime($pmembers->projAppTimestamp),"M d, Y - g:i A")}}
                             </td>
                         </tr>
                     @endforeach

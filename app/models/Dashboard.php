@@ -58,11 +58,6 @@ class Dashboard extends Model
     }
 
     public function getDashboardCoord() {
-        /*
-        this.NotifyCoordOnSchedRequest = ko.observableArray([]).extend({ notify: 'always' });
-        this.NotifyCoordOnNextStage = ko.observableArray([]).extend({ notify: 'always' });
-        this.NotifyCoordOnSchedFinalize = ko.observableArray([]).extend({ notify: 'always' });
-        */
         $status = ['Waiting for Schedule Request'];
         $verdict = ['2','3','7'];
         $SchedRequest = DB::table('group')
@@ -82,7 +77,7 @@ class Dashboard extends Model
         ->count();
 
         $user_id = Auth::user()->getId();
-        $ValidGroupStatus = ['Waiting for Schedule Approval','Waiting for Project Approval'];
+        $status = ['Waiting for Project Approval'];
         $stage = new Stage;
 
         $proj = DB::table('group')
@@ -93,11 +88,12 @@ class Dashboard extends Model
         ->join('account','account.accID','=','panel_group.panelAccID')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
         ->where('panel_group.panelAccID','=',$user_id)
-        ->whereIn('group.groupStatus', $ValidGroupStatus)
+        ->whereIn('group.groupStatus', $status)
         ->whereIn('project.projPVerdictNo',['2','3'])
         ->where('project_approval.isApproved','=','0')
         ->count();
 
+        $status = ['Waiting for Schedule Approval'];
         $sched = DB::table('group')
         ->join('project','project.projGroupID','=','group.groupID')
         ->join('stage','stage.stageNo','=','project.projStageNo')
@@ -107,12 +103,12 @@ class Dashboard extends Model
         ->join('schedule','schedule.schedGroupID','=','group.groupID')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
         ->where('panel_group.panelAccID','=',$user_id)
-        ->whereIn('group.groupStatus', $ValidGroupStatus)
+        ->whereIn('group.groupStatus', $status)
         ->whereNotIn('project.projPVerdictNo',['2','3'])
         ->where('schedule_approval.isApproved','=','0')
         ->count();
   
-        $substatus = ['Submitted to Content Adviser'];
+        $status = ['Submitted to Content Adviser'];
         $adv = DB::table('group')
         ->join('project','project.projGroupID','=','group.groupID')
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
@@ -121,7 +117,7 @@ class Dashboard extends Model
         ->select('schedule.*','account.*','project.*','group.*','panel_verdict.*')
         ->whereIn('account.accType',['1','2'])
         ->where('group.groupCAdviserID','=',$user_id)
-        ->whereIn('group.groupStatus',$substatus)
+        ->whereIn('group.groupStatus',$status)
         ->count();
 
         $data = ['SchedRequest'=>$SchedRequest,'NextStage'=>$NextStage,'SchedFinalize'=>$SchedFinalize,'sched'=>$sched,'proj'=>$proj,'adv'=>$adv];

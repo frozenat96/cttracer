@@ -1,6 +1,6 @@
 <div class="form-row card bx2 card1 jumbotron">
         <div class="col-md-12"> 
-            <table class="table table-responsive-sm">
+            <table class="table table-responsive-sm table-responsive-md">
                 <thead>
                     <tr class="">
                         <th>Approval Details</th>
@@ -114,20 +114,7 @@
                 
                 <td>
                     <table class="table-sm">
-                    <tr><td>     
-
-                    {!!Form::open(['action' => 'ProjAppController@projApprovalStatus', 'method' => 'POST','class'=>'form1']) !!}
-                    {{csrf_field()}}
-                    <button  type="submit" class="btn btn-success btn-sm" name="submit" value="1" data-toggle="popover" data-content="Approve revision" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
-                    <input type="hidden" name="opt" value="1">
-                    <input type="hidden" name="grp" value="{{$data1->groupID}}">
-                    <input type="hidden" name="acc" value="{{$data1->accID}}">
-                    <input type="hidden" name="_method" value="PUT">
-                    {!!Form::close() !!}
-
-                    </td></tr>
                     <tr><td>
-               
                     <a class="btn btn-primary btn-sm" href="/approve-projects/{{$data1->groupID}}/edit" data-toggle="popover" data-content="Make corrections or approve the document submitted" data-placement="top">
                         <span><i class="far fa-question-circle"></i> Correct/Approve Document</span>
                     </a>

@@ -275,6 +275,17 @@ Route::group(['middleware' => ['auth']], function() {
     Route::group(['middleware' => 'roles', 'roles' => $student], function() {
         Route::resource('/my-project', 'MyProjController')->parameters([
         ]);
+
+        Route::any('/my-project/{id}/submit-project-archive', [
+            'uses'=>'MyProjController@submitProjectArchive',
+        ]
+        ); 
+
+        Route::any('/submitProjectArchiveStore/{id}', [
+            'uses'=>'MyProjController@submitProjectArchiveStore',
+        ]
+        ); 
+
     }); //End Route::Group Student
 
     //routes without roles needed

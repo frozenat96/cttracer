@@ -17,6 +17,8 @@ use App\Notifications\NotifyCoordOnNextStage;
 use App\Mail\NotifyCoordOnNextStage as NotifyCoordOnNextStage_mail;
 use App\Notifications\NotifyCoordOnSchedFinalize;
 use App\Mail\NotifyCoordOnSchedFinalize as NotifyCoordOnSchedFinalize_mail;
+use App\Notifications\NotifyCoordOnProjectArchive;
+use App\Mail\NotifyCoordOnProjectArchive as NotifyCoordOnProjectArchive_mail;
 
 use App\Notifications\NotifyStudentOnAdvCorrected;
 use App\Mail\NotifyStudentOnAdvCorrected as NotifyStudentOnAdvCorrected_mail;
@@ -129,30 +131,39 @@ class Notification extends Model
 
     //Coordinator
     public function NotifyCoordOnSchedRequest(Group $group) {
-            $CC = $this->getCoordinator();
-            $x = User::find($CC->accID);
+            $x = User::find($group->groupCoordID);
+            $x->notify(new NotifyCoordOnProjectArchive($group));
             $x->notify(new NotifyCoordOnSchedRequest($group));
-            $z = ['grp'=>$group->groupID,'acc'=>$CC,'mailName'=>'NotifyCoordOnSchedRequest','to'=>$x->accEmail];
+            $z = ['grp'=>$group->groupID,'acc'=>$x,'mailName'=>'NotifyCoordOnSchedRequest','to'=>$x->accEmail];
             //email notification 
             //Mail::send(new NotifyCoordOnSchedRequest_mail($z));
             event(new eventTrigger('trigger'));
     }
 
+    public function NotifyCoordOnProjectArchive(Group $group) {
+        $x = User::find($group->groupCoordID);
+        $x->notify(new NotifyCoordOnProjectArchive($group));
+        $z = ['grp'=>$group->groupID,'acc'=>$x,'mailName'=>'NotifyCoordOnSchedRequest','to'=>$x->accEmail];
+        //email notification 
+        //Mail::send(new NotifyCoordOnSchedRequest_mail($z));
+        event(new eventTrigger('trigger'));
+    }
+
     public function NotifyCoordOnNextStage(Group $group) {
-        $CC = $this->getCoordinator();
-        $x = User::find($CC->accID);
+        $x = User::find($group->groupCoordID);
+        $x->notify(new NotifyCoordOnProjectArchive($group));
         $x->notify(new NotifyCoordOnNextStage($group));
-        $z = ['grp'=>$group->groupID,'acc'=>$CC,'mailName'=>"Group of {$group->groupName} is ready for next stage",'to'=>$x->accEmail];
+        $z = ['grp'=>$group->groupID,'acc'=>$x,'mailName'=>"Group of {$group->groupName} is ready for next stage",'to'=>$x->accEmail];
         //email notification
         //Mail::send(new NotifyCoordOnSchedRequest_mail($z));
         event(new eventTrigger('trigger'));
     }
 
     public function NotifyCoordOnSchedFinalize(Group $group) {
-        $CC = $this->getCoordinator();
-        $x = User::find($CC->accID); 
+        $x = User::find($group->groupCoordID);
+        $x->notify(new NotifyCoordOnProjectArchive($group));
         $x->notify(new NotifyCoordOnSchedFinalize($group));
-        $z = ['grp'=>$group->groupID,'acc'=>$CC,'mailName'=>"Group of {$group->groupName} is ready for next stage",'to'=>$x->accEmail];
+        $z = ['grp'=>$group->groupID,'acc'=>$x,'mailName'=>"Group of {$group->groupName} is ready for next stage",'to'=>$x->accEmail];
         //email notification
         //Mail::send(new NotifyCoordOnSchedRequest_mail($z));
         event(new eventTrigger('trigger'));

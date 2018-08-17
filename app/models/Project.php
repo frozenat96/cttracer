@@ -43,10 +43,9 @@ class Project extends Model
         $update = DB::table('project_approval')
         ->join('panel_group','panel_group.panelGroupID','=','project_approval.projAppPanelGroupID')
         ->where('panel_group.panelCGroupID','=',$groupID)
-        ->when($type, function ($query) use ($stage,$groupID) {
+        ->when(($type > 0), function ($query) use ($stage,$groupID) {
             return $query->where('panel_group.panelGroupType','=',$stage->current($groupID));
         })
-        ->where('panel_group.panelGroupType','=',$stage->current($groupID))
         ->update([
             'project_approval.isApproved' => $num
         ]);
@@ -57,7 +56,7 @@ class Project extends Model
         $update = DB::table('schedule_approval')
         ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
         ->where('panel_group.panelCGroupID','=',$groupID)
-        ->when($type, function ($query) use ($stage,$groupID) {
+        ->when(($type > 0), function ($query) use ($stage,$groupID) {
             return $query->where('panel_group.panelGroupType','=',$stage->current($groupID));
         })
         ->update([
