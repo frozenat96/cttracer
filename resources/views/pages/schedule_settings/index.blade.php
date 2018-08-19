@@ -13,10 +13,10 @@
         <br class="my-4">
             <div class="row">
                 <div class="col-md-10">
-            <form method="post" action="/schedule-search-results" accept-charset="UTF-8" role="search">
+            <form id="form-search" method="post" action="/schedule-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
+                    <input type="text" class="form-control search-bar1" name="q" placeholder="Search Groups"> 
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>

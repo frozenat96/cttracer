@@ -21,27 +21,25 @@
         <br class="my-4">
             <div class="row">
                 <div class="col-md-12">
-            <form method="post" action="/quick-view-search-results" accept-charset="UTF-8" role="search" id="form-search">
+            <form id="form-search" method="post" action="/quick-view-search-results" accept-charset="UTF-8" role="search">
                 {{csrf_field()}} 
                 <div class="input-group">
-                    <input type="text" class="form-control" id="query" name="q" list="groups1" placeholder="Search Groups"> 
+                    <input type="text" class="form-control search-bar1" name="q" list="list1" placeholder="Search Groups"> 
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">
                             <span><i class="fas fa-search"></i> Search</span>
                         </button>
                     </span>
-                    <?php 
-                    $g1 = DB::table('group')->pluck('group.groupName');
-                    $p1 = DB::table('project')->pluck('project.projName'); 
-                    ?>
-                    <datalist id="groups1" class="datalist scrollable">
-                        @foreach($g1 as $g2)
-                            <option value="{{$g2}}">
+                    @if(isset($data) && count($data))
+                    <datalist id="list1" class="datalist scrollable">
+                        @foreach($data as $data1)
+                            <option value="{{$data1->groupName}}">
                         @endforeach
-                        @foreach($p1 as $p2)
-                            <option value="{{$p2}}">
+                        @foreach($data as $data2)
+                            <option value="{{$data1->projName}}">
                         @endforeach
                     </datalist>
+                    @endif
                     
                 </div>
             </form>
@@ -218,7 +216,7 @@ $('#search1').select2();
 $(document).ready(function () {
     $('#search1').change(function () {
         x = $('#search1').val();
-        $('#query').val(x);
+        $('.search-bar1').val(x);
         $('#form-search').submit();
     });
 });

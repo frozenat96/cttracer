@@ -17,7 +17,7 @@
                 @include('inc.messages')
                 {!!Form::open(['action' => ['ScheduleController@coordRequestForSched'], 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                            <legend class="text-left"><span class="alert bg2">CREATE SCHEDULE FORM</span><hr class="my-4"></legend>
+                            <h4 class="text-left"><span class="alert bg2">CREATE SCHEDULE FORM</span><hr class="my-4"></h4>
                             
                             {{csrf_field()}} 
                     <div class="form-row">
@@ -35,10 +35,7 @@
                                 <label for="starting_time">Starting Time</label>
                                 <input name="starting_time" type="time" class="form-control" id="starting_time" required="yes" autocomplete="Starting Time" value="{{old('starting_time')}}" min="07-04-2018">
                         </div>
-                        <div class="form-group col-md-3">
-                                <label for="ending_time">Ending Time</label>
-                                <input name="ending_time" type="time" class="form-control" id="ending_time"  required="yes" autocomplete="Ending Time" value="{{old('ending_time')}}">
-                        </div>        
+                             
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-10">
@@ -57,16 +54,31 @@
 
               
                     </div>
-                        <div class="form-group text-right">
-                                <hr class="my-4">
+                    <!-- options -->
+                    <hr class="my-4">
+                    <div class="form-row">
+                        <div class="col-md-12 text-right">
+                        <table class="table-responsive-md" style="float:right;">
+                        <tr>
+                            <td style="padding-right:3px;" class="back-button">
+                                <a class="btn btn-secondary btn-lg" href="/quick-view"><i class="fas fa-arrow-left"></i> Back</a>
+                            </td>
+                            <td style="padding-right:3px;">    
                                 <button type="reset" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-recycle"></i> Reset Values</span>
                                 </button>
+                            </td>
+                            <td>
                                 <button type="button" id="sub1" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
-                                    <span><i class="far fa-edit"></i> Save Changes</span>
+                                    <span><i class="fas fa-plus"></i> Create Schedule</span>
                                 </button>
                                 <button id="sub2" type="submit" style="display:none;"></button>
-                            </div>
+                            </td>
+                        </tr>
+                        </table>
+                        </div>
+                    </div>
+                    <!-- options -->
                         </fieldset>
                         <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" name="grp" value="{{$data->groupID}}">

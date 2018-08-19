@@ -33,6 +33,7 @@ class GroupHistory extends Model
     
             $grpHist = new GroupHistory;
             $grpHist->groupHistID = Uuid::generate()->string;
+            $grpHist->groupHGroupID = $group->groupID;
             $grpHist->groupHGroupName = $group->groupName;
             $grpHist->groupHProjName = $proj->projName;
             $grpHist->groupHActivity = $activity;

@@ -15,25 +15,43 @@
             </div>
         </div>
         <br class="my-4">
+
+            <!--Search bar-->
             <div class="row">
-                <div class="col-md-10">
-            <form method="post" action="/group-search-results" accept-charset="UTF-8" role="search">
-                {{csrf_field()}} 
-                <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-info btn-lg">
-                            <span><i class="fas fa-search"></i> Search</span>
-                        </button>
-                    </span>
-                    
-                </div>
-            </form>
-                </div>
-                <div class="col-md-1 text-right">
-                        <a href="/groups/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new group" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
-                </div>
+                <div class="col-md-12">
+                <table class="table table-responsive-sm table-responsive-md">
+                    <tr>
+                        <td style="min-width: 360px;width:85%;">
+                    <form id="form-search" method="post" action="/group-search-results" accept-charset="UTF-8" role="search">
+                        {{csrf_field()}} 
+                    <div class="input-group">
+                        <input type="text" class="form-control search-bar1" name="q" list="list1" placeholder="Search Groups"> 
+                        
+                        <datalist id="list1" class="datalist scrollable">
+                            @foreach($data as $data1)
+                            <option value="{{$data1->groupName}}">
+                            @endforeach
+                            @foreach($data as $data2)
+                                <option value="{{$data2->projName}}">
+                            @endforeach
+                        </datalist>
+                
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <span><i class="fas fa-search"></i> Search</span>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                </td>
+            <td class="text-left" style="">
+                <a href="/groups/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new group" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+            </td>
+                </tr>
+            </table>
             </div>
+        </div>
+        <!-- search bar-->
             <hr class="my-4">
             @if(isset($data) && count($data))
             <?php 
@@ -73,15 +91,19 @@
             </table>
             {!! $data->render() !!}    
             <div class="row">
-            <div class="col-md-12 text-right">
-                    <form action="/deleteFinishedGroups" class="form1">
-                    <span data-toggle="popover" data-content="Delete all groups that are already finished with their project." data-placement="top">
-                    <button id="sub1" type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#confirm1">
-                            <span><i class="fas fa-minus"></i> Delete All Finished Groups</span>
-                    </button>
-                    </span>
-                    <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;"></button>
-                    </form>
+                <div class="col-md-12 text-right">
+                    <table class="table-responsive-md" style="float:right;">
+                        <tr><td>
+                        <form action="/deleteFinishedGroups" class="form1">
+                        <span data-toggle="popover" data-content="Delete all groups that are already finished with their project that are under a Capstone Coordinator." data-placement="top">
+                        <button id="sub1" type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#confirm1">
+                                <span><i class="fas fa-minus"></i> Delete All Finished Groups</span>
+                        </button>
+                        </span>
+                        <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;"></button>
+                        </form>
+                        </td></tr>
+                    </table>
                 </div>
             </div>
             @else

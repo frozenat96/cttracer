@@ -95,7 +95,7 @@
                         <td>
                     </tr>
                     <tr>
-                        <td><small><b>Project Document : </b></small><a href="{{$data1->projDocumentLink}}" class="btn btn-link btn-sm" title="{{$data1->projName}}" data-toggle="popover" data-content="Download project document" data-placement="top"><span><i class="fas fa-download"></i>  {{(substr($data1->projName, 0, 10) . '..')}}</span></a>
+                        <td><small><b>Project Document : </b></small><a href="{{$data1->projDocumentLink}}" target="_blank" class="btn btn-link btn-sm" title="{{$data1->projName}}" data-toggle="popover" data-content="View project document" data-placement="top"><span><i class="fas fa-download"></i>  {{(substr($data1->projName, 0, 10) . '..')}}</span></a>
                         </td>
                     </tr>
                     </table>

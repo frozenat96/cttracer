@@ -20,10 +20,22 @@
         <br class="my-4">
             <div class="row">
                 <div class="col-md-12">
-                    <form method="post" action="/advised-groups-search-results" accept-charset="UTF-8" role="search">
+                    <form id="form-search" method="post" action="/advised-groups-search-results" accept-charset="UTF-8" role="search">
                         {{csrf_field()}} 
                         <div class="input-group">
-                            <input type="text" class="form-control" name="q" placeholder="Search Groups"> 
+                            <input type="text" class="form-control search-bar1" list="list1" name="q" placeholder="Search Groups"> 
+                    
+                            @if(isset($data) && count($data))
+                            <datalist id="list1" class="datalist scrollable">
+                                @foreach($data as $data1)
+                                    <option value="{{$data1->groupName}}">
+                                @endforeach
+                                @foreach($data as $data2)
+                                    <option value="{{$data1->projName}}">
+                                @endforeach
+                            </datalist>
+                            @endif
+                            
                             <span class="input-group-btn">
                                 <button type="submit" class="btn btn-info btn-lg">
                                     <span><i class="fas fa-search"></i> Search</span>

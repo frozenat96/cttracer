@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Webpatser\Uuid\Uuid;
 use Auth;
 use Exception;
+use Session;
 
 class AccountController extends Controller
 {
@@ -35,7 +36,14 @@ class AccountController extends Controller
      */
     public function index()
     {
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
         $accounts = $this->getIndex();
+        if(!is_null($q) && $q==1) {
+            return view('pages.accounts.index')->with('data',$accounts)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.accounts.index')->with('data',$accounts)->with('error',$msg);
+        }
         return view('pages.accounts.index')->with('data',$accounts);
     }
 
@@ -373,6 +381,11 @@ class AccountController extends Controller
                 ->where('panel_group.panelAccID','=',$acc->accID)
                 ->decrement('project.minProjPanel',1);
             }
+            if(in_array($request->input('role'),['2','3']) && in_array($acc->accType,['1'])) {
+                DB::table('application_setting')
+                ->where('application_setting.settingCoordID','=',$acc->accID)
+                ->delete();
+            }
 
             if($acc->accEmail != $request->input('email')) {
                 $validator = Validator::make($request->all(), [
@@ -389,6 +402,7 @@ class AccountController extends Controller
             $acc->save();
             DB::commit();
         } catch(Exception $e) {
+            //return dd($e);
             DB::rollback();
             return redirect()->back()->withInput($request->all)->withErrors('Account Information was not Updated!');
         }
@@ -420,7 +434,7 @@ class AccountController extends Controller
             $user_id = Auth::user()->getId(); 
             DB::beginTransaction();
             $valid_panel_members= DB::table('account')
-            ->whereIn('account.accType',['1','2'])
+            ->whereIn('account.accType',['2'])
             ->pluck('accID');
             $validator = Validator::make($request->all(), [
                 'transferee_account' => ['required',Rule::In($valid_panel_members->all())],
@@ -431,10 +445,7 @@ class AccountController extends Controller
             
             $transferer = User::find($user_id);
             $transferee = User::find($request->input('transferee_account'));
-
-            if($transferee->accType!='2') {
-                return redirect()->back()->withErrors( ['Transfer of account information failed!','The account to be transfered to is not a Panel Member.']);
-            }
+   
             $transferer->accType = '2';
             $transferee->accType = '1';
             
@@ -458,11 +469,10 @@ class AccountController extends Controller
         $currentUser = User::find($user_id);
             $deleteAccount = User::find($id);
             if(($currentUser->accType == '1') && ($user_id == $id)) {
-                //if trying to delete own account and acount type is Capstone Coordinator
+                //if trying to delete own account and account type is Capstone Coordinator
                 return redirect()->back()->withErrors('Cannot delete capstone coordinator account.');
-            } elseif($deleteAccount->accType == '2') {
+            } elseif(in_array($deleteAccount->accType,['1','2'])) {
                 //if the account to be deleted is a Panel Member account
-         
                 $delete1 = DB::table('schedule_approval')
                 ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
                 ->where('panel_group.panelAccID','=',$id)
@@ -476,24 +486,30 @@ class AccountController extends Controller
                 $delete3 = DB::table('panel_group')
                 ->where('panel_group.panelAccID','=',$id)
                 ->delete();
+                if(!$delete1 || !$delete2 || !$delete3) {
+                    DB::rollback();
+                    return redirect()->action('AccountController@index', ['status' => 0,'statusMsg'=>['Deletion of account failed.','Rolled back changes']]);
+                }
                 $this->deleteUpdateDependencies($id);
                 $delete4 = DB::table('account')->where('account.accID','=',$id)->delete();
-            } elseif($deleteAccount->accType == '1') {
-                return redirect()->back()->withErrors('Cannot delete capstone coordinator accounts.');
             } else {
                 $deleteAccount->delete();
-                DB::commit();
-                $accounts = $this->getIndex();
-                return view('pages.accounts.index')->with('data',$accounts)->with('success2','Account Information has been Deleted!');
+                DB::commit();  
+                return redirect()->action('AccountController@index', ['status' => 1,'statusMsg'=>['Account Information has been Deleted!']]);
+            }
+            if($deleteAccount->accType == '1') {
+                //delete application settings
+                $delete4 = DB::table('applications_settings')
+                ->where('applications_settings.settingCoordID','=',$id)
+                ->delete();
             }
             DB::commit();
-            return redirect()->back()->with('success',['Account Information has been Deleted!','Depedency of accounts has been successfully updated']);
+            return redirect()->action('AccountController@index', ['status' => 1,'statusMsg'=>['Account Information has been Deleted!']]);
         } catch (Exception $e) {
+            //return dd($e);
             DB::rollback();
-            return redirect()->back()->withErrors(['Deletion of account failed.','Rolled back changes']);
-        }
-
-          
+            return redirect()->action('AccountController@index', ['status' => 0,'statusMsg'=>['Deletion of account failed.','Rolled back changes']]);
+        } 
     }
 
     public function deleteUpdateDependencies($id) {
@@ -506,6 +522,5 @@ class AccountController extends Controller
         ->update([
             'group.groupCAdviserID' => $cc->accID,
         ]);
-        return 1;
     }
 }

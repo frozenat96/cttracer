@@ -17,7 +17,7 @@
                 @include('inc.messages')
                 <form method="post" action="{{action('AccountController@transferExecute')}}" accept-charset="UTF-8" role="create">
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">TRANSFER ROLE FORM</span><hr class="my-4"></legend>
+                                <h4 class="text-left"><span class="alert bg2">TRANSFER ROLE FORM</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
                     <div class="form-row">

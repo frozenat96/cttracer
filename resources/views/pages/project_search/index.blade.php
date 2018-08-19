@@ -15,26 +15,44 @@
         @include('inc.messages')
         <h4><span class="alert bg2">PROJECT ARCHIVE</span></h4>
         <br class="my-4">
+            <!--Search bar-->
             <div class="row">
-            <div @if($user[0]->accType=='1') class="col-md-10" @else class="col-md-12" @endif>
-                <form method="post" action="/proj-archive-search-results" accept-charset="UTF-8" role="search">
-                    {{csrf_field()}} 
+                <div class="col-md-12">
+                <table class="table table-responsive-sm table-responsive-md">
+                    <tr>
+                        <td @if($user[0]->accType=='1') style="min-width: 360px;width:85%;" @else style="width:100%;" @endif>
+                    <form id="form-search" method="post" action="/proj-archive-search-results" accept-charset="UTF-8" role="search">
+                        {{csrf_field()}}  
                     <div class="input-group">
-                        <input type="text" class="form-control" name="q" placeholder="Search Projects"> 
+                            <input type="text" class="form-control search-bar1" list="list1" name="q" placeholder="Search Projects"> 
+
+                            @if(isset($data) && count($data))
+                            <datalist id="list1" class="datalist scrollable">
+                                @foreach($data as $data1)
+                                    <option value="{{$data1->projName}}">
+                                @endforeach
+                            </datalist>
+                            @endif
+                
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-search"></i> Search</span>
                             </button>
-                        </span>  
+                        </span>
                     </div>
                 </form>
+                </td>
+            @if($user[0]->accType=='1')
+            <td class="text-left" style="">
+                <a href="/project-archive/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new project archive" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+            </td>
+            @endif
+                </tr>
+            </table>
             </div>
-                @if($user[0]->accType=='1')
-                <div class="col-md-1 text-right">
-                    <a href="/project-archive/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new project archive" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
-                </div>
-                @endif
-            </div>
+        </div>
+        <!-- search bar-->
+
         <hr class="my-4">
         @if(isset($data) && count($data))
         <table class="table table-striped table-hover table-responsive-sm">

@@ -246,6 +246,8 @@ class QuickViewController extends Controller
             $stgName = Stage::find($data->projStageNo);
             $msg ='';
             $notify = new Notification;
+
+            //Add to group history
             $grpHist = new GroupHistory;
             if($data->projStageNo < $maxStage) {
                 $group->groupStatus = 'Waiting for Submission';
@@ -292,6 +294,11 @@ class QuickViewController extends Controller
             $group->save();
             $notify = new Notification;
             $notify->NotifyStudentOnFinish($group);
+
+            //Add to group history
+            $grpHist = new GroupHistory;
+            $grpHistActivity = "The project of the group was completed.";
+            $grpHist->add($group,$grpHistActivity);
             DB::commit();
         } catch(Exception $e) { 
             DB::rollback();
@@ -307,6 +314,30 @@ class QuickViewController extends Controller
             DB::beginTransaction();   
             $group = Group::find($request->input('grp'));
             $group->groupStatus = 'Ready for Defense';
+
+            //find the schedule
+            $sc0 = DB::table('schedule')
+            ->where('schedule.schedGroupID','=',$request->input('grp'))
+            ->first();
+            $sc0 = Schedule::find($sc0->schedID);
+
+            //find the stage of the group
+            $stg = DB::table('project')
+            ->join('stage','stageNo','=','project.projStageNo')
+            ->where('project.projGroupID','=',$request->input('grp'))
+            ->first();
+
+            //add the event on google calendar
+            $event = new Event;
+            $event->addLocation($sc0->schedPlace);
+            $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
+            $event->endDateTime = $tend = $tstart->addMinutes($stg->stageDefDuration);
+            $sc0->schedTimeEnd = $tend;
+            $event->name = "{$sc0->schedType}({$group->groupName}); {$event->startDateTime->format("H:i A")} - {$tend->format("H:i A")} @ {$sc0->schedPlace};";
+            $calendarEvent = $event->save();
+            $sc0->schedEventID = $calendarEvent->id;
+            $sc0->save();
+
             $group->save();
             $notify = new Notification;
             $notify->NotifyAllOnReady($group);
@@ -343,6 +374,7 @@ class QuickViewController extends Controller
     public function setProjectVerdict(Request $request) {
         try {
             $groupID = $request->input('grp');
+            $grpHist = new GroupHistory;
             DB::beginTransaction();
             $validPanelVerdict = DB::table('panel_verdict')
             ->pluck('panelVerdictNo');
@@ -372,6 +404,12 @@ class QuickViewController extends Controller
                 DB::commit();
                 $pv = PanelVerdict::find($request->input('panel_verdict'));
                 $msg = 'The group\'s panel verdict is now set to \'' . $pv->pVerdictDescription . '\'.';
+
+                if($request->input('panel_verdict')=='4') {
+                    $project->projStageNo = 1;
+                    $grpHistActivity = "The group was advised to re-propose a new project.";
+                    $grpHist->add($group,$grpHistActivity);
+                }
                 
             } elseif(in_array($request->input('panel_verdict'),['7'])) {
                 $msg = $this->getNextStage($groupID);
@@ -446,14 +484,17 @@ class QuickViewController extends Controller
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = $request->input('schedule_status');
             $sc0->save();
+
             //update the google calendar
             $event = Event::find($sc0->schedEventID);
-            $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
-            $event->endDateTime = $tend = new Carbon("{$sc0->schedDate} {$sc0->schedTimeEnd}");
-            $event->name = "{$sc0->schedType} for the group of {$data[0]->groupName}, {$sc0->schedPlace} -- {$sc0->schedTimeStart} - {$sc0->schedTimeEnd}";
-            $event->addLocation($sc0->schedPlace);
-            $event->save();
-
+            if(!is_null($event)) {
+                $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
+                $event->endDateTime = $tend = new Carbon("{$sc0->schedDate} {$sc0->schedTimeEnd}");
+                $event->name = "{$sc0->schedType} for the group of {$data[0]->groupName}, {$sc0->schedPlace} -- {$sc0->schedTimeStart} - {$sc0->schedTimeEnd}";
+                $event->addLocation($sc0->schedPlace);
+                $event->save();
+            }
+         
             foreach($data as $pmembers) {
                 $sc1 = ScheduleApproval::find($pmembers->schedAppID);
                 $approval = $request->input('sched_app_' . $pmembers->accID);

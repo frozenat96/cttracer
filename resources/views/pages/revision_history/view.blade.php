@@ -21,18 +21,18 @@
 
         <div class="jumbotron bx2">
                 @include('inc.messages')
-                <legend class="text-left"><span class="alert bg2">REVISION VIEW</span><hr class="my-4"></legend>
-        @if(isset($data) && count($data))
+                <h4 class="text-left"><span class="alert bg2">REVISION VIEW</span><hr class="my-4"></h4>
+        @if(isset($data['projApp']) && count($data['projApp']))
         <!-- Project Revision Approval -->
         <div class="row">
             <div class="col-md-12">
             <h5>Revision Details : </h5>
-            <h6>For the group of : {{$data['projApp'][0]->groupName}}</h6>
+            <h6>For the group of : {{$data['projApp'][0]->revGroupName}}</h6>
             <h6>Stage : {{$data['projApp'][0]->stageNo}} - {{$data['projApp'][0]->stageName}}</h6>
             <h6>Revision {{$data['projApp'][0]->revNo}}</h6>
             <hr>
             <h5>Project Approval Details : </h5>
-            <table class="table table-striped table-hover table-hover">
+            <table class="table table-striped table-hover table-hover table-responsive-sm table-responsive-md">
                 <thead>
                     <tr class="">
                         <th>Position</th>
@@ -45,7 +45,7 @@
                     @foreach($data['projApp'] as $rev)
                         <tr class="">
                             <td>
-                                @if($rev->panelIsChair)
+                                @if($rev->revPanelIsChair)
                                     Chair panel member
                                 @else
                                     Panel member
@@ -65,12 +65,12 @@
                                 @endif  
                             </td>
                             <td>
-                                {{date_format(new Datetime($rev->revTimestamp),"Y-m-d g:i A")}}
+                                {{date_format(new Datetime($rev->revTimestamp),"M-d-Y -- g:i A")}}
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table>   
             </div>
         </div> 
         <hr>
@@ -83,7 +83,7 @@
                 
                 <label for="proj_approval_comment">
                     <span title='{{$rev->accTitle}} {{$rev->accFName}} {{$rev->accMInitial}} {{$rev->accLName}}'>
-                        {{$rev->accLName}}, {{$grpModel->initials($rev->accFName)}}@if($rev->panelIsChair)
+                        {{$rev->accLName}}, {{$grpModel->initials($rev->accFName)}}@if($rev->revPanelIsChair)
                         (Chair panel member) @endif
                         </span>
                 </label>
@@ -92,14 +92,11 @@
                 @endforeach
         </div> <!-- End of comment section -->
         <!-- End of Project Revision Approval -->
-        <span class="text-right">
-        {!!Form::open(['action' => ['RevHistoryController@print'], 'method' => 'POST', 'target'=>'_blank']) !!}
-        <button  type="submit" class="btn btn-warning btn-lg" name="submit" data-toggle="popover" data-content="View revision for printing" data-placement="top"><span><i class="fas fa-print"></i> View for Printing</span></button>
-        <input type="hidden" name="grp" value="{{$data['projApp'][0]->groupID}}">
-        <input type="hidden" name="stg" value="{{$data['projApp'][0]->stageNo}}">
-        <input type="hidden" name="rev_no" value="{{$data['projApp'][0]->revNo}}">
-        {!!Form::close() !!}
-        </span>
+        <div class="form-row">
+            <div class="col-md-12 text-right">
+        <a class="btn btn-secondary btn-lg" href="/revision-history-search-results/{{$rev->revGroupName}}"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
+        </div>
       
         </div> <!-- End of div jumbotron -->
         </div> <!-- End of div container -->

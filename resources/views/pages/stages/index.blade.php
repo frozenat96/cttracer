@@ -11,33 +11,41 @@
         @include('inc.messages')
         <h4><span class="alert bg2 f-title1">MANAGE STAGE SETTINGS</span></h4>
             <br class="my-4">
+            <!--Search bar-->
             <div class="row">
-                <div class="col-md-10">
-            <form method="post" action="/stage-search-results" accept-charset="UTF-8" role="search">
-                {{csrf_field()}} 
-                <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Stages" list="stage1"> 
-                    <?php 
-                    $s1 = DB::table('stage')->pluck('stageName');
-                    ?>
-                    <datalist id="stage1" class="datalist scrollable">
-                        @foreach($s1 as $s2)
-                            <option value="{{$s2}}">
-                        @endforeach
-                    </datalist>
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-info btn-lg">
-                            <span><i class="fas fa-search"></i> Search</span>
-                        </button>
-                    </span>
+                <div class="col-md-12">
+                    <table class="table table-responsive-sm table-responsive-md">
+                        <tr>
+                            <td style="min-width: 360px;width:85%;">
+                    <form id="form-search" method="post" action="/stage-search-results" accept-charset="UTF-8" role="search">
+                        {{csrf_field()}} 
+                        <div class="input-group">
+                        <input type="text" class="form-control search-bar1" name="q" placeholder="Search Stages" list="stage1">           
+                        <?php 
+                        $s1 = DB::table('stage')->pluck('stageName');
+                        ?>
+                        <datalist id="stage1" class="datalist scrollable">
+                            @foreach($s1 as $s2)
+                                <option value="{{$s2}}">
+                            @endforeach
+                        </datalist>
                     
-                </div>
-            </form>
-                </div>
-                <div class="col-md-1 text-right">
-                        <a href="/stage-settings/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new stage" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-info btn-lg">
+                                    <span><i class="fas fa-search"></i> Search</span>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                    </td>
+                <td class="text-left" style="">
+                    <a href="/stage-settings/create" class="btn btn-success btn-lg" data-toggle="popover" data-content="Add a new stage" data-placement="top"><span><i class="fas fa-plus"></i> Add</span></a>
+                </td>
+                    </tr>
+                </table>
                 </div>
             </div>
+            <!-- search bar-->
             
             <hr class="my-4">
             @if(isset($data) && count($data))

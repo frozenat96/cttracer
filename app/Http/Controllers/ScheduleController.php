@@ -8,6 +8,7 @@ use App\models\PanelGroup;
 use App\models\ScheduleApproval;
 use App\models\Schedule;
 use App\models\Group;
+use App\models\Project;
 use App\models\Stage;
 use Auth;
 use DB;
@@ -73,7 +74,10 @@ class ScheduleController extends Controller
             ->whereIn('group.groupStatus', ['Ready for Defense'])
             ->whereNotIn('project.projPVerdictNo',['2','3','7'])
             ->where('schedule.schedStatus','=','Ready')
-            ->where('group.groupName','LIKE', "%".$q."%")
+            ->where(function ($query) use ($q){
+                $query->where('group.groupName','LIKE', "%".$q."%")
+                ->orWhere('project.projName','LIKE', "%".$q."%");
+            })
             ->orderBy('schedule.schedDate')
             ->orderBy('schedule.schedTimeStart')
             ->paginate(5); 
@@ -169,7 +173,6 @@ class ScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'date' => ['required','date_format:Y-m-d'],
                 'starting_time' => ['required','date_format:H:i'],
-                'ending_time' => ['required','date_format:H:i','after:starting_time'],
                 'place' => ['required','max:100'],
                 'schedule_type' => ['required','max:20',Rule::In($validType)],
                 'grp' =>  ['required']
@@ -180,6 +183,7 @@ class ScheduleController extends Controller
             
             $now = date("H:i");
             $today = date("Y-m-d");
+            $pRes = new Project;
             $now_format = date_format(new \Datetime($now),"H:i A");
             if(($now > $request->input('starting_time')) && ($today == $request->input('date'))) {
                 return redirect()->back()->withInput($request->all)->withErrors(['Schedule Information was not created.',"The starting time must greater than {$now_format}"]);   
@@ -192,15 +196,21 @@ class ScheduleController extends Controller
             ->join('panel_group','panel_group.panelCGroupID','=','group.groupID')
             ->join('schedule_approval','schedule_approval.schedPanelGroupID','=','panel_group.panelGroupID')
             ->join('account','account.accID','=','panel_group.panelAccID')
-            ->select('group.*','schedule.*','schedule_approval.*','panel_group.*','account.*')
             ->where('group.groupID','=',$id)
             ->where('panel_group.panelGroupType','=',$stg->current($id))
             ->get();
+
+            //find the stage of the group
+            $stg1 = DB::table('project')
+            ->join('stage','stageNo','=','project.projStageNo')
+            ->where('project.projGroupID','=',$id)
+            ->first();
                
             $sc0 = Schedule::find($data[0]->schedID);
             $sc0->schedDate = $request->input('date');
             $sc0->schedTimeStart = $request->input('starting_time');
-            $sc0->schedTimeEnd = $request->input('ending_time');
+            $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
+            $sc0->schedTimeEnd = $tstart->addMinutes($stg1->stageDefDuration);
             $sc0->schedPlace = $request->input('place');
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = 'Not Ready';
@@ -212,7 +222,8 @@ class ScheduleController extends Controller
             $group->save(); 
             $notify = new Notification;
            // $notify->NotifyPanelOnSchedRequest($group);
-
+   
+            /*
             //add the event on google calendar
             $event = new Event;
             $event->name = "{$sc0->schedType} for the group of {$group->groupName}, {$sc0->schedPlace}";
@@ -220,16 +231,10 @@ class ScheduleController extends Controller
             $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
             $event->endDateTime = $tend = $tstart->addHour(2);
             $calendarEvent = $event->save();
-            $update = DB::table('schedule_approval')
-            ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
-            ->where('panel_group.panelCGroupID','=',$group->groupID)
-            ->update([
-                'schedule_approval.isApproved' => '0',
-                'schedule_approval.schedAppMsg' => ''
-            ]);
-            //$calendarId = Event::get()->last()->id;
-            //$eventid = Event::find($calendarId);
             $sc0->schedEventID = $calendarEvent->id;
+            */
+
+            $pRes->resetSchedApp($group->groupID,'0',1);
             $sc0->save(); 
             DB::commit();    
             } catch (Exception $e) {
@@ -238,8 +243,9 @@ class ScheduleController extends Controller
             }
             $data = DB::table('group')
             ->where('group.groupID','=',$group->groupID)
-            ->first();
-            return view('pages.quick_view.create-schedule')->with('data',$data)->with('success2','Schedule Information was created successfully!');;
+            ->first();  
+            return redirect("/quick-view-search-results?q={$group->groupName}")->withSuccess('Schedule Information was created successfully!');
+            return view('pages.quick_view.create-schedule')->with('data',$data)->withInput($request->all)->with('success2','Schedule Information was created successfully!');;
     }
 
 }

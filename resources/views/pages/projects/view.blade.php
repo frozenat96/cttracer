@@ -20,7 +20,7 @@
         </div>
 
         <div class="jumbotron bx2">
-                <legend class="text-left"><span class="alert bg2">PROJECT VIEW</span><hr class="my-4"></legend>
+                <h4 class="text-left"><span class="alert bg2">PROJECT VIEW</span><hr class="my-4"></h4>
         @if(isset($data) && count($data))
         <div class="row"> <!-- Group Information -->
             <div class="col-md-4">         
@@ -68,7 +68,7 @@
                         <?php $allowRevHist = new App\models\RevisionHistory; ?>
                         @if($allowRevHist->status==true)
                         <li>
-                            <a href="/revision-history-search-results/{{$data['proj']->groupName}}" target="_blank" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> View Revision History</a>
+                            <a href="/revision-history-search-results/{{$data['proj']->groupName}}" target="_blank" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Revision History</a>
                         </li>
                         @endif
                         </ul>
@@ -146,7 +146,9 @@
                                 @endif  
                             </td>
                             <td>
+                                @if($pmembers->isApproved != 0)
                                 {{date_format(new Datetime($pmembers->projAppTimestamp),"M d, Y - g:i A")}}
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -168,7 +170,7 @@
                         (Chair panel member) @endif
                         </span>
                 </label>
-                <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accID}}" class="form-control" readonly="readonly">{{$pmember->projAppComment}}</textarea>
+                <textarea id="proj_approval_comment" name="proj_comment_{{$pmember->accID}}" class="form-control" readonly>{{$pmember->projAppComment}}</textarea>
                 </div>
                 @endforeach
         </div> <!-- End of comment section -->

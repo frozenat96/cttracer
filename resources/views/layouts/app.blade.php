@@ -102,6 +102,10 @@ $(".form1").on("submit", function(){
     $("#pageloader").show();
 });
 
+$('.search-bar1').change(function () {
+    $('#form-search').submit();
+});
+
 function btnConfirm() {
     if(confirm('Are you sure?')) {
         $("#pageloader").show();

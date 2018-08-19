@@ -35,6 +35,14 @@ class StageController extends Controller
     {
         $data = DB::table('stage')
             ->paginate(10);
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.stages.index')->with('data',$data)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.stages.index')->with('data',$data)->with('error',$msg);
+        }
         return view('pages.stages.index')->withData($data);    
     }
 
@@ -250,8 +258,16 @@ class StageController extends Controller
      */
     public function destroy($id)
     {
-        $delete = Stage::find($id);
-        $delete->delete();
-        return redirect()->back()->with('success', 'Stage Information has been Deleted!');
+        try {
+            DB::beginTransaction();
+            $delete = Stage::find($id);
+            $delete->delete();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->action('StageController@index', ['status' => 0,'statusMsg'=>['Stage Information was not deleted!']]);
+        }
+
+        return redirect()->action('StageController@index', ['status' => 1,'statusMsg'=>['Stage Information has been deleted!']]);
     }
 }

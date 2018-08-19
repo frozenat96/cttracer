@@ -16,10 +16,22 @@
         <br class="my-4">
             <div class="row">
             <div class="col-md-12">
-                <form method="post" action="/proj-search-results" accept-charset="UTF-8" role="search">
+                <form id="form-search" method="post" action="/proj-search-results" accept-charset="UTF-8" role="search">
                     {{csrf_field()}} 
                     <div class="input-group">
-                        <input type="text" class="form-control" name="q" placeholder="Search Projects"> 
+                        <input type="text" class="form-control search-bar1" list="list1" name="q" placeholder="Search Projects"> 
+
+                        @if(isset($data) && count($data))
+                        <datalist id="list1" class="datalist scrollable">
+                            @foreach($data as $data1)
+                                <option value="{{$data1->groupName}}">
+                            @endforeach
+                            @foreach($data as $data2)
+                                <option value="{{$data1->projName}}">
+                            @endforeach
+                        </datalist>
+                        @endif
+
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-info btn-lg">
                                 <span><i class="fas fa-search"></i> Search</span>
@@ -31,14 +43,19 @@
                
             </div>
         <hr class="my-4">
+        <?php $allowRevHist = new App\models\RevisionHistory; ?>
         @if(isset($data) && count($data))
-        <table class="table table-striped table-hover table-responsive-sm">
+        <table class="table table-sm table-striped table-hover table-responsive-sm">
             <thead>
                 <tr>
                     <th scope="col">Project Name</th>
                     <th scope="col">Group Name</th>
                     <th scope="col">Project Status</th>
                     <th scope="col">Project view</th>
+                    @if($allowRevHist->status==true)
+                    <th scope="col">Revision History</th>
+                    <th scope="col">Group History</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +75,17 @@
                                     <i class="far fa-eye"></i> View Project 
                             </a>     
                         </td>
+                        
+                        
+                        @if($allowRevHist->status==true)
+                        <td>
+                            <a class="btn btn-dark" href="/revision-history-search-results/{{$proj->groupName}}" target="_blank" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Revision History</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" href="/group-history-search-results?q={{$proj->groupName}}" target="_blank" data-content="View Group History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Group History</a>
+                        </td>
+                        @endif
+                       
                     </tr>
                 @endforeach
             </tbody>

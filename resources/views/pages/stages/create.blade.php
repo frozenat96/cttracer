@@ -17,7 +17,7 @@
                 @include('inc.messages')
                 <form method="post" action="{{action('StageController@store')}}" accept-charset="UTF-8" role="create" class="form1">
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">CREATE STAGE FORM</span><hr class="my-4"></legend>
+                                <h4 class="text-left"><span class="alert bg2">CREATE STAGE FORM</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
                     <!-- required fields note -->
@@ -91,16 +91,31 @@
                         </div>
                     </div>
 
-                        <div class="form-group text-right">
-                            <hr class="my-4">
-                            <button type="reset" class="btn btn-info btn-lg">
-                            <span><i class="fas fa-recycle"></i> Reset Values</span>
-                            </button>
-                            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
-                                <span><i class="fas fa-plus"></i> Create Stage</span>
-                            </button>
-                            <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
+                        <!-- options -->
+                        <hr class="my-4">
+                        <div class="form-row">
+                            <div class="col-md-12 text-right">
+                            <table class="table-responsive-md" style="float:right;">
+                            <tr>
+                                <td style="padding-right:3px;" class="back-button">
+                                    <a class="btn btn-secondary btn-lg" href="/stage-settings"><i class="fas fa-arrow-left"></i> Back</a>
+                                </td>
+                                <td style="padding-right:3px;">    
+                                    <button type="reset" class="btn btn-info btn-lg">
+                                    <span><i class="fas fa-recycle"></i> Reset Values</span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" id="sub1" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
+                                        <span><i class="fas fa-plus"></i> Create Stage</span>
+                                    </button>
+                                    <button id="sub2" type="submit" style="display:none;"></button>
+                                </td>
+                            </tr>
+                            </table>
+                            </div>
                         </div>
+                        <!-- options -->
                     </fieldset>
                 </form>
             </div>

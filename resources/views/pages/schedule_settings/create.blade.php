@@ -16,7 +16,7 @@
                 @include('inc.messages')
                 <form method="post" action="{{action('GroupController@store')}}" accept-charset="UTF-8" role="create">
                         <fieldset>
-                            <legend class="text-left"><span class="alert bg2">CREATE SCHEDULE SETTING FORM</span><hr class="my-4"></legend>
+                            <h4 class="text-left"><span class="alert bg2">CREATE SCHEDULE SETTING FORM</span><hr class="my-4"></h4>
                             
                             {{csrf_field()}} 
                     <div class="form-row">

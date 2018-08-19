@@ -65,8 +65,8 @@ Route::group(['middleware' => ['auth']], function() {
         ]
         );
 
-        Route::any('/revision-history-print', [
-            'uses'=>'RevHistoryController@print',
+        Route::any('/revision-history-delete-all-group/{id}', [
+            'uses'=>'RevHistoryController@deleteAllByGroup',
         ]
         );
 
@@ -74,6 +74,11 @@ Route::group(['middleware' => ['auth']], function() {
 
         Route::any('/group-history-search-results', [
             'uses'=>'GrpHistoryController@search',
+        ]
+        );
+
+        Route::any('/group-history-delete-all-group/{id}', [
+            'uses'=>'GrpHistoryController@deleteAllByGroup',
         ]
         );
     }); //End Route::Group Capstone Coordinator/Panel Members

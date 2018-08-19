@@ -66,7 +66,7 @@ class ProjAppController extends Controller
         $user_id = Auth::user()->getId();
         $q = Input::get('q');
       
-        $ValidGroupStatus = ['Approved by Content Adviser'];
+        $ValidGroupStatus = ['Waiting for Project Approval'];
         if($q != '') {
             $data = DB::table('group')
             ->join('project','project.projGroupID','=','group.groupID')
@@ -79,7 +79,10 @@ class ProjAppController extends Controller
             ->whereIn('group.groupStatus', $ValidGroupStatus)
             ->whereIn('project.projPVerdictNo',['2','3'])
             ->where('project_approval.isApproved','=','0')
-            ->where('group.groupName','LIKE', "%".$q."%")
+            ->where(function ($query) use ($q){
+                $query->where('group.groupName','LIKE', "%".$q."%")
+                ->orWhere('project.projName','LIKE', "%".$q."%");
+            })
             ->orderBy('group.groupName')
             ->paginate(5); 
  
@@ -117,16 +120,17 @@ class ProjAppController extends Controller
         if($request->input('opt')=='1') {
             $approval->isApproved = 1;
             $approval->projAppComment = '';
+            $approval->revisionLink = $project->projDocumentLink;
             $approval->projAppTimestamp = Carbon::now();
             $msg = 'The project document of group : ' . $q->groupName . ' was approved.';
         } else { 
             //When a panel member has given a correction, the current document link of the group will be stored to the revision link of the current project approval
             $approval->revisionLink = $project->projDocumentLink;
             $approval->isApproved = 2;
+            $approval->projAppTimestamp = Carbon::now();
             $msg = 'The project document of group : ' . $q->groupName . ' was given corrections.';
+            $approval->projAppComment = !is_null($request->input('comments')) ? $request->input('comments') : '';
         }
-
-        $approval->projAppComment = !is_null($request->input('comments')) ? $request->input('comments') : '';
 
         //revision history
         $q2 = DB::table('panel_group')
@@ -139,18 +143,16 @@ class ProjAppController extends Controller
         ->first();
         $res1 = 1;
         $revNoTest = DB::table('revision_history')
-        ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-        ->join('account','account.accID','=','panel_group.panelAccID')
-        ->join('group','group.groupID','=','panel_group.panelCGroupID')
-        ->join('project','project.projGroupID','=','group.groupID')
-        ->where('account.accID','=',$request->input('acc'))
-        ->where('panel_group.panelCGroupID','=',$request->input('grp'))
-        ->where('project.projStageNo','=',$q2->projStageNo)
+        ->join('account','account.accID','=','revision_history.revPanelAccID')
+        ->where('revision_history.revPanelAccID','=',$request->input('acc'))
+        ->where('revision_history.revGroupID','=',$request->input('grp'))
+        ->where('revision_history.revStageNo','=',$q2->projStageNo)
         ->max('revision_history.revNo');
-        if(is_null($revNoTest)) {
+        //check the maximum value of revision number for a particular stage
+        if(is_null($revNoTest)) { //if null, set to 1
             $res1 = 1;
-        } else {
-            $res1 = (int)$res1 + 1;
+        } else { //if not null, add the current maximum value by 1
+            $res1 = $revNoTest + 1;
         }
 
         $revHistory = new RevisionHistory;
@@ -158,11 +160,15 @@ class ProjAppController extends Controller
         $revHistory->revID = $rvID = Uuid::generate()->string;
         $revHistory->revStageNo = $q2->projStageNo;
         $revHistory->revNo = $res1;
-        $revHistory->revPanelGroupID = $q2->panelGroupID;
+        $revHistory->revPanelAccID = $request->input('acc');
+        $revHistory->revPanelIsChair = $q2->panelIsChair;
+        $revHistory->revGroupID = $request->input('grp');
+        $revHistory->revGroupName = $q2->groupName;
+        $revHistory->revProjName = $q2->projName;
         $revHistory->revComment = $approval->projAppComment;
         $revHistory->revLink = $approval->revisionLink;
         $revHistory->revStatus = $approval->isApproved;
-        $revHistory->revTimestamp = date('Y-m-d H:i:s');
+        $revHistory->revTimestamp = Carbon::now();
         }
 
         try{

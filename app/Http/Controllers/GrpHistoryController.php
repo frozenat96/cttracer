@@ -20,7 +20,8 @@ class GrpHistoryController extends Controller
     public function index()
     {
         $data = GroupHistory::
-        orderBy('group_history.groupHGroupName')
+        orderBy('group_history.groupHTimestamp')
+        ->orderBy('group_history.groupHGroupName')
         ->orderBy('group_history.groupHProjName')
         ->paginate(10); 
         return view('pages.group_history.index')->with('data',$data);
@@ -33,6 +34,7 @@ class GrpHistoryController extends Controller
             $data = DB::table('group_history')
             ->where('group_history.groupHGroupName','LIKE', "%".$q."%")
             ->orWhere('group_history.groupHProjName','LIKE', "%".$q."%")
+            ->orderBy('group_history.groupHTimestamp')
             ->orderBy('group_history.groupHGroupName')
             ->orderBy('group_history.groupHProjName')
             ->paginate(10);
@@ -45,6 +47,21 @@ class GrpHistoryController extends Controller
         ));
            
         return view('pages.group_history.index')->with('data',$data)->with('q',$q);
+    }
+
+    public function deleteAllByGroup($id) {
+        try {
+            DB::beginTransaction();
+            DB::table('group_history')
+            ->where('group_history.groupHGroupID','=',$id)
+            ->delete();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            
+            return redirect()->back()->withErrors('Group History data of the group was not deleted!');
+        }
+        return redirect()->back()->withSuccess('Group History data of the group was deleted!');
     }
 
 

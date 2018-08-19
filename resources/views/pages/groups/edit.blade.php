@@ -19,8 +19,24 @@ $account_types = DB::table('account_type')->get();
                 @include('inc.messages')
                 {!!Form::open(['action' => ['GroupController@update',$data['group']->groupID], 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                            <legend class="text-left"><span class="alert bg2">EDIT GROUP FORM</span><hr class="my-4"></legend>
-                            
+                            <!-- title of the form -->
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                <table class="table table-responsive-sm table-responsive-md">
+                                <tr>
+                                    <td>
+                            <h4 class="text-left"><span class="alert bg2">EDIT GROUP FORM</span></h4>
+                                    </td>
+         
+                                    <td class="text-right">
+                            <a class="btn btn-secondary btn-lg" href="/quick-view"><i class="fas fa-arrow-left"></i> Back</a>
+                                    </td>
+                                </tr>
+                                </table>
+                                </div>
+                            </div>
+                            <!-- title of the form -->
+                            <hr class="my-4">
                             {{csrf_field()}}
                     <section> 
                     <!-- required fields note -->
@@ -216,16 +232,31 @@ $account_types = DB::table('account_type')->get();
                     </div>
                     </section>
                     @endif
-                    <div class="form-group text-right">
-                        <hr class="my-4">
-                        <button type="reset" class="btn btn-info btn-lg">
-                        <span><i class="fas fa-recycle"></i> Reset Values</span>
-                        </button>
-                        <button id="sub1" type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
-                            <span><i class="far fa-edit"></i> Save Changes</span>
-                        </button>
-                        <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;"></button>
+                    <!-- options -->
+                    <hr class="my-4">
+                    <div class="form-row">
+                        <div class="col-md-12 text-right">
+                        <table class="table-responsive-md" style="float:right;">
+                        <tr>
+                            <td style="padding-right:3px;" class="back-button">
+                                <a class="btn btn-secondary btn-lg" href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Back</a>
+                            </td>
+                            <td style="padding-right:3px;">    
+                                <button type="reset" class="btn btn-info btn-lg">
+                                <span><i class="fas fa-recycle"></i> Reset Values</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" id="sub1" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
+                                    <span><i class="far fa-edit"></i> Save Changes</span>
+                                </button>
+                                <button id="sub2" type="submit" style="display:none;"></button>
+                            </td>
+                        </tr>
+                        </table>
+                        </div>
                     </div>
+                    <!-- options -->
                         </fieldset>
                         <?php $pg = DB::table('panel_group')->where('panel_group.panelCGroupID','=',$data['group']->groupID)->pluck('panelAccID'); ?>
                         <input type="hidden" name="_method" value="PUT">

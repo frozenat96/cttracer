@@ -19,7 +19,7 @@ $account_types = DB::table('account_type')->get();
                 @include('inc.messages')
                 {!!Form::open(['action' => ['GroupController@store'], 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                            <legend class="text-left"><span class="alert bg2">CREATE GROUP FORM</span><hr class="my-4"></legend>
+                            <h4 class="text-left"><span class="alert bg2">CREATE GROUP FORM</span><hr class="my-4"></h4>
                             
                             {{csrf_field()}}
                     <section> 
@@ -108,25 +108,33 @@ $account_types = DB::table('account_type')->get();
                             </div>    
                         </div>
                     </section>
-                    <!-- required fields note -->
+                    
+                    <!-- options -->
+                    <hr class="my-4">
                     <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <span><b>
-                                Note : fields with <span class="text-danger">*</span> are required fields.</b>
-                            </span>
+                        <div class="col-md-12 text-right">
+                        <table class="table-responsive-md" style="float:right;">
+                        <tr>
+                            <td style="padding-right:3px;" class="back-button">
+                                <a class="btn btn-secondary btn-lg" href="/groups"><i class="fas fa-arrow-left"></i> Back</a>
+                            </td>
+                            <td style="padding-right:3px;">    
+                                <button type="reset" class="btn btn-info btn-lg">
+                                <span><i class="fas fa-recycle"></i> Reset Values</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" id="sub1" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
+                                    <span><i class="fas fa-plus"></i> Create Group</span>
+                                </button>
+                                <button id="sub2" type="submit" style="display:none;"></button>
+                            </td>
+                        </tr>
+                        </table>
                         </div>
                     </div>
-                    <!-- required fields note -->
-                    <div class="form-group text-right">
-                        <hr class="my-4">
-                        <button type="reset" class="btn btn-info btn-lg">
-                        <span><i class="fas fa-recycle"></i> Reset Values</span>
-                        </button>
-                        <button id="sub1" type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
-                            <span><i class="fas fa-plus"></i> Create Group</span>
-                        </button>
-                        <button id="sub2" type="submit" style="display:none;"></button>
-                    </div>
+                    <!-- options -->
+
                         </fieldset>
                 {!!Form::close() !!}
             </div>

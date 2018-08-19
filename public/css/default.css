@@ -290,8 +290,9 @@ html, body {
 		display: none;
 	}
 	h4 {
-		font-size: 0.9rem;
+		font-size: 1em;
 	}
+	
 	.card {
 		width:auto;
 	}
@@ -337,4 +338,12 @@ html, body {
 .datalist { 
 	display:none;
 	max-height: 50px;
+}
+
+td, th {
+	white-space: nowrap;
+}
+
+.back-button {
+	display: none;
 }

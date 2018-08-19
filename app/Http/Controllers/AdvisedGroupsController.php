@@ -72,7 +72,10 @@ class AdvisedGroupsController extends Controller
             ->whereIn('account.accType',['1','2'])
             ->where('group.groupCAdviserID','=',$user_id)
             ->whereIn('group.groupStatus', ['Submitted To Content Adviser'])
-            ->where('group.groupName','LIKE', "%".$q."%")
+            ->where(function ($query) use ($q){
+                $query->where('group.groupName','LIKE', "%".$q."%")
+                ->orWhere('project.projName','LIKE', "%".$q."%");
+            })
             ->paginate(5);
         } else {
             return redirect()->action('AdvisedGroupsController@index');
@@ -175,7 +178,6 @@ class AdvisedGroupsController extends Controller
             $notify->NotifyPanelOnProjectApproval($group);
         } elseif($group->groupStatus=='Submitted to Content Adviser') {
             $group->groupStatus = 'Waiting for Schedule Request';     
-            $pRes->resetSchedApp($group->groupID,'0',1);
             $group->save();  
             $notify = new Notification;
             $notify->NotifyCoordOnSchedRequest($group);

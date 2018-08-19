@@ -18,7 +18,7 @@
                 
                 {!!Form::open(['action' => ['ProjSearchController@update',$data->projID], 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">EDIT PROJECT ARCHIVE FORM</span><hr class="my-4"></legend>
+                                <h4 class="text-left"><span class="alert bg2">EDIT PROJECT ARCHIVE FORM</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
 
@@ -34,16 +34,31 @@
                                 <input class="form-control" type="url" name="document_link" maxlength="150" placeholder="Document Link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_link')) ? old('document_link') : $data->projDocumentLink}}"> 
                             </div>
                         </div>
-                    <div class="form-group text-right">
-                            <hr class="my-4">
-                            <button type="reset" class="btn btn-info btn-lg">
-                              <span><i class="fas fa-recycle"></i> Reset Values</span>
-                            </button>
-                            <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
-                                <span><i class="far fa-edit"></i> Save Changes</span>
-                            </button>
-                            <button id="sub2" type="submit" class="btn btn-success btn-lg" style="display:none;">
+                    <!-- options -->
+                    <hr class="my-4">
+                    <div class="form-row">
+                        <div class="col-md-12 text-right">
+                        <table class="table-responsive-md" style="float:right;">
+                        <tr>
+                            <td style="padding-right:3px;" class="back-button">
+                                <a class="btn btn-secondary btn-lg" href="/project-archive"><i class="fas fa-arrow-left"></i> Back</a>
+                            </td>
+                            <td style="padding-right:3px;">    
+                                <button type="reset" class="btn btn-info btn-lg">
+                                <span><i class="fas fa-recycle"></i> Reset Values</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" id="sub1" class="btn btn-success btn-lg" data-toggle="modal" data-target="#confirm1">
+                                    <span><i class="far fa-edit"></i> Save Changes</span>
+                                </button>
+                                <button id="sub2" type="submit" style="display:none;"></button>
+                            </td>
+                        </tr>
+                        </table>
                         </div>
+                    </div>
+                    <!-- options -->
                         <input type="hidden" name="_method" value="PUT">
                 {!!Form::close() !!}
             </div>

@@ -17,7 +17,7 @@
                 @include('inc.messages')
                 @if(isset($data) && !is_null($data))
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></legend>
+                                <h4 class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
                     <div class="form-row">
@@ -51,7 +51,7 @@
                         <table class="table-responsive-md" style="float:right;">
                         <tr>
                             <td style="padding-right:3px;">
-                                <a class="btn btn-secondary btn-lg" href="/advised-groups"><i class="fas fa-arrow-left"></i> Back to Advised Groups</a>
+                                <a class="btn btn-secondary btn-lg" class="back-button" href="/advised-groups"><i class="fas fa-arrow-left"></i> Back</a>
                             </td>
                             <td style="padding-right:3px;">    
                                 {!!Form::open(['action' => 'AdvisedGroupsController@contentAdvCorrections', 'method' => 'POST','class'=>'form1']) !!} 

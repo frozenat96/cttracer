@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\models\Group;
+use App\models\GroupHistory;
 use App\models\Project;
 use App\models\PanelGroup;
 use App\models\Schedule;
@@ -44,6 +45,14 @@ class GroupController extends Controller
         ->select('group.*','project.*','account.*')
         ->orderBy('group.groupName')
         ->paginate(10); 
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.groups.index')->with('data',$groups)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.groups.index')->with('data',$groups)->with('error',$msg);
+        }
         return view('pages.groups.index')->with('data',$groups);
     }
 
@@ -59,6 +68,7 @@ class GroupController extends Controller
             ->where('group.groupName','LIKE', "%".$q."%")
             ->orWhere(DB::raw('CONCAT(account.accFName," ",account.accMInitial," ",account.accLName," ",account.accTitle)'), 'LIKE', "%".$q."%")
             ->orWhere('group.groupStatus','LIKE', "%".$q."%")
+            ->orWhere('project.projName','LIKE', "%".$q."%")
             ->orderBy('group.groupName')
             ->paginate(10);
         } else {
@@ -113,12 +123,12 @@ class GroupController extends Controller
         $valid_panel_members= DB::table('account')
         ->whereIn('account.accType',['1','2'])
         ->pluck('accID');
-
+        
         $validator = Validator::make($request->all(), [
             'group_name' => ['required','max:100','unique:group,groupName','regex:/^[A-Za-z:,; -]+$/'],
             'group_type' => ['required',Rule::In($valid_group_types)],
             'content_adviser' => ['required',Rule::In($valid_panel_members->all())],
-            'group_project_name' => ['required','max:150','unique:project,projName','regex:/^[A-Za-z: -]+$/'],
+            'group_project_name' => ['required','max:150','unique:project,projName','regex:/^[0-9A-Za-z: -]+$/'],
           	'minimum_panel_members_for_project_approval' => ['required'],
         ]);
         if ($validator->fails()) {
@@ -132,7 +142,7 @@ class GroupController extends Controller
             $group->groupStatus = 'Waiting for Submission';
             $group->groupType = $request->input('group_type');
             $group->groupCAdviserID = $request->input('content_adviser');
-            $group->groupCAdviserID = $user_id;
+            $group->groupCoordID = $user_id;
             $group->save(); 
             $project->projID = Uuid::generate()->string;
             $project->projName = $request->input('group_project_name');
@@ -172,9 +182,17 @@ class GroupController extends Controller
             $sched->schedType = 'Oral Defense';
             $sched->schedStatus = 'Not Ready';
             $sched->save();
+
+            if(is_null($request->input('EditGroupPanelApp'))) {
+                $request['EditGroupPanelApp'] = 'off';
+            }
+
+            $grpHist = new GroupHistory;
+            $grpHistActivity = "The project of the group was created.";
+            $grpHist->add($group,$grpHistActivity);
             DB::commit();
         } catch(Exception $e){
-            return dd($e);
+            //return dd($e);
             DB::rollback();
             return redirect()->back()->withInput($request->all)->withErrors('Cannot save information.');
         }
@@ -324,7 +342,7 @@ class GroupController extends Controller
             'group_name' => ['required','max:100','regex:/^[A-Za-z:,; -]+$/'],
             'group_type' => ['required',Rule::In($valid_group_types)],
             'content_adviser' => ['max:36','required',Rule::In($valid_panel_members->all())],
-            'group_project_name' => ['required','max:150','regex:/^[A-Za-z: -]+$/'],
+            'group_project_name' => ['required','max:150','regex:/^[0-9A-Za-z: -]+$/'],
             'stage_no' => ['Integer','required',Rule::In($valid_stages->all())],
             'panel_verdict' => ['Integer','required',Rule::In($valid_panel_verdict->all())],
             'group_status' => ['required',Rule::In($valid_group_status)],
@@ -334,6 +352,7 @@ class GroupController extends Controller
 			return redirect()->back()->withInput($request->all)->withErrors($validator);
         }
 
+        $grpHist = new GroupHistory;
         $group = Group::find($id);
         $project = DB::table('project')->where('project.projGroupID','=',$group->groupID)->get();
         $project = Project::find($project[0]->projID);
@@ -393,16 +412,16 @@ class GroupController extends Controller
             }
             $group->groupName = $request->input('group_name');
         }
-        if(in_array($request->input('panel_verdict'),['8'])) {
-            //check the stage if equal to 1
-            if($project->projStageNo == 1) {
 
-            } elseif($project->projStageNo > 1) {
-                //decrement
-                $project->projStageNo = $project->projStageNo - 1;
-            }
+        //If Panel Verdict is re-propose;
+        if(in_array($request->input('panel_verdict'),['4'])) {
+            $project->projStageNo = 1;
             $group->groupStatus = 'Waiting for Submission';
             $project->projPVerdictNo = '1';
+            
+            //update group history
+            $grpHistActivity = "The group was advised to re-propose a new project.";
+            $grpHist->add($group,$grpHistActivity);
         }
         /* This field cannot be edited
         if($project->projName != $request->input('group_project_name')) {
@@ -447,7 +466,7 @@ class GroupController extends Controller
         
         return redirect()->back()->withSuccess('Group Information was Updated!');
     }
-    
+
     public function modifyPanelDelete($id) {
 
         $x = DB::table('schedule_approval')
@@ -533,9 +552,9 @@ class GroupController extends Controller
             DB::commit();
         } catch(Exception $e) {
             DB::rollback();
-            return redirect()->back()->withErrors('Deletion of group information failed.');
+            return redirect()->action('GroupController@index', ['status' => 0,'statusMsg'=>['Deletion of the group has failed!']]);
         }
-        return redirect()->back()->with('success','Deletion of group information succeeded.');
+        return redirect()->action('GroupController@index', ['status' => 1,'statusMsg'=>['Deletion of the group was successful!']]);
     }
 
     private function deleteGroupExecute($id) {
@@ -549,13 +568,6 @@ class GroupController extends Controller
         DB::table('schedule_approval')
         ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
         ->where('panel_group.panelCGroupID','=',$id)
-        ->delete();
-
-        //delete the revision history associated with the group
-        DB::table('revision_history')
-        ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-        ->join('group','group.groupID','=','panel_group.panelCGroupID')
-        ->where('group.groupID','=',$id)
         ->delete();
 
         //delete the panel group associated with the group
@@ -584,11 +596,21 @@ class GroupController extends Controller
     public function deleteFinishedGroups() {
         try {
             DB::beginTransaction();
+            $user_id = Auth::user()->getId();
+            $user = User::find($user_id);
+            $onlyAllowCCs = true;
+            if($onlyAllowCCs==true) {
+                if($user->accType!='1') {
+                    return redirect()->back()->withErrors(['Only Capstone Coordinators can use this function']);
+                }
+            }
+
             //delete the project approval associated with the group
             DB::table('project_approval')
             ->join('panel_group','panel_group.panelGroupID','=','project_approval.projAppPanelGroupID')
             ->join('group','group.groupID','=','panel_group.panelCGroupID')
             ->where('group.groupStatus','=','Finished')
+            ->where('group.groupCoordID','=',$user_id)
             ->delete();
             
             //delete the schedule approval associated with the group
@@ -596,44 +618,66 @@ class GroupController extends Controller
             ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
             ->join('group','group.groupID','=','panel_group.panelCGroupID')
             ->where('group.groupStatus','=','Finished')
+            ->where('group.groupCoordID','=',$user_id)
             ->delete();
 
+            //find the settings
+            $settings = DB::table('application_setting')
+            ->where('application_setting.settingCoordID','=',$user_id)
+            ->first();
             //delete the revision history associated with the group
-            DB::table('revision_history')
-            ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-            ->join('group','group.groupID','=','panel_group.panelCGroupID')
-            ->where('group.groupStatus','=','Finished')
-            ->delete();
+            if(!is_null($settings) && $settings->settingAutoRHDelete=='1') {
+                DB::table('revision_history')
+                ->join('group','group.groupID','=','revision_history.revGroupID')
+                ->where('group.groupStatus','=','Finished')
+                ->where('group.groupCoordID','=',$user_id)
+                ->delete();
+            }
+
+            //delete the group history associated with the group
+            if(!is_null($settings) && $settings->settingAutoGHDelete=='1') {
+                DB::table('group_history')
+                ->join('group','group.groupID','=','group_history.groupHGroupID')
+                ->where('group.groupStatus','=','Finished')
+                ->where('group.groupCoordID','=',$user_id)
+                ->delete();
+            }
 
             //delete the panel group associated with the group
             DB::table('panel_group')
             ->join('group','group.groupID','=','panel_group.panelCGroupID')
             ->where('group.groupStatus','=','Finished')
+            ->where('group.groupCoordID','=',$user_id)
             ->delete();
 
             //delete the schedule associated with the group
             DB::table('schedule')
             ->join('group','group.groupID','=','schedule.schedGroupID')
             ->where('group.groupStatus','=','Finished')
+            ->where('group.groupCoordID','=',$user_id)
             ->delete();
             //delete all accounts associated with the group
             DB::table('account')
             ->join('group','group.groupID','=','account.accGroupID')
             ->where('group.groupStatus','=','Finished')
+            ->where('group.groupCoordID','=',$user_id)
             ->delete();
 
             //delete the group itself
           	$totalGroups = DB::table('group')
             ->where('group.groupStatus','=','Finished')
+            ->where('group.groupCoordID','=',$user_id)
             ->count();
-            DB::table('group')
-            ->where('group.groupStatus','=','Finished')
-            ->delete();
+            
             DB::commit();
           	if($totalGroups>0) {
-              return redirect()->back()->withSuccess(['Deletion of group information succeeded.','All groups that are finished are already deleted.']);
+                DB::table('group')
+                ->where('group.groupStatus','=','Finished')
+                ->where('group.groupCoordID','=',$user_id)
+                ->delete();
+                return redirect()->back()->withSuccess(['Deletion of group information succeeded.','All groups that are finished are already deleted.']);
             } else {
-              return redirect()->back()->withErrors(['No groups to be deleted']);
+                return redirect()->back()->withErrors(['No groups to be deleted']);
             }
             
         } catch(Exception $e) {

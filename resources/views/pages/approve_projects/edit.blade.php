@@ -18,7 +18,7 @@
                 @if(isset($data) && !is_null($data))
                 
                         <fieldset>
-                                <legend class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></legend>
+                                <h4 class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
                     <div class="form-row">
@@ -49,6 +49,9 @@
                     <hr class="my-4">
                     <table class="table-responsive-md" style="float:right;">
                     <tr>
+                        <td style="padding-right:3px;">
+                            <a class="btn btn-secondary btn-lg" class="back-button" href="/approve-projects"><i class="fas fa-arrow-left"></i> Back</a>
+                        </td>
                         <td style="padding-right:3px;">    
                             <button type="reset" class="btn btn-info btn-lg">
                               <span><i class="fas fa-recycle"></i> Reset Values</span>

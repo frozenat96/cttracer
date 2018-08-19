@@ -53,19 +53,16 @@ class RevHistoryController extends Controller
      */
     public function index()
     {
-        $groups = $this->getIndex();                
+        $groups = $this->getIndex();               
         return view('pages.revision_history.index')->with('data',$groups);
     }
 
     private function getIndex() {
         return $groups = DB::table('revision_history')
-        ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-        ->join('account','account.accID','=','panel_group.panelAccID')
-        ->join('group','group.groupID','=','panel_group.panelCGroupID')
-        ->join('project','project.projGroupID','=','group.groupID')
-        ->orderBy('group.groupName')
-        ->orderBy('project.projStageNo')
+        ->join('account','account.accID','=','revision_history.revPanelAccID')
+        ->orderBy('revision_history.revStageNo')
         ->orderBy('revision_history.revNo')
+        ->orderBy('revision_history.revGroupName')
         ->paginate(10); 
     }
 
@@ -78,15 +75,12 @@ class RevHistoryController extends Controller
 
         if($q != '') {
             $data = DB::table('revision_history')
-            ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-            ->join('account','account.accID','=','panel_group.panelAccID')
-            ->join('group','group.groupID','=','panel_group.panelCGroupID')
-            ->join('project','project.projGroupID','=','group.groupID')
-            ->where('group.groupName','LIKE', "%".$q."%")
-            ->orWhere('project.projName','LIKE', "%".$q."%")
-            ->orderBy('group.groupName')
-            ->orderBy('project.projStageNo')
+            ->join('account','account.accID','=','revision_history.revPanelAccID')
+            ->where('revision_history.revGroupName','LIKE', "%".$q."%")
+            ->orWhere('revision_history.revProjName','LIKE', "%".$q."%")
+            ->orderBy('revision_history.revStageNo')
             ->orderBy('revision_history.revNo')
+            ->orderBy('revision_history.revGroupName')
             ->paginate(10);
         } else {
             return redirect()->action('RevHistoryController@index');
@@ -95,7 +89,6 @@ class RevHistoryController extends Controller
         $data->appends(array(
             'q' => Input::get('q')
         ));
-           
         return view('pages.revision_history.index')->with('data',$data);
     }
 
@@ -138,16 +131,15 @@ class RevHistoryController extends Controller
         $rev_no = $request->input('rev_no');
 
         $d = DB::table('revision_history')
-            ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-            ->join('account','account.accID','=','panel_group.panelAccID')
-            ->join('group','group.groupID','=','panel_group.panelCGroupID')
-            ->join('project','project.projGroupID','=','group.groupID')
-            ->join('stage','stage.stageNo','=','project.projStageNo')
-            ->where('project.projStageNo','=',$stg)
-            ->where('group.groupID','=',$grp)
-            ->where('revision_history.revNo','=',$rev_no)
-            ->get();
+        ->join('account','account.accID','=','revision_history.revPanelAccID')
+        ->join('stage','stage.stageNo','=','revision_history.revStageNo')
+        ->where('revision_history.revStageNo','=',$stg)
+        ->where('revision_history.revGroupID','=',$grp)
+        ->where('revision_history.revNo','=',$rev_no)
+        ->get();
+
         $data=['projApp'=>$d];
+        //return dd($data);
         return view('pages.revision_history.view')->with('data',$data);
     }
 
@@ -158,16 +150,14 @@ class RevHistoryController extends Controller
         $rev_no = $request->input('rev_no');
 
         $d = DB::table('revision_history')
-            ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-            ->join('account','account.accID','=','panel_group.panelAccID')
-            ->join('group','group.groupID','=','panel_group.panelCGroupID')
-            ->join('project','project.projGroupID','=','group.groupID')
-            ->join('stage','stage.stageNo','=','project.projStageNo')
-            ->where('project.projStageNo','=',$stg)
-            ->where('group.groupID','=',$grp)
+            ->join('account','account.accID','=','revision_history.revPanelAccID')
+            ->join('stage','stage.stageNo','=','revision_history.revStageNo')
+            ->where('revision_history.revStageNo','=',$stg)
+            ->where('revision_history.revGroupID','=',$grp)
             ->where('revision_history.revNo','=',$rev_no)
             ->get();
         $data=['projApp'=>$d];
+        //return dd($data);
         return view('pages.revision_history.print')->with('data',$data);
     }
     /**
@@ -178,25 +168,28 @@ class RevHistoryController extends Controller
      */
     public function edit($id)
     {
-        $rev=DB::table('revision_history')
-        ->join('panel_group','panel_group.panelGroupID','=','revision_history.revPanelGroupID')
-        ->join('account','account.accID','=','panel_group.panelAccID')
-        ->join('group','group.groupID','=','panel_group.panelCGroupID')
-        ->join('project','project.projGroupID','=','group.groupID')
+        $rev = DB::table('revision_history')
+        ->join('account','account.accID','=','revision_history.revPanelAccID')
         ->where('revision_history.revID','=',$id)
         ->first();
-        $group = DB::table('group')
-        ->select('group.*')
-        ->whereNotIn('group.groupStatus', ['Finished'])->get();
         $stages = Stage::all();
-        $panel_members = DB::table('account')
-        ->where('account.isActivePanel','=','1')
-        ->where('account.accType','=','2')
-        ->get();
-        $data = ['rev'=>$rev,'group'=>$group,'panel_members'=>$panel_members,'stage'=>$stages];
-        return view('pages.revision_history.edit')->with('data',$data);
+        $data = $rev;
+        return view('pages.revision_history.edit')->with('data',$data)->with('stage',$stages);
     }
 
+    public function deleteAllByGroup($id) {
+        try {
+            DB::beginTransaction();
+            DB::table('revision_history')
+            ->where('revision_history.revGroupID','=',$id)
+            ->delete();
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('Revision History data of the group was not deleted!');
+        }
+        return redirect()->back()->withSuccess('Revision History data of the group was deleted!');
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -210,7 +203,6 @@ class RevHistoryController extends Controller
         try {
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'stage_no' => ['required','min:1','max:9','Integer'],
                 'comment' => ['max:1600'],
                 'status' => ['required','min:1','max:2','Integer'],
             ]);
@@ -218,7 +210,6 @@ class RevHistoryController extends Controller
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
             } 
             $rev = RevisionHistory::find($id);
-            $rev->revStageNo = $request->input('stage_no');
             if(!is_null($request->input('comment'))) {
                 $rev->revComment = $request->input('comment');
             } else {

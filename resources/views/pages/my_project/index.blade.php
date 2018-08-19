@@ -21,7 +21,7 @@
 
         <div class="jumbotron bx2">
                 @include('inc.messages')
-                <legend class="text-left"><span class="alert bg2">MY PROJECT</span><hr class="my-4"></legend>
+                <h4 class="text-left"><span class="alert bg2">MY PROJECT</span><hr class="my-4"></h4>
         @if(isset($data) && count($data))
         <div class="row"> <!-- Group Information -->
             <div class="col-md-4">
@@ -145,6 +145,7 @@
                         <th>Position</th>
                         <th>Name</th>
                         <th>Approval Status</th>
+                        <th>Reviewed On</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -169,6 +170,12 @@
                                 @else
                                 <span class="badge badge-secondary badge-pill">  Waiting </span>
                                 @endif  
+                            </td>
+                            
+                            <td>
+                                @if($pmembers->isApproved != 0)
+                                {{date_format(new Datetime($pmembers->projAppTimestamp),"M d, Y - g:i A")}}
+                                @endif
                             </td>
                         </tr>
                     @endforeach

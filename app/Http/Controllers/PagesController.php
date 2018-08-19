@@ -83,11 +83,26 @@ class PagesController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
             }
+           
+            
             DB::beginTransaction();
             $app = new ApplicationSetting;
             $app->settingID = Uuid::generate()->string;
+            $app->settingCoordID = Auth::user()->getId();
             $app->settingDocLink = $request->input('document_folder_link');
             $app->settingProjArcLink = $request->input('project_archive_folder_link');
+            if(is_null($request->input('auto_delete_revision_history'))) {
+                $app->settingAutoRHDelete = '0';
+                $request['auto_delete_revision_history'] = 'off';
+            } else {
+                $app->settingAutoRHDelete = '1';
+            }
+            if(is_null($request->input('auto_delete_group_history'))) {
+                $app->settingAutoGHDelete = '0';
+                $request['auto_delete_group_history'] = 'off';
+            } else {
+                $app->settingAutoGHDelete = '1';
+            }
             $app->save();
             DB::commit();
             return redirect()->back()->withInput($request->all)->withSuccess('Application settings was created successfully.');
@@ -98,15 +113,22 @@ class PagesController extends Controller
     }
 
     public function appSettingsEdit() {
+        $user_id = Auth::user()->getId();
+        $user = User::find($user_id);
         $application_settings = DB::table('application_setting')
+        ->where('application_setting.settingCoordID','=',$user_id)
         ->first();
         if(is_null($application_settings)) {
-            return view('pages.application_settings.create');
+            if($user->accType=='1'){
+                return view('pages.application_settings.create');
+            } else {
+                return redirect('/')->withErrors('Only Capstone Coordinators can access the Application Settings.');
+            }         
         }
         return view('pages.application_settings.edit')->with('data',$application_settings);
     }
 
-    public function appSettingsUpdate($id) {
+    public function appSettingsUpdate($id,Request $request) {
         try {  
             $validator = Validator::make($request->all(), [
                 'document_folder_link' => ['required','max:150','active_url'],
@@ -118,6 +140,18 @@ class PagesController extends Controller
             $app = ApplicationSetting::find($id);
             $app->settingDocLink = $request->input('document_folder_link');
             $app->settingProjArcLink = $request->input('project_archive_folder_link');
+            if(is_null($request->input('auto_delete_revision_history'))) {
+                $app->settingAutoRHDelete = '0';
+                $request['auto_delete_revision_history'] = 'off';
+            } else {
+                $app->settingAutoRHDelete = '1';
+            }
+            if(is_null($request->input('auto_delete_group_history'))) {
+                $app->settingAutoGHDelete = '0';
+                $request['auto_delete_group_history'] = 'off';
+            } else {
+                $app->settingAutoGHDelete = '1';
+            }
             $app->save();
             DB::commit();
             return redirect()->back()->withInput($request->all)->withSuccess('Application settings was updated successfully.');

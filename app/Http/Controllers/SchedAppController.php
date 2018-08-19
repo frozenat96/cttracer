@@ -73,7 +73,10 @@ class SchedAppController extends Controller
             ->whereIn('group.groupStatus', $ValidGroupStatus)
             ->whereNotIn('project.projPVerdictNo',['2','3'])
             ->where('schedule_approval.isApproved','=','0')
-            ->where('group.groupName','LIKE', "%".$q."%")
+            ->where(function ($query) use ($q){
+                $query->where('group.groupName','LIKE', "%".$q."%")
+                ->orWhere('project.projName','LIKE', "%".$q."%");
+            })
             ->paginate(5); 
             
         } else {

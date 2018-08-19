@@ -89,7 +89,8 @@ class MyProjController extends Controller
 
     public function submitProjectArchive($id) {
         $data = Group::find($id);
-        $settings = ApplicationSetting::first();
+        $settings = ApplicationSetting::where('settingCoordID','=',$data->groupCoordID);
+      
         return view('pages.my_project.project-archive')
         ->with('data',$data)
         ->with('settings',$settings);
@@ -168,7 +169,7 @@ class MyProjController extends Controller
         ->select('project.*','group.*')
         ->where('group.groupID','=',$id)
         ->first();
-        $settings = DB::table('application_setting')->first();
+        $settings = ApplicationSetting::where('settingCoordID','=',$group->groupCoordID);
         if(!in_array($group->groupStatus,['Waiting for Submission','Corrected by Panel Members','Corrected by Content Adviser'])) {
             return redirect()->action('MyProjController@index');
         }
