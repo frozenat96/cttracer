@@ -53,7 +53,16 @@ class RevHistoryController extends Controller
      */
     public function index()
     {
-        $groups = $this->getIndex();               
+        $groups = $this->getIndex();    
+
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.revision_history.index')->with('data',$groups)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.revision_history.index')->with('data',$groups)->with('error',$msg);
+        }           
         return view('pages.revision_history.index')->with('data',$groups);
     }
 
@@ -186,9 +195,9 @@ class RevHistoryController extends Controller
             DB::commit();
         } catch(Exception $e) {
             DB::rollback();
-            return redirect()->back()->withErrors('Revision History data of the group was not deleted!');
+            return redirect()->action('RevHistoryController@index', ['status' => 0,'statusMsg'=>['Revision History data of the group was not deleted!']]);
         }
-        return redirect()->back()->withSuccess('Revision History data of the group was deleted!');
+        return redirect()->action('RevHistoryController@index', ['status' => 1,'statusMsg'=>['Revision History data of the group was deleted!']]);
     }
     /**
      * Update the specified resource in storage.
@@ -253,9 +262,9 @@ class RevHistoryController extends Controller
             DB::commit();
         } catch(Exception $e) {
             DB::rollback();
-            return redirect()->back()->withErrors('Revision Information was not deleted!');
+            return redirect()->action('RevHistoryController@index', ['status' => 0,'statusMsg'=>['Revision History data was not deleted!']]);
         }
-        return redirect()->back()->withSuccess('Revision Information was deleted!');
+        return redirect()->action('RevHistoryController@index', ['status' => 1,'statusMsg'=>['Revision History data was deleted!']]);
     }
 
     public function truncateRevHistory() {

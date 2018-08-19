@@ -24,6 +24,14 @@ class GrpHistoryController extends Controller
         ->orderBy('group_history.groupHGroupName')
         ->orderBy('group_history.groupHProjName')
         ->paginate(10); 
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.group_history.index')->with('data',$data)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.group_history.index')->with('data',$data)->with('error',$msg);
+        } 
         return view('pages.group_history.index')->with('data',$data);
     }
 
@@ -58,10 +66,9 @@ class GrpHistoryController extends Controller
             DB::commit();
         } catch(Exception $e) {
             DB::rollback();
-            
-            return redirect()->back()->withErrors('Group History data of the group was not deleted!');
+            return redirect()->action('GrpHistoryController@index', ['status' => 0,'statusMsg'=>['Group History data of the group was not deleted!']]);
         }
-        return redirect()->back()->withSuccess('Group History data of the group was deleted!');
+        return redirect()->action('GrpHistoryController@index', ['status' => 0,'statusMsg'=>['Group History data of the group was deleted!']]);   
     }
 
 
@@ -136,10 +143,9 @@ class GrpHistoryController extends Controller
             DB::commit();
         } catch(Exception $e) {
             DB::rollback();
-            
-            return redirect()->back()->withErrors('Group History data was not deleted!');
+            return redirect()->action('GrpHistoryController@index', ['status' => 0,'statusMsg'=>['Group History data was not deleted!']]);
         }
-        return redirect()->back()->withSuccess('Group History data was deleted!');
+        return redirect()->action('GrpHistoryController@index', ['status' => 0,'statusMsg'=>['Group History data was deleted!']]);
     }
 
     public function deleteAll() {

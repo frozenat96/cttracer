@@ -169,7 +169,7 @@
                             <div class="row bg-light" style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
                                 <div class="col-12" style="padding-top:5px;">
                                         @if($data['adv'])
-                                        <p class="card-text blockquote-footer">You have a total of {{$data['adv']}} Advised Groups that had submitted their documents</p>
+                                        <p class="card-text blockquote-footer">You have a total of {{$data['adv']}} Advised Group/s that had submitted their documents</p>
                                         @else
                                         <p class="card-text blockquote-footer">No advised groups have submitted their document yet.</p>
                                         @endif
@@ -208,6 +208,37 @@
                                 <div class="col-12">
                                     <div class="text-right" style="padding-bottom:10px;padding-top:10px;">
                                         <a href="/nd/NotifyPanelOnProjectApproval/ProjAppController@search/null" class="btn btn-primary">View</a>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- End of card -->
+
+                <div class="col-lg-4 col-md-12"> <!-- card -->
+                    <div class="card my-card1">
+                        <div class="card-body">
+                            <div class="row bg-dark text-light" style="border-top-left-radius:5px;border-top-right-radius:5px;">
+                            <div class="col-8" style="padding-top:10px;">
+                                <h6>Total Project Archive Submissions</h6>
+                            </div>
+                            <div class="col-4">
+                                    @if($data['coord'])
+                                    <h1 class="card-title text-right"><span class="badge badge-pill badge-dark">{{$data['coord']}}</span></h1>
+                                    @endif
+                            </div>
+                            </div>
+                            <div class="row bg-light" style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
+                                <div class="col-12" style="padding-top:5px;">
+                                        @if($data['coord'])
+                                        <p class="card-text blockquote-footer">You have a total of {{$data['coord']}} group/s that had submitted their project archives.</p>
+                                        @else
+                                        <p class="card-text blockquote-footer">No groups have submitted their project archive yet.</p>
+                                        @endif
+                                </div>  
+                                <div class="col-12">
+                                    <div class="text-right" style="padding-bottom:10px;padding-top:10px;">
+                                        <a href="/nd/NotifyCoordOnProjectArchive/QuickViewController@search/Submitted to Capstone Coordinator" class="btn btn-primary">View</a>
                                     </div>
                                 </div>  
                             </div>

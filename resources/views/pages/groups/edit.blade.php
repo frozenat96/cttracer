@@ -117,6 +117,8 @@ $account_types = DB::table('account_type')->get();
 
                                 <option title="Project is waiting for the processing of requirements for completion" value="Waiting for Project Completion">Waiting for Project Completion</option>
 
+                                <option title="The group has submitted a document to the Capstone Coordinator" value="Submitted to Capstone Coordinator">Submitted to Capstone Coordinator</option>
+
                                 <option title="The group has completely finished the project" value="Finished">Finished</option>
 
                             </select>

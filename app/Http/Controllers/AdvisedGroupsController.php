@@ -39,6 +39,14 @@ class AdvisedGroupsController extends Controller
     public function index()
     {
         $groups = $this->getIndex();
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.advised_groups.index')->with('data',$groups)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.advised_groups.index')->with('data',$groups)->with('error',$msg);
+        }
         return view('pages.advised_groups.index')->with('data',$groups);
     }
 
@@ -188,12 +196,11 @@ class AdvisedGroupsController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            return redirect()->back()->withErrors( 'The document of group : ' . $group->groupName . ' was not approved.');
+            return redirect()->action('AdvisedGroupsController@index', ['status' => 0,'statusMsg'=>['The document of group : ' . $group->groupName . ' was not approved.']]);
         }
         $msg = 'The document of group : ' . $group->groupName . ' was approved.';
         $g = $this->getIndex();
-        return view('pages.advised_groups.index')->with('data',$g)->with('success2',$msg);
-        //return redirect()->back()->withSuccess();
+        return redirect()->action('AdvisedGroupsController@index', ['status' => 1,'statusMsg'=>[$msg]]);
     } 
 
     public function contentAdvCorrections(Request $request){
@@ -218,12 +225,11 @@ class AdvisedGroupsController extends Controller
             $notify->NotifyStudentOnAdvCorrected($group);
 
             DB::commit();
-            return redirect()->back()->with('success', 'The document of group : ' . $group->groupName . ' was corrected.');
+            return redirect()->action('AdvisedGroupsController@index', ['status' => 1,'statusMsg'=>['The document of group : ' . $group->groupName . ' was corrected.']]);
             
         } catch (Exception $e) {
-            //return dd($e);
             DB::rollback();
-            return redirect()->back()->withInput($request->all)->withErrors( 'The document of group : ' . $group->groupName . ' was not corrected.');
+            return redirect()->action('AdvisedGroupsController@index', ['status' => 0,'statusMsg'=>['The document of group : ' . $group->groupName . ' was not corrected.']]);
         }
     }
 }

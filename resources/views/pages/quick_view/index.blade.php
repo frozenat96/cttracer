@@ -68,6 +68,7 @@
                         <option value="Corrected by Panel Members">Corrected by Panel Members</option>
                         <option value="Ready for Next Stage">Ready for Next Stage</option>
                         <option value="Waiting for Project Completion">Waiting for Project Completion</option>
+                        <option value="Submitted to Capstone Coordinator">Submitted to Capstone Coordinator</option>
                         <option value="Finished">Finished</option>
                     </select>
                             </td>
@@ -166,7 +167,7 @@
                                     </form>
                                     </td></tr>
 
-                                    @elseif(in_array($grp->groupStatus,['Waiting for Project Completion']))
+                                    @elseif(in_array($grp->groupStatus,['Waiting for Project Completion','Submitted to Capstone Coordinator']))
                                     <tr><td>
                                     {!!Form::open(['action' => ['QuickViewController@setToProjComplete'], 'method' => 'POST','class'=>'form1']) !!}
                                     <button type="submit" name="grp" value="{{$grp->groupID}}" class="btn btn-info btn-sm" data-toggle="popover" data-content="The group has finished the project." data-placement="top" onclick="return confirm('Are you sure');"><span><i class="fas fa-forward" ></i></span> Set to Project Complete</button>

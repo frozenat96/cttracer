@@ -57,6 +57,14 @@ class ProjAppController extends Controller
         ->paginate(5); 
         //return dd($data);
         //return $this->calcSchedStatus($sched[0]->panelCGroupID);
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.approve_projects.index')->with('data',$data)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.approve_projects.index')->with('data',$data)->with('error',$msg);
+        }
         return view('pages.approve_projects.index')->with('data',$data);
     }
 
@@ -181,8 +189,9 @@ class ProjAppController extends Controller
             DB::commit();
         } catch (Exception $e) {
             //return dd($e);
+            $request->session()->flash('alert-danger', 'Project approval failed.');
             DB::rollback();
-            return redirect()->back()->withErrors( 'Project approval failed.');
+            return view('pages.approve_projects.index');
         }
         
         $request->session()->flash('alert-success', $msg);

@@ -54,6 +54,9 @@
                  @elseif(in_array($data['proj']->groupStatus,['Waiting for Project Completion']))
                  <h5>Options</h5>
                  <a href="/my-project/{{$data['proj']->groupID}}/submit-project-archive" class="btn btn-primary">Submit Project Archive</a>
+                 @elseif(in_array($data['proj']->groupStatus,['Submitted to Capstone Coordinator']))
+                 <h5>Status</h5>
+                 <span>The project archive has been submitted to your Capstone Coordinator.</span>
                  @endif
                  <!-- Options -->
             </section>

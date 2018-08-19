@@ -291,6 +291,12 @@ class QuickViewController extends Controller
             DB::beginTransaction();
             $group = Group::find($request->input('grp'));
             $group->groupStatus = 'Finished';
+            $project = DB::table('project')
+            ->where('project.projGroupID','=',$request->input('grp'))
+            ->first();
+            $project = Project::find($project->projID);
+            $project->projPVerdictNo = '7';
+            $project->save();
             $group->save();
             $notify = new Notification;
             $notify->NotifyStudentOnFinish($group);

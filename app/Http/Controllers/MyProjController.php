@@ -89,7 +89,9 @@ class MyProjController extends Controller
 
     public function submitProjectArchive($id) {
         $data = Group::find($id);
-        $settings = ApplicationSetting::where('settingCoordID','=',$data->groupCoordID);
+        $settings = DB::table('application_setting')
+        ->where('application_setting.settingCoordID','=',$data->groupCoordID)
+        ->first();
       
         return view('pages.my_project.project-archive')
         ->with('data',$data)
@@ -109,9 +111,11 @@ class MyProjController extends Controller
             $project = DB::table('project')
             ->where('project.projGroupID','=',$group->groupID)
             ->first();
+            $group->groupStatus = 'Submitted to Capstone Coordinator';
             $project = Project::find($project->projID);
             $project->projDocumentLink = $request->input('document_link');
             $project->save();
+            $group->save();
             $notify = new Notification;
             $notify->NotifyCoordOnProjectArchive($group);
             DB::commit();

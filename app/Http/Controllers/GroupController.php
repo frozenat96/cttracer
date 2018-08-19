@@ -174,8 +174,8 @@ class GroupController extends Controller
             $sched = new Schedule;
             $sched->schedID = Uuid::generate()->string;
             $sched->schedDate = date('Y-m-d'); 
-            $sched->schedTimeStart = date('H:i:s');
-            $sched->schedTimeEnd = date('H:i:s');
+            $sched->schedTimeStart = Carbon::now();
+            $sched->schedTimeEnd = Carbon::now();
             $sched->schedPlace = '';
             $sched->schedEventID = null;
             $sched->schedGroupID = $grpID;
@@ -334,7 +334,8 @@ class GroupController extends Controller
             "Waiting for Project Approval", 
             "Corrected by Panel Members", 
             "Ready for Next Stage", 
-            "Waiting for Project Completion", 
+            "Waiting for Project Completion",
+            "Submitted to Capstone Coordinator",
             "Finished" 
         ];
 

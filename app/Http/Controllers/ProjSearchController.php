@@ -37,6 +37,15 @@ class ProjSearchController extends Controller
         ->select('project.*')
         ->where('project.projPVerdictNo','=','7')
         ->paginate(10);
+
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.project_search.index')->with('data',$data)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.project_search.index')->with('data',$data)->with('error',$msg);
+        }
         return view('pages.project_search.index')->withData($data);
     }
 
@@ -186,8 +195,8 @@ class ProjSearchController extends Controller
             DB::commit();
         } catch(Exception $e) {
             DB::rollback();
-            return redirect()->back()->withErrors('Project Information was not deleted.');
+            return redirect()->action('ProjSearchController@index', ['status' => 0,'statusMsg'=>['Project Information was not deleted.']]);
         }
-        return redirect()->back()->with('success','Project Information was deleted.');
+        return redirect()->action('ProjSearchController@index', ['status' => 1,'statusMsg'=>['Project Information was deleted.']]);
     }
 }

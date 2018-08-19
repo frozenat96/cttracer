@@ -120,7 +120,15 @@ class Dashboard extends Model
         ->whereIn('group.groupStatus',$status)
         ->count();
 
-        $data = ['SchedRequest'=>$SchedRequest,'NextStage'=>$NextStage,'SchedFinalize'=>$SchedFinalize,'sched'=>$sched,'proj'=>$proj,'adv'=>$adv];
+        $status = ['Submitted to Capstone Coordinator'];
+        $coord = DB::table('group')
+        ->join('account','account.accID','=','group.groupCAdviserID')
+        ->whereIn('account.accType',['1'])
+        ->where('group.groupCoordID','=',$user_id)
+        ->whereIn('group.groupStatus',$status)
+        ->count();
+
+        $data = ['SchedRequest'=>$SchedRequest,'NextStage'=>$NextStage,'SchedFinalize'=>$SchedFinalize,'sched'=>$sched,'proj'=>$proj,'adv'=>$adv,'coord'=>$coord];
         return $data;
     }
 
