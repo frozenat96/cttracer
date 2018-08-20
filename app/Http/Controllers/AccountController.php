@@ -116,8 +116,8 @@ class AccountController extends Controller
         }
         $validTitle = ['','Mr.','Ms.','Mrs.','Asst. Prof.','Prof.','Engr.','Dr.'];
         $validator = Validator::make($request->all(), [
-            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ -]+$/'],
-            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. -]+$/'],
+            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ -\']+$/'],
+            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. -\']+$/'],
             'title' => ['max:20',Rule::In($validTitle)],
             'email' => ['E-mail','required','max:191','unique:account,accEmail'],
             'role' => ['Integer','required',Rule::In($acc_type->all())],
@@ -310,8 +310,8 @@ class AccountController extends Controller
 
         $validTitle = ['','Mr.','Ms.','Mrs.','Asst. Prof.','Prof.','Engr.','Dr.'];
         $validator = Validator::make($request->all(), [
-            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ -]+$/'],  
-            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. -]+$/'],
+            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ -\']+$/'],  
+            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. -\']+$/'],
             'title' => ['max:20',Rule::In($validTitle)],
             'email' => ['E-mail','required','max:70'],
             'role' => ['Integer','required',Rule::In($acc_type->all())],

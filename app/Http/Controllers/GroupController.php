@@ -19,6 +19,7 @@ use Illuminate\Validation\Rule;
 use Webpatser\Uuid\Uuid;
 use Auth;
 use Exception;
+use Carbon\Carbon;
 
 class GroupController extends Controller
 {
@@ -125,10 +126,10 @@ class GroupController extends Controller
         ->pluck('accID');
         
         $validator = Validator::make($request->all(), [
-            'group_name' => ['required','max:100','unique:group,groupName','regex:/^[A-Za-z:,; -]+$/'],
+            'group_name' => ['required','max:100','unique:group,groupName','regex:/^[A-Za-z:,; -\']+$/'],
             'group_type' => ['required',Rule::In($valid_group_types)],
             'content_adviser' => ['required',Rule::In($valid_panel_members->all())],
-            'group_project_name' => ['required','max:150','unique:project,projName','regex:/^[0-9A-Za-z: -]+$/'],
+            'group_project_name' => ['required','max:150','unique:project,projName','regex:/^[0-9A-Za-z: -\']+$/'],
           	'minimum_panel_members_for_project_approval' => ['required'],
         ]);
         if ($validator->fails()) {
@@ -340,10 +341,10 @@ class GroupController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'group_name' => ['required','max:100','regex:/^[A-Za-z:,; -]+$/'],
+            'group_name' => ['required','max:100','regex:/^[A-Za-z:,; -\']+$/'],
             'group_type' => ['required',Rule::In($valid_group_types)],
             'content_adviser' => ['max:36','required',Rule::In($valid_panel_members->all())],
-            'group_project_name' => ['required','max:150','regex:/^[0-9A-Za-z: -]+$/'],
+            'group_project_name' => ['required','max:150','regex:/^[0-9A-Za-z: -\']+$/'],
             'stage_no' => ['Integer','required',Rule::In($valid_stages->all())],
             'panel_verdict' => ['Integer','required',Rule::In($valid_panel_verdict->all())],
             'group_status' => ['required',Rule::In($valid_group_status)],

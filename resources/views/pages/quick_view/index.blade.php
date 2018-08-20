@@ -36,7 +36,7 @@
                             <option value="{{$data1->groupName}}">
                         @endforeach
                         @foreach($data as $data2)
-                            <option value="{{$data1->projName}}">
+                            <option value="{{$data2->projName}}">
                         @endforeach
                     </datalist>
                     @endif
