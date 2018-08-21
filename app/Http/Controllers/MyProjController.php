@@ -102,7 +102,7 @@ class MyProjController extends Controller
         try {
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'document_link' => ['required','max:255','active_url'],
+                'document_link' => ['required','max:150','active_url'],
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
@@ -173,7 +173,9 @@ class MyProjController extends Controller
         ->select('project.*','group.*')
         ->where('group.groupID','=',$id)
         ->first();
-        $settings = ApplicationSetting::where('settingCoordID','=',$group->groupCoordID);
+        $settings = DB::table('application_setting')
+        ->where('settingCoordID','=',$group->groupCoordID)
+        ->first();
         if(!in_array($group->groupStatus,['Waiting for Submission','Corrected by Panel Members','Corrected by Content Adviser'])) {
             return redirect()->action('MyProjController@index');
         }

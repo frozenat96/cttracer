@@ -114,6 +114,11 @@ $(document).ready(function () {
     $('.popover-dismiss').popover({
     trigger: 'click'
     });
+    $("form").bind("keypress", function(e) {
+        if (e.keyCode == 13 && $("form").prop('id')!="form-search") {
+            return false;
+        }
+    });
 });
 </script>
 <script src="{{asset('js/bootstrap-submenu.js')}}"></script>

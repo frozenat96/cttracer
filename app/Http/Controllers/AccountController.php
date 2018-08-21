@@ -92,7 +92,6 @@ class AccountController extends Controller
         $acc_type = DB::table('account_type')
         ->get();
         $group = DB::table('group')
-        ->select('group.*')
         ->whereNotIn('group.groupStatus', ['Finished'])->get();
         $data = ['acc_type' => $acc_type, 'group' => $group];
         return view('pages.accounts.create')->with('data',$data);
@@ -116,8 +115,8 @@ class AccountController extends Controller
         }
         $validTitle = ['','Mr.','Ms.','Mrs.','Asst. Prof.','Prof.','Engr.','Dr.'];
         $validator = Validator::make($request->all(), [
-            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ -\']+$/'],
-            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. -\']+$/'],
+            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ \'-]+$/'],
+            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. \'-]+$/'],
             'title' => ['max:20',Rule::In($validTitle)],
             'email' => ['E-mail','required','max:191','unique:account,accEmail'],
             'role' => ['Integer','required',Rule::In($acc_type->all())],
@@ -310,8 +309,8 @@ class AccountController extends Controller
 
         $validTitle = ['','Mr.','Ms.','Mrs.','Asst. Prof.','Prof.','Engr.','Dr.'];
         $validator = Validator::make($request->all(), [
-            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ -\']+$/'],  
-            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. -\']+$/'],
+            'given_name' => ['required','max:50','regex:/^[A-Za-zñÑ \'-]+$/'],  
+            'last_name' => ['required','max:50','regex:/^[A-Za-zñÑ. \'-]+$/'],
             'title' => ['max:20',Rule::In($validTitle)],
             'email' => ['E-mail','required','max:70'],
             'role' => ['Integer','required',Rule::In($acc_type->all())],
@@ -499,16 +498,16 @@ class AccountController extends Controller
             }
             if($deleteAccount->accType == '1') {
                 //delete application settings
-                $delete4 = DB::table('applications_settings')
-                ->where('applications_settings.settingCoordID','=',$id)
-                ->delete();
+                $delete4 = DB::table('application_setting')
+                ->where('application_setting.settingCoordID','=',$id)
+                ->delete();    
             }
             DB::commit();
             return redirect()->action('AccountController@index', ['status' => 1,'statusMsg'=>['Account Information has been Deleted!']]);
         } catch (Exception $e) {
-            //return dd($e);
+            return dd($e);
             DB::rollback();
-            return redirect()->action('AccountController@index', ['status' => 0,'statusMsg'=>['Deletion of account failed.','Rolled back changes']]);
+            return redirect()->action('AccountController@index', ['status' => 0,'statusMsg'=>['Deletion of account failed.','Rolled back changes.']]);
         } 
     }
 

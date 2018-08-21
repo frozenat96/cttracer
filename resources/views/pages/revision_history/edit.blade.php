@@ -18,7 +18,24 @@
                 @include('inc.messages')
                 {!!Form::open(['action' => ['RevHistoryController@update',$data->revID], 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
-                            <h4 class="text-left"><span class="alert bg2">EDIT REVISION FORM</span><hr class="my-4"></h4>
+                            <!-- title of the form -->
+                            <div class="form-row">
+                                    <div class="col-md-12">
+                                    <table class="table table-responsive-sm table-responsive-md">
+                                    <tr>
+                                        <td>
+                                <h4 class="text-left"><span class="alert bg2">EDIT REVISION HISTORY FORM</span></h4>
+                                        </td>
+             
+                                        <td class="text-right">
+                                <a class="btn btn-secondary btn-lg" href="/revision-history-search-results/{{$data->revGroupName}}"><i class="fas fa-arrow-left"></i> Back</a>
+                                        </td>
+                                    </tr>
+                                    </table>
+                                    </div>
+                                </div>
+                                <!-- title of the form -->
+                                <hr class="my-4">
                     
                             {{csrf_field()}} 
                     <div class="form-row">

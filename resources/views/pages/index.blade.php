@@ -24,7 +24,7 @@
         </div>
         
         <div class="col-md-12">
-            <img src="{{asset('img/design/index-background/index-background.png')}}" class="img-fluid" alt="Responsive image">
+            <img src="{{asset('img/design/index-background/index-background.png')}}" class="img-fluid" alt="Background image">
         </div>
 </div>
 <div class="row">

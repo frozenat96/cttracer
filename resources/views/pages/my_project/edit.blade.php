@@ -25,7 +25,10 @@
                         <div class="form-group col-md-12">
                             <label for="for_group">For Group Of : {{$data['group']->groupName}}</label>
                             <input type="hidden" name="groupID" value="{{$data['group']->groupID}}">
-                            <p>Instructions: </p>
+                            <p><em><b>Please follow the submission instructions when uploading documents.
+                            </b></em></p>
+                            <a class="btn btn-danger" href="/submission-instructions" target="_blank"><i class="far fa-eye"></i> View Submission Instructions </a>
+                            
                         </div>
                     </div>
                     @if(isset($data['settings']) && !is_null($data['settings']))

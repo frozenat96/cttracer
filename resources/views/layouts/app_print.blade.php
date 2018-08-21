@@ -115,6 +115,11 @@ $('[data-toggle="popover"]').popover({ trigger: "hover" });
             $('#sub2').trigger('click');
         });
     }
+    $("form").bind("keypress", function(e) {
+        if (e.keyCode == 13 && $("form").prop('id')!="form-search") {
+            return false;
+        }
+    });
 });
 
 </script>

@@ -17,7 +17,24 @@
                 @include('inc.messages')
                 <form method="post" action="{{action('StageController@store')}}" accept-charset="UTF-8" role="create" class="form1">
                         <fieldset>
-                                <h4 class="text-left"><span class="alert bg2">CREATE STAGE FORM</span><hr class="my-4"></h4>
+                            <!-- title of the form -->
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                <table class="table table-responsive-sm table-responsive-md">
+                                <tr>
+                                    <td>
+                            <h4 class="text-left"><span class="alert bg2">CREATE STAGE FORM</span></h4>
+                                    </td>
+         
+                                    <td class="text-right">
+                            <a class="btn btn-secondary btn-lg" href="/stage-settings"><i class="fas fa-arrow-left"></i> Back</a>
+                                    </td>
+                                </tr>
+                                </table>
+                                </div>
+                            </div>
+                            <!-- title of the form -->
+                            <hr class="my-4">
                     
                             {{csrf_field()}} 
                     <!-- required fields note -->

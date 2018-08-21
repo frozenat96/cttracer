@@ -38,6 +38,7 @@ $account_types = DB::table('account_type')->get();
                             </div>
                         </div>
                         <!-- title of the form -->
+                        <hr class="my-4">
                             {{csrf_field()}} 
                     <!-- required fields note -->
                     <div class="form-row">

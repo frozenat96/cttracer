@@ -40,6 +40,7 @@ $account_types = DB::table('account_type')->get();
                     
                             {{csrf_field()}} 
                     <!-- required fields note -->
+                    <hr class="my-4">
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <span><b>

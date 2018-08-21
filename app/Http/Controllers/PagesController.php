@@ -74,6 +74,10 @@ class PagesController extends Controller
         return view('pages.misc.contact');
     }
 
+    public function submissionInstructionsIndex() {
+        return view('pages.misc.submit-instructions');
+    }
+
     public function appSettingsStore(Request $request) {
         try {   
             $validator = Validator::make($request->all(), [

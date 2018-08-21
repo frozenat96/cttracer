@@ -47,12 +47,12 @@
         @yield('includes')
         <title>{{config('app.name','cttracer')}}</title>
         <style type="text/css">
-            @yield('style')
+        @yield('style')
             #cont1 {
                 margin-top: 50px;
                 background-color: white;
             }
-        </style>
+        </style>        
     </head>
     <body>
         <div id="pageloader">
@@ -127,6 +127,11 @@ $('[data-toggle="popover"]').popover({ trigger: "hover" });
             $('#sub2').trigger('click');
         });
     }
+    $("form").bind("keypress", function(e) {
+        if (e.keyCode == 13 && $("form").prop('id')!="form-search") {
+            return false;
+        }
+    });
 });
 
 </script>

@@ -291,6 +291,11 @@ Route::group(['middleware' => ['auth']], function() {
         ]
         ); 
 
+        Route::any('/submission-instructions', [
+            'uses'=>'PagesController@submissionInstructionsIndex',
+        ]
+        );
+        
     }); //End Route::Group Student
 
     //routes without roles needed
