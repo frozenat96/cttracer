@@ -60,7 +60,6 @@
                         <th scope="col"><small><b>Status</b></small></th>
                         <th scope="col"><small><b>View</b></small></th>
                         @if($user->accType=='1')
-                        <th scope="col"><small><b>Edit</b></small></th>
                         <th scope="col"><small><b>Delete</b></small></th>
                         <th scope="col"><small><b>Delete All</b></small></th>
                         @endif
@@ -97,9 +96,6 @@
                                 {!!Form::close() !!}
                             </td>
                             @if($user->accType=='1')
-                            <td>
-                                <a href="/revision-history/{{$d->revID}}/edit" class="btn btn-secondary" data-toggle="popover" data-content="Modify Revision Details" data-placement="top"><span><i class="far fa-edit"></i></span> </a>
-                            </td>
                             <td>
                                 {!!Form::open(['action' => ['RevHistoryController@destroy',$d->revID], 'method' => 'POST','class'=>'form1']) !!}
                                 <button  type="submit" class="btn btn-danger" name="submit" data-toggle="popover" data-content="Delete this revision" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-minus"></i></span></button>

@@ -116,6 +116,7 @@ $(document).ready(function () {
     });
     $("form").bind("keypress", function(e) {
         if (e.keyCode == 13 && $("form").prop('id')!="form-search") {
+            $('#confirm1').modal('show');
             return false;
         }
     });
