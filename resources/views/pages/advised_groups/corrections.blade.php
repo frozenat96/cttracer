@@ -17,13 +17,16 @@
                 @include('inc.messages')
                 @if(isset($data) && !is_null($data))
                         <fieldset>
-                                <h4 class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></h4>
+                                <h4 class="text-left"><span class="alert bg2">CORRECT/APPROVE DOCUMENT</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="for_group">For Group Of : {{$data->groupName}}</label>
                             <input type="hidden" name="groupID" value="{{$data->groupID}}">
+                            <br>
+                            <label for="for_group">For : @if(!in_array($data->projPVerdictNo,['2','3','7'])) Schedule Request @elseif(in_array($data->projPVerdictNo,['2','3'])) Project Approval @endif
+                            </label>
                         </div>
                     </div>
                     <div class="form-row">
