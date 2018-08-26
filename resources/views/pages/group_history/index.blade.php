@@ -15,11 +15,10 @@
                 <input type="text" class="form-control search-bar1" list="groups1" name="q" value="{{isset($q) ? $q : ''}}" placeholder="Search Groups"> 
 
                     <?php 
-                    $g1 = DB::table('group')->pluck('group.groupName');
-                    $p1 = DB::table('project')
-                    ->join('group','group.groupID','=','project.projGroupID')
-                    ->where('project.projPVerdictNo','!=','7')
-                    ->pluck('project.projName'); 
+                    $g1 = DB::table('group_history')->groupBy('group_history.groupHGroupName')->pluck('group_history.groupHGroupName');
+                    $p1 = DB::table('group_history')
+                    ->groupBy('group_history.groupHProjName')
+                    ->pluck('group_history.groupHProjName'); 
                     ?>
                     <datalist id="groups1" class="datalist scrollable">
                         @foreach($g1 as $g2)

@@ -17,7 +17,7 @@
             <a class="dropdown-item" href="/groups"><i class="fas fa-users-cog"></i> Manage Group Settings</a>
             <a class="dropdown-item" href="/transfer-role-index"><i class="fas fa-exchange-alt"></i> Transfer Role</a>
             <a class="dropdown-item" href="/application-settings"><i class="fas fa-sliders-h"></i> Application Settings</a>
-            <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> Search groups</a>
+            <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> View groups</a>
             <a class="dropdown-item" href="/group-history"><i class="fas fa-history"></i> Group History</a>
           @endif
           <hr>

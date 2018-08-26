@@ -90,7 +90,7 @@
 
                             <li> 
                             <h6>Project Document : </h6>
-                            <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download the file" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> download</a>
+                            <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download the file" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Project Document</a>
                             </li>
                             @if(in_array($data['proj']->groupStatus,['Corrected by Content Adviser'])) 
 

@@ -40,8 +40,8 @@ class GrpHistoryController extends Controller
         $q = Input::get('q');
         if($q != '') {
             $data = DB::table('group_history')
-            ->where('group_history.groupHGroupName','LIKE', "%".$q."%")
-            ->orWhere('group_history.groupHProjName','LIKE', "%".$q."%")
+            ->where('group_history.groupHGroupName','=', $q)
+            ->orWhere('group_history.groupHProjName','=', $q)
             ->orderBy('group_history.groupHTimestamp')
             ->orderBy('group_history.groupHGroupName')
             ->orderBy('group_history.groupHProjName')

@@ -451,10 +451,11 @@ class GroupController extends Controller
             }
             $group->save();
             $project->save();
-            if(($request->input('group_status')=='Waiting for Schedule Approval') && !in_array($request->input('panel_verdict'),['2','3','7'])) {
+            if(in_array($request->input('group_status'),['Waiting for Schedule Approval']) && !in_array($request->input('panel_verdict'),['2','3','7'])) {
                 $pRes->resetSchedApp($id,'0',1);
             } elseif(($request->input('group_status')=='Waiting for Project Approval') && in_array($request->input('panel_verdict'),['2','3'])) {
                 $pRes->resetProjApp($id,'0',1);
+            } elseif(in_array($request->input('group_status'),['Ready for Defense','Waiting for Final Schedule']) && !in_array($request->input('panel_verdict'),['2','3','7'])) {
             } else {
                 $pRes->resetSchedApp($id,'3',0);
                 $pRes->resetProjApp($id,'3',0);

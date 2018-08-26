@@ -219,7 +219,7 @@ Route::group(['middleware' => ['auth']], function() {
     }); //End Route::Group Capstone Coordinator
 
    
-    Route::group(['middleware' => 'roles', 'roles' => $panel], function() {
+    Route::group(['middleware' => 'roles', 'roles' => $coordpanel], function() {
         Route::resource('/advised-groups', 'AdvisedGroupsController')->parameters([
         ]);
     
@@ -275,7 +275,7 @@ Route::group(['middleware' => ['auth']], function() {
         ]
         ); 
 
-    }); //End Route::Group Panel Member
+    }); //End Route::Group Panel Member / Capstone Coordinator
 
     Route::group(['middleware' => 'roles', 'roles' => $student], function() {
         Route::resource('/my-project', 'MyProjController')->parameters([

@@ -85,8 +85,8 @@ class RevHistoryController extends Controller
         if($q != '') {
             $data = DB::table('revision_history')
             ->join('account','account.accID','=','revision_history.revPanelAccID')
-            ->where('revision_history.revGroupName','LIKE', "%".$q."%")
-            ->orWhere('revision_history.revProjName','LIKE', "%".$q."%")
+            ->where('revision_history.revGroupName','=', $q)
+            ->orWhere('revision_history.revProjName','=', $q)
             ->orderBy('revision_history.revStageNo')
             ->orderBy('revision_history.revNo')
             ->orderBy('revision_history.revGroupName')

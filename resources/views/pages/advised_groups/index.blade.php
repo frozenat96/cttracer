@@ -46,6 +46,30 @@
                     </form>
                 </div>
             </div>
+            <!-- Group Status Selection -->
+            <div class="row justify-content-left">
+                <div class="form-group col-sm-12 col-md-6">
+                    <table class="table-responsive-sm table-responsive-md" style="margin-top:10px;">
+                        <tr>
+                            <td>
+                    <span style="font-size:1em;padding-right:5px;">Select Group Status</span>
+                            </td>
+                            <td>
+                    <select id="search1" class="form-control">
+                        <option value="" style="visibility:0;"></option>
+                        <option value="">All Advised Groups</option>
+                        <option value="Unsubmitted">All Groups without Submissions</option>
+                        <option value="Submitted to Content Adviser">All Groups with Submissions</option>
+                        <option value="Waiting for Submission">Groups Waiting for Submission</option>
+                        <option value="Corrected by Content Adviser">Groups Corrected by Content Adviser</option>
+                        <option value="Corrected by Panel Members">Groups Corrected by Panel Members</option>
+                    </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!-- Group Status Selection -->
             <hr class="my-4">
             @if(isset($data) && count($data))
             <?php 
@@ -179,11 +203,16 @@
                                 ->get();
                                 ?>
                                 <table class="table-sm">
-                    
+                                @if($sched->groupStatus=='Submitted to Content Adviser')
                                 <tr><td>
                                 <a href="/advised-groups/{{$sched->groupID}}/edit" class="btn btn-warning btn-sm" name="submit" value="1" data-toggle="popover" data-content="Make corrections or approve the document submitted" data-placement="top"><span><i class="far fa-question-circle"></i> Correct/Approve Document</span>
                                 </a>
                                 </td></tr>
+                                @else
+                                <tr><td>
+                                <a href="/projects/{{$sched->groupID}}" class="btn btn-warning btn-sm" title="{{$sched->projName}}" data-toggle="popover" data-content="View project details" data-placement="top"><span><i class="fas fa-project-diagram"></i></span> View Project</a>
+                                </td></tr>
+                                @endif
                                 </table>
                             </td>
                             </tr>
@@ -204,7 +233,14 @@
 @section('includes2')
 <script type="text/javascript">
 $(document).ready(function () {
-
+    $('#search1').select2();
+    $(document).ready(function () {
+        $('#search1').change(function () {
+            x = $('#search1').val();
+            $('.search-bar1').val(x);
+            $('#form-search').submit();
+        });
+    });
 });
 </script>
 @endsection

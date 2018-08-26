@@ -173,14 +173,16 @@ class ScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'date' => ['required','date_format:Y-m-d'],
                 'starting_time' => ['required','date_format:H:i'],
-                'place' => ['required','max:100'],
+                'place' => ['required','max:100','regex:/^[0-9A-Za-z: \'-]+$/'],
                 'schedule_type' => ['required','max:20',Rule::In($validType)],
                 'grp' =>  ['required']
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
             } 
-            
+           
+
+
             $now = date("H:i");
             $today = date("Y-m-d");
             $pRes = new Project;
@@ -199,13 +201,17 @@ class ScheduleController extends Controller
             ->where('group.groupID','=',$id)
             ->where('panel_group.panelGroupType','=',$stg->current($id))
             ->get();
+            if(is_null($data) || !count($data)) {
+                DB::rollback();
+                return redirect()->back()->withInput($request->all)->withErrors(['Schedule Information was not created.','The group does not have any panel members.']);  
+            }
 
             //find the stage of the group
             $stg1 = DB::table('project')
             ->join('stage','stageNo','=','project.projStageNo')
             ->where('project.projGroupID','=',$id)
             ->first();
-               
+            
             $sc0 = Schedule::find($data[0]->schedID);
             $sc0->schedDate = $request->input('date');
             $sc0->schedTimeStart = $request->input('starting_time');
@@ -214,26 +220,29 @@ class ScheduleController extends Controller
             $sc0->schedPlace = $request->input('place');
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = 'Not Ready';
-            
+
+            /*
+            //Check if the schedule is conflicting with another group's schedule
+            $conflict = DB::table('schedule')
+            ->where('schedule.schedDate','=',$request->input('date'))
+            ->whereBetween('schedule.schedTimeStart', array($sc0->schedTimeStart, $sc0->schedTimeEnd))
+            ->where('schedule.schedTimeEnd', '>', $sc0->schedTimeStart)
+            ->where('schedule.schedTimeEnd', '<', $sc0->schedTimeEnd)
+            ->where('schedule.schedGroupID','!=',$request->input('grp'))
+            ->count();
+            if($conflict > 0) {
+                DB::rollback();
+                return redirect()->back()->withInput($request->all)->withErrors(['Schedule Information was not created.','The schedule is in conflict with other groups\' schedule.']);  
+            } 
+            */
 
             $stage = new Stage;
             $group = Group::find($id);
             $group->groupStatus = 'Waiting for Schedule Approval';
             $group->save(); 
             $notify = new Notification;
-           // $notify->NotifyPanelOnSchedRequest($group);
+            //$notify->NotifyPanelOnSchedRequest($group);
    
-            /*
-            //add the event on google calendar
-            $event = new Event;
-            $event->name = "{$sc0->schedType} for the group of {$group->groupName}, {$sc0->schedPlace}";
-            $event->addLocation($sc0->schedPlace);
-            $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
-            $event->endDateTime = $tend = $tstart->addHour(2);
-            $calendarEvent = $event->save();
-            $sc0->schedEventID = $calendarEvent->id;
-            */
-
             $pRes->resetSchedApp($group->groupID,'0',1);
             $sc0->save(); 
             DB::commit();    
@@ -245,7 +254,6 @@ class ScheduleController extends Controller
             ->where('group.groupID','=',$group->groupID)
             ->first();  
             return redirect("/quick-view-search-results?q={$group->groupName}")->withSuccess('Schedule Information was created successfully!');
-            return view('pages.quick_view.create-schedule')->with('data',$data)->withInput($request->all)->with('success2','Schedule Information was created successfully!');;
     }
 
 }

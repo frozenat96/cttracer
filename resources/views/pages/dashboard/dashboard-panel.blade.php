@@ -45,9 +45,9 @@
                             <div class="row bg-light" style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
                                 <div class="col-12" style="padding-top:5px;">
                                     @if($data['sched'])
-                                    <p class="card-text blockquote-footer">You have a total of {{$data['sched']}} Schedules to be approved</p>
+                                    <p class="card-text blockquote-footer">You have a total of {{$data['sched']}} Schedules to be approved.</p>
                                     @else
-                                    <p class="card-text blockquote-footer">No schedules to be approved</p>
+                                    <p class="card-text blockquote-footer">No schedules to be approved.</p>
                                     @endif
                                 </div>  
                                 <div class="col-12">
@@ -76,7 +76,7 @@
                             <div class="row bg-light" style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
                                 <div class="col-12" style="padding-top:5px;">
                                         @if($data['adv'])
-                                        <p class="card-text blockquote-footer">You have a total of {{$data['adv']}} Advised Groups that had submitted their documents</p>
+                                        <p class="card-text blockquote-footer">You have a total of {{$data['adv']}} Advised Groups that had submitted their documents.</p>
                                         @else
                                         <p class="card-text blockquote-footer">No advised groups have submitted their document yet.</p>
                                         @endif
@@ -107,9 +107,9 @@
                             <div class="row bg-light" style="border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
                                 <div class="col-12" style="padding-top:5px;">
                                         @if($data['proj'])
-                                        <p class="card-text blockquote-footer">You have a total of {{$data['proj']}} projects to be approved</p>
+                                        <p class="card-text blockquote-footer">You have a total of {{$data['proj']}} projects to be approved.</p>
                                         @else
-                                        <p class="card-text blockquote-footer">No projects to be approved</p>
+                                        <p class="card-text blockquote-footer">No projects to be approved.</p>
                                         @endif
                                 </div>  
                                 <div class="col-12">

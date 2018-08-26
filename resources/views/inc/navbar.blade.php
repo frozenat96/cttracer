@@ -74,7 +74,7 @@
       </a>
       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
           @if(in_array($user[0]->accType,['1']))
-        <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> Search groups</a>
+        <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> View groups</a>
           @endif
           @if(in_array($user[0]->accType,['1','2']))
         <a class="dropdown-item" href="/advised-groups"><i class="fas fa-chalkboard-teacher"></i> Advised Groups</a>

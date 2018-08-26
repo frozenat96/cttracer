@@ -18,7 +18,7 @@
                 @if(isset($data) && !is_null($data))
                 
                         <fieldset>
-                                <h4 class="text-left"><span class="alert bg2">APPROVE/CORRECT DOCUMENT</span><hr class="my-4"></h4>
+                                <h4 class="text-left"><span class="alert bg2">CORRECT/APPROVE DOCUMENT</span><hr class="my-4"></h4>
                     
                             {{csrf_field()}} 
                     <div class="form-row">

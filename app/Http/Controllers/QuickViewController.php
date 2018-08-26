@@ -200,6 +200,14 @@ class QuickViewController extends Controller
                     if($validator->fails()) {
                         return redirect()->back()->withInput($request->all)->withErrors($validator);
                     }
+                } 
+                if(!is_null($comment)) {
+                    $validator = Validator::make($request->all(), [
+                        "proj_comment_{$pmembers->accID}" => ['max:1600','regex:/^[0-9A-Za-z:. \'-]+$/'],
+                    ]);
+                    if($validator->fails()) {
+                        return redirect()->back()->withInput($request->all)->withErrors($validator);
+                    }
                 }
                 $pj1->revisionLink = !is_null($documentLink) ? $documentLink : '';
                 $pj1->projAppComment = !is_null($comment) ? $comment : '';    
@@ -464,7 +472,7 @@ class QuickViewController extends Controller
                 'date' => ['required','date_format:Y-m-d'],
                 'starting_time' => ['required','date_format:H:i'],
                 'ending_time' => ['required','date_format:H:i','after:starting_time'],
-                'place' => ['required','max:100'],
+                'place' => ['required','max:100','regex:/^[0-9A-Za-z: \'-]+$/'],
                 'schedule_type' => ['required','max:20',Rule::In($validType)],
                 'schedule_status' => ['required','max:20',Rule::In($validStatus)],
             ]);
@@ -481,6 +489,10 @@ class QuickViewController extends Controller
             ->where('group.groupID','=',$id)
             ->where('panel_group.panelGroupType','=',$stg->current($id))
             ->get();
+            if(is_null($data) || !count($data)) {
+                DB::rollback();
+                return redirect()->back()->withInput($request->all)->withErrors(['Schedule Information was not updated.','The group does not have any panel members.']);  
+            }
 
             $sc0 = Schedule::find($data[0]->schedID);
             $sc0->schedDate = $request->input('date');
@@ -489,16 +501,32 @@ class QuickViewController extends Controller
             $sc0->schedPlace = $request->input('place');
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = $request->input('schedule_status');
-            $sc0->save();
+            /*
+            //Check if the schedule is conflicting with another group's schedule
+            $conflict = DB::table('schedule')
+            ->where('schedule.schedDate','=',$request->input('date'))
+            ->whereBetween('schedule.schedTimeStart', array($sc0->schedTimeStart, $sc0->schedTimeEnd))
+            ->where('schedule.schedTimeEnd', '>', $sc0->schedTimeStart)
+            ->where('schedule.schedTimeEnd', '<', $sc0->schedTimeEnd)
+            ->where('schedule.schedGroupID','!=',$request->input('grp'))
+            ->count();
+            if($conflict > 0) {
+                DB::rollback();
+                return redirect()->back()->withInput($request->all)->withErrors(['Schedule Information was not updated.','The schedule is in conflict with other groups\' schedule.']);  
+            }
+            */
 
+            $sc0->save();
             //update the google calendar
-            $event = Event::find($sc0->schedEventID);
-            if(!is_null($event)) {
-                $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
-                $event->endDateTime = $tend = new Carbon("{$sc0->schedDate} {$sc0->schedTimeEnd}");
-                $event->name = "{$sc0->schedType} for the group of {$data[0]->groupName}, {$sc0->schedPlace} -- {$sc0->schedTimeStart} - {$sc0->schedTimeEnd}";
-                $event->addLocation($sc0->schedPlace);
-                $event->save();
+            if(!is_null($sc0->schedEventID)) {
+                $event = Event::find($sc0->schedEventID);
+                if(!is_null($event)) {
+                    $event->startDateTime = $tstart = new Carbon("{$sc0->schedDate} {$sc0->schedTimeStart}");
+                    $event->endDateTime = $tend = new Carbon("{$sc0->schedDate} {$sc0->schedTimeEnd}");
+                    $event->name = "{$sc0->schedType} for the group of {$data[0]->groupName}, {$sc0->schedPlace} -- {$sc0->schedTimeStart} - {$sc0->schedTimeEnd}";
+                    $event->addLocation($sc0->schedPlace);
+                    $event->save();
+                }
             }
          
             foreach($data as $pmembers) {

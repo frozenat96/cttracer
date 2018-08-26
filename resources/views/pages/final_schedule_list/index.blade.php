@@ -50,7 +50,7 @@
             <hr class="my-4">
             @if(isset($data) && count($data))
             <?php 
-            $model = new App\models\Group;
+            $model = new App\models\Group; 
             ?> 
                 @foreach($data as $sched)
                 <div class="form-row card bx2 card1 jumbotron">

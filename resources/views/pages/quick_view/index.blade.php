@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col">@include('inc.messages')</div>
         </div>
-        <h4><span class="alert bg2">SEARCH GROUPS</span></h4>
+        <h4><span class="alert bg2">VIEW GROUPS</span></h4>
         <br class="my-4">
             <div class="row">
                 <div class="col-md-12">
@@ -46,6 +46,7 @@
                 </div>
                 
             </div>
+            <!-- Group Status Selection -->
             <div class="row justify-content-left">
                 <div class="form-group col-sm-12 col-md-6">
                     <table class="table-responsive-sm table-responsive-md" style="margin-top:10px;">
@@ -56,7 +57,7 @@
                             <td>
                     <select id="search1" class="form-control">
                         <option value="" style="visibility:0;"></option>
-                        <option value="">None</option>
+                        <option value="">View All Groups</option>
                         <option value="Waiting for Submission">Waiting for Submission</option>
                         <option value="Submitted to Content Adviser">Submitted to Content Adviser</option>
                         <option value="Corrected by Content Adviser">Corrected by Content Adviser</option>
@@ -76,6 +77,7 @@
                     </table>
                 </div>
             </div>
+            <!-- Group Status Selection -->
             <hr class="my-4">
             @if(isset($data) && count($data))
             <?php 

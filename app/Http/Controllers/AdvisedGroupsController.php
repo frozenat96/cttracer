@@ -58,10 +58,8 @@ class AdvisedGroupsController extends Controller
         ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
         ->join('schedule','schedule.schedGroupID','=','group.groupID')
         ->join('account','account.accID','=','group.groupCAdviserID')
-        ->select('schedule.*','account.*','project.*','group.*','panel_verdict.*')
         ->whereIn('account.accType',['1','2'])
         ->where('group.groupCAdviserID','=',$user_id)
-        ->whereIn('group.groupStatus',$substatus)
         ->paginate(5); 
         return $groups;
     }
@@ -69,24 +67,29 @@ class AdvisedGroupsController extends Controller
     public function search() {
         $q = Input::get('q');
         $user_id = Auth::user()->getId(); 
-        if($q != '') {
+        $validGroupStatus = ['Waiting for Submission','Corrected by Content Adviser','Corrected by Panel Members'];
+        $validGroupStatus2 = ['Waiting for Submission','Corrected by Content Adviser','Corrected by Panel Members','Submitted to Content Adviser'];
+        if($q=='') {
+            return redirect()->action('AdvisedGroupsController@index');
+        } elseif($q != '') {
             $data = DB::table('group')
-            ->join('panel_group','panel_group.panelGroupID','=','group.groupID')
             ->join('project','project.projGroupID','=','group.groupID')
             ->join('panel_verdict','panel_verdict.panelVerdictNo','=','project.projPVerdictNo')
             ->join('schedule','schedule.schedGroupID','=','group.groupID')
             ->join('account','account.accID','=','group.groupCAdviserID')
-            ->select('schedule.*','panel_group.*','account.*','project.*','group.*','panel_verdict.*')
             ->whereIn('account.accType',['1','2'])
             ->where('group.groupCAdviserID','=',$user_id)
-            ->whereIn('group.groupStatus', ['Submitted To Content Adviser'])
-            ->where(function ($query) use ($q){
-                $query->where('group.groupName','LIKE', "%".$q."%")
-                ->orWhere('project.projName','LIKE', "%".$q."%");
-            })
+            ->when(($q=='Unsubmitted'), function ($query) use ($validGroupStatus,$validGroupStatus2) {
+                return $query->whereIn('group.groupStatus',$validGroupStatus);
+            }, function ($query) use ($validGroupStatus2,$q) {
+                $query->when((in_array($q,$validGroupStatus2)), function ($query) use ($q) {
+                    return $query->where('group.groupStatus','LIKE', "%".$q."%");
+                }, function ($query) use ($q) {
+                    $query->where('group.groupName','LIKE', "%".$q."%")
+                    ->orWhere('project.projName','LIKE', "%".$q."%");
+                });
+            }) 
             ->paginate(5);
-        } else {
-            return redirect()->action('AdvisedGroupsController@index');
         }
 
         $data->appends(array(

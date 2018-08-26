@@ -103,7 +103,7 @@ class ProjSearchController extends Controller
         try {
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'project_name' => ['required','max:150'],
+                'project_name' => ['required','max:150','unique:project,projName'],
                 'document_link' => ['required','max:150','active_url'],
             ]);
             if ($validator->fails()) {
@@ -168,7 +168,15 @@ class ProjSearchController extends Controller
             } 
 
             $project = Project::find($id); 
-            $project->projName = $request->input('project_name');
+            if($request->input('project_name') != $project->projName) {
+                $validator = Validator::make($request->all(), [
+                    'project_name' => ['unique:project,projName'],
+                ]);
+                if ($validator->fails()) {
+                    return redirect()->back()->withInput($request->all)->withErrors($validator);
+                } 
+                $project->projName = $request->input('project_name');   
+            }
             $project->projDocumentLink = $request->input('document_link');
             $project->save();
             DB::commit();

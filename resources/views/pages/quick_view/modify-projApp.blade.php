@@ -15,6 +15,7 @@
         <div class="row justify-content-center">
             <div class="col-md-9 jumbotron bx2">
                 @include('inc.messages')
+                @if(isset($data) && count($data) > 0)
                 {!!Form::open(['action' => 'QuickViewController@modifyProjAppUpdate', 'method' => 'POST','class'=>'form1']) !!}
                         <fieldset>
                         <div class="form-row">
@@ -122,6 +123,28 @@
                         <input type="hidden" name="groupID" value="{{$data[0]->groupID}}">
                         <input type="hidden" name="_method" value="PUT">
                 {!!Form::close() !!}
+                @else
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                    <table class="table table-responsive-sm table-responsive-md">
+                    <tr>
+                        <td>
+                <h4 class="text-left"><span class="alert bg2">MODIFY PROJECT APPROVAL</span></h4>
+                        </td>
+
+                        <td class="text-right">
+                <a class="btn btn-secondary btn-lg btn-block" href="/quick-view"><i class="fas fa-arrow-left"></i> Back</a>
+                        </td>
+                    </tr>
+                    </table>
+                    </div>
+                </div><hr>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <p>The group does not have any panel members.</p>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

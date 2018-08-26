@@ -19,17 +19,19 @@
                 {{csrf_field()}} 
                 <div class="input-group" style="">
                     <input type="text" class="form-control search-bar1" name="q" list="list1" placeholder="Search Groups"> 
+                   
                     <?php 
-                    $list = DB::table('group')
-                    ->join('project','project.projGroupID','=','group.groupID')
-                    ->get();
+                    $g1 = DB::table('revision_history')->groupBy('revision_history.revGroupName')->pluck('revision_history.revGroupName');
+                    $p1 = DB::table('revision_history')
+                    ->groupBy('revision_history.revProjName')
+                    ->pluck('revision_history.revProjName'); 
                     ?>
                     <datalist id="list1">
-                        @foreach($list as $list1)
-                            <option value="{{$list1->groupName}}">
+                        @foreach($g1 as $list1)
+                            <option value="{{$list1->revGroupName}}">
                         @endforeach
-                        @foreach($list as $list2)
-                            <option value="{{$list2->projName}}">
+                        @foreach($p1 as $list2)
+                            <option value="{{$list2->revProjName}}">
                         @endforeach
                     </datalist>
                     <span class="input-group-btn">

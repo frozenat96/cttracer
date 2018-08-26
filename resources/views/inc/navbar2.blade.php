@@ -68,7 +68,7 @@
                 <i class="fas fa-users"></i> Groups
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
-              <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> Search groups</a>
+              <a class="dropdown-item" href="/quick-view"><i class="fas fa-search"></i> View groups</a>
               <a class="dropdown-item" href="/advised-groups"><i class="fas fa-chalkboard-teacher"></i> Advised Groups</a>
               <a class="dropdown-item" href="/group-history"><i class="fas fa-history"></i> Group History</a>
             </div>

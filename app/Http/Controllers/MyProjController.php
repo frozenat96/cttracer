@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use App\models\Project;
+use App\models\Schedule;
 use App\models\Group;
 use App\models\Stage;
 use App\models\Notification;
@@ -206,6 +207,19 @@ class MyProjController extends Controller
             $proj->projDocumentLink = $request->input('document_link');
             $proj->save();
             $group->groupStatus = 'Submitted to Content Adviser';
+            //if the group is submitting for schedule request -> reset schedule
+            if(!in_array($proj->projPVerdictNo,['2','3','7'])) {
+                $sched = DB::table('schedule')
+                ->where('schedule.schedGroupID','=',$proj->projGroupID)
+                ->first();
+                $sched = Schedule::find($sched->schedID);
+                $sched->schedDate = null;
+                $sched->schedTimeStart = null;
+                $sched->schedTimeEnd = null;
+                $sched->schedPlace = '';
+                $sched->save();
+            }
+
             $notify = new Notification;
             $notify->NotifyAdviserOnSubmission($group);
                

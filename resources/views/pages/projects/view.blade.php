@@ -62,7 +62,7 @@
                             </li>
                             <li>
                         <h6>Project Document : 
-                        <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download project document" data-toggle="popover" data-placement="top"><i class="fas fa-download"></i> download</a>
+                        <a href="{{($data['proj']->projDocumentLink)}}" target="_blank" data-content="Download project document" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Project Document</a>
                         </h6>
                         </li>
                         <?php $allowRevHist = new App\models\RevisionHistory; ?>
