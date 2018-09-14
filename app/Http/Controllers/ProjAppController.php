@@ -344,8 +344,8 @@ class ProjAppController extends Controller
         ->where('project.projGroupID','=',$group->groupID)
         ->first();
         $project = Project::find($project->projID);
-        //When all panel members are done evaluating a project approval and no panel members gave corrections, the panel member's correction link will be set to an empty string
-        $project->projPCorrectionLink = '';
+        //When all panel members are done evaluating a project approval and no panel members gave corrections, the panel member's correction link will be set to the current document link
+        $project->projPCorrectionLink = $project->projDocumentLink;
         $project->save();
         $notify = new Notification;
         $notify->NotifyCoordOnNextStage($group);

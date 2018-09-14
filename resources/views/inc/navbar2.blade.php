@@ -2,7 +2,7 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <img src="{{asset('img/design/logo/logo.png')}}" style="width: 100px;">
+                  <a href="/"><img src="{{asset('img/design/logo/logo.png')}}" style="width: 100px;"></a>
                 </li>
             </ul>
 

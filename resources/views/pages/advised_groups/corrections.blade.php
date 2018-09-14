@@ -32,18 +32,18 @@
                     <div class="form-row">
                         @if(!is_null($data->projPCorrectionLink) && trim($data->projPCorrectionLink)!='')
                         <div class="form-group col-md-12">
-                            <a class="btn btn-secondary" href="{{$data->projPCorrectionLink}}"><i class="far fa-eye"></i> View Panel Member's Corrections
+                            <a class="btn btn-secondary" href="{{$data->projPCorrectionLink}}" target="_blank"><i class="far fa-eye"></i> View Panel Member's Corrections
                             </a>
                         </div>
                         @endif
                         @if(!is_null($data->projCAdvCorrectionLink) && trim($data->projCAdvCorrectionLink)!='')
                         <div class="form-group col-md-12">
-                            <a class="btn btn-dark" href="{{$data->projCAdvCorrectionLink}}"><i class="far fa-eye"></i> View Old Document
+                            <a class="btn btn-dark" href="{{$data->projCAdvCorrectionLink}}" target="_blank"><i class="far fa-eye"></i> View Old Document
                             </a>
                         </div>
                         @endif
                         <div class="form-group col-md-12">
-                            <a class="btn btn-primary" href="{{$data->projDocumentLink}}"><i class="far fa-eye"></i> View Submitted Document
+                            <a class="btn btn-primary" href="{{$data->projDocumentLink}}" target="_blank"><i class="far fa-eye"></i> View Submitted Document
                             </a>
                         </div>
                     </div>

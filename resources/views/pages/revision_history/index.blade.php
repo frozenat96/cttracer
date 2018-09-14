@@ -27,12 +27,16 @@
                     ->pluck('revision_history.revProjName'); 
                     ?>
                     <datalist id="list1">
+                      @if(count($g1))
                         @foreach($g1 as $list1)
-                            <option value="{{$list1->revGroupName}}">
+                            <option value="{{$list1}}">
                         @endforeach
+                      @endif
+                      @if(count($p1))
                         @foreach($p1 as $list2)
-                            <option value="{{$list2->revProjName}}">
+                            <option value="{{$list2}}">
                         @endforeach
+                      @endif
                     </datalist>
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-info btn-lg">

@@ -2,7 +2,7 @@
   <div class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <img src="{{asset('img/design/logo/logo.png')}}" style="width: 100px;">
+            <a href="/"><img src="{{asset('img/design/logo/logo.png')}}" style="width:100px;height:80px;"></a>
           </li>
       </ul>
 
@@ -40,7 +40,7 @@
 <div class="panel-menu-sm" style="padding-top:20px;padding-bottom:20px;">
     <ul class="navbar-nav mr-auto text-center">
         <li class="nav-item active">
-          <img src="{{asset('img/design/logo/logo.png')}}" style="width: 100px;">
+          <img src="{{asset('img/design/logo/logo.png')}}" style="width:100px;height:80px;">
         </li>
     </ul>
 </div>
@@ -122,7 +122,7 @@
       <a class="dropdown-item" href="/nd/NotifyCoordOnSchedFinalize/QuickViewController@search/Waiting for Final Schedule"> Schedules to be Finalized <span class="badge badge-pill badge-success" data-bind="text: NotifyCoordOnSchedFinalize().length"></span></a>
       <!-- /ko -->
       <!-- ko if: NotifyCoordOnProjectArchive().length -->
-      <a class="dropdown-item" href="/nd/NotifyCoordOnProjectArchive/QuickViewController@search/Waiting for Project Completion"> Project archive submissions <span class="badge badge-pill badge-success" data-bind="text: NotifyCoordOnProjectArchive().length"></span></a>
+      <a class="dropdown-item" href="/nd/NotifyCoordOnProjectArchive/QuickViewController@search/Submitted to Capstone Coordinator"> Project archive submissions <span class="badge badge-pill badge-success" data-bind="text: NotifyCoordOnProjectArchive().length"></span></a>
       <!-- /ko -->
       @endif
       @if(in_array($user[0]->accType,['1','2']))
