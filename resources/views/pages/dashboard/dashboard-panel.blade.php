@@ -83,7 +83,7 @@
                                 </div>  
                                 <div class="col-12">
                                     <div class="text-right" style="padding-bottom:10px;padding-top:10px;">
-                                        <a href="/nd/NotifyAdviserOnSubmission/AdvisedGroupsController@search/null" class="btn btn-primary">View</a>
+                                        <a href="/nd/NotifyAdviserOnSubmission/AdvisedGroupsController@search/Submitted to Content Adviser" class="btn btn-primary">View</a>
                                     </div>
                                 </div>  
                             </div>
