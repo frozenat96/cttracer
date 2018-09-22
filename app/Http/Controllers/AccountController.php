@@ -447,6 +447,12 @@ class AccountController extends Controller
    
             $transferer->accType = '2';
             $transferee->accType = '1';
+
+            DB::table('group')
+            ->where('group.groupCoordID','=',$transferer->accID)
+            ->update([
+                'group.groupCoordID' => $transferee->accID
+            ]);
             
             $transferee->save();
             $transferer->save();

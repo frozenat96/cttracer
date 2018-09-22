@@ -241,7 +241,7 @@ class ScheduleController extends Controller
             $group->groupStatus = 'Waiting for Schedule Approval';
             $group->save(); 
             $notify = new Notification;
-            //$notify->NotifyPanelOnSchedRequest($group);
+            $notify->NotifyPanelOnSchedRequest($group);
    
             $pRes->resetSchedApp($group->groupID,'0',1);
             $sc0->save(); 

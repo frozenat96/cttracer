@@ -18,15 +18,22 @@
 @endsection
 
 @section('content')
-<div class="row">
+<div class="row" style="margin-bottom:50px;">
         <div class="col-md-12">
             @include('inc.messages')
         </div>
-        
         <div class="col-md-12">
             <img src="{{asset('img/design/index-background/index-background.png')}}" class="img-fluid" alt="Background image">
         </div>
+        <?php
+        $interface = DB::table('interface_setting')->first();
+        ?>
+        <div class="col-md-12" style="height:480px;">
+            <iframe src="{{$interface->intSetFrameLink}}" style="height:100%;width:100%;" frameBorder="0">Browser not compatible.</iframe>
+        </div>
+        
 </div>
+<!--
 <div class="row">
 <div class="col-md-12 jumbotron" id="index_content1">
         @if(session('status'))
@@ -79,4 +86,5 @@
     </div>				
 </div>
 </div>
+-->
 @endsection

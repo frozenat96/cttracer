@@ -145,9 +145,9 @@ class StageController extends Controller
         } catch(Exception $e) {
             DB::rollback();
           	//return dd($e);
-            return redirect()->back()->withInput($request->all)->withErrors('Stage Information was not Updated!');
+            return redirect()->back()->withInput($request->all)->withErrors('Stage Information was not Created!');
         }
-        return redirect()->back()->withInput($request->all)->with('success','Stage Information was Updated!');
+        return redirect()->back()->withInput($request->all)->with('success','Stage Information was Created!');
     }
 
     /**

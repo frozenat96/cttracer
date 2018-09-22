@@ -361,6 +361,7 @@ class GroupController extends Controller
         $group->groupType = $request->input('group_type');
         $group->groupCAdviserID = $request->input('content_adviser');
         $group->groupStatus = $request->input('group_status');
+      	$group->groupCoordID = $request->input('capstone_coordinator');
         $pRes = new Project;
         if($project->projStageNo != $request->input('stage_no')) {
             $pRes->resetProjApp($id,'3',0);
@@ -372,7 +373,13 @@ class GroupController extends Controller
         } else {
             $project->projPVerdictNo = $request->input('panel_verdict');
         }
-        
+
+        if($request->input('group_status')=='Ready for Defense') {
+            DB::table('schedule')
+            ->where('schedule.schedGroupID','=',$id)
+            ->update(['schedStatus'=>'Ready']);
+        }
+
         if(!is_null($request->input('document_link'))) {
             $validator = Validator::make($request->all(), [
                 'document_link' => ['max:150','active_url'],

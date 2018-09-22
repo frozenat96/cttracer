@@ -137,6 +137,7 @@ class PagesController extends Controller
             $validator = Validator::make($request->all(), [
                 'document_folder_link' => ['required','max:150','active_url'],
                 'project_archive_folder_link' => ['required','max:150','active_url'],
+                'home_page_frame_link' => ['max:150'],
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withInput($request->all)->withErrors($validator);
@@ -156,6 +157,19 @@ class PagesController extends Controller
             } else {
                 $app->settingAutoGHDelete = '1';
             }
+            $interface = DB::table('interface_setting')->first();
+
+            if(is_null($request->input('home_page_frame_link'))) {
+                DB::table('interface_setting')
+                ->where('interface_setting.interfaceSettingID','=',$interface->interfaceSettingID)
+                ->update(['intSetFrameLink'=>'']);
+            } elseif($request->input('home_page_frame_link')!=$interface->intSetFrameLink) {
+                        
+                DB::table('interface_setting')
+                ->where('interface_setting.interfaceSettingID','=',$interface->interfaceSettingID)
+                ->update(['intSetFrameLink'=>$request->input('home_page_frame_link')]);
+            }
+            
             $app->save();
             DB::commit();
             return redirect()->back()->withInput($request->all)->withSuccess('Application settings was updated successfully.');

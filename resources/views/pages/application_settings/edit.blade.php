@@ -32,14 +32,23 @@
                         <!-- required fields note -->
                         <div class="form-row">
                             <div class="form-group col-md-12">
-                                <label for="document_folder_link">Documents Folder Link<span class="text-danger">*</span></label>
+                                <label for="document_folder_link" data-toggle="popover" data-content="The link of the shared folder where the groups will upload their document." data-placement="top">Documents Folder Link<span class="text-danger">*</span></label>
                                 <input type="url" maxlength="150" class="form-control" placeholder="URL link" name="document_folder_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_folder_link')) ? old('document_folder_link') : (!is_null($data->settingDocLink) ? $data->settingDocLink : '')}}"> 
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-12">
-                                <label for="project_archive_folder_link">Project Archive Folder Link<span class="text-danger">*</span></label>
+                                <label for="project_archive_folder_link" data-toggle="popover" data-content="The link of the shared folder where the groups will upload their project archive document." data-placement="top">Project Archive Folder Link<span class="text-danger">*</span></label>
                                 <input type="url" maxlength="150" class="form-control" placeholder="URL link" name="project_archive_folder_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('project_archive_folder_link')) ? old('project_archive_folder_link') : (!is_null($data->settingProjArcLink) ? $data->settingProjArcLink : '')}}"> 
+                            </div>
+                        </div>
+                        <?php
+                            $interface = DB::table('interface_setting')->first();
+                        ?>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="interfaceLink" data-toggle="popover" data-content="The link of the home page interface." data-placement="top">Home Page Frame Link</label>
+                                <input type="url" maxlength="150" class="form-control" placeholder="URL link" name="home_page_frame_link" autocomplete="Document Link" value="{{!is_null(old('home_page_frame_link')) ? old('home_page_frame_link') : (!is_null($data->settingProjArcLink) ? $interface->intSetFrameLink : '')}}"> 
                             </div>
                         </div>
                         <div class="form-row">

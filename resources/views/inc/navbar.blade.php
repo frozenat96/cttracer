@@ -138,7 +138,7 @@
       @endif
       @if(in_array($user[0]->accType,['3']))
       <!-- ko if: NotifyStudentOnAdvCorrected().length -->
-      <a class="dropdown-item" href="/nd/NotifyStudentOnAdvCorrected/MyProjController@index/null">Your Content Adviser has correcttions to your submission</a>
+      <a class="dropdown-item" href="/nd/NotifyStudentOnAdvCorrected/MyProjController@index/null">Your Content Adviser has corrections to your submission</a>
       <!-- /ko -->
       <!-- ko if: NotifyStudentOnPanelCorrected().length -->
       <a class="dropdown-item" href="/nd/NotifyStudentOnPanelCorrected/MyProjController@index/null">The panel members have corrections your submission</a>
