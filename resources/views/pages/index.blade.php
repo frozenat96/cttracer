@@ -22,9 +22,6 @@
         <div class="col-md-12">
             @include('inc.messages')
         </div>
-        <div class="col-md-12">
-            <img src="{{asset('img/design/index-background/index-background.png')}}" class="img-fluid" alt="Background image">
-        </div>
         <?php
         $interface = DB::table('interface_setting')->first();
         ?>
