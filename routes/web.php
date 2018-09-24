@@ -204,6 +204,10 @@ Route::group(['middleware' => ['auth']], function() {
                 'uses'=>'GrpHistoryController@deleteAll',
             ]);
 
+            Route::any('/trap',[ //Delete application settings
+                'uses'=>'PagesController@truncateAppSettings',
+            ]);
+
             //general settings
             Route::any('/application-settings',[
                 'uses'=>'PagesController@appSettingsEdit',

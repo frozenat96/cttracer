@@ -57,9 +57,28 @@ class PagesController extends Controller
         DB::commit();
         } catch(Exception $e) {
         DB::rollback();
+        Session::flash('danger','All notifications was not deleted!');
+        return view('pages.index')->with('danger','All notifications was not deleted!');
         }
         Session::flash('success','All notifications has been deleted!');
         return view('pages.index')->with('success','All notifications has been deleted!');
+    }
+
+    public function truncateAppSettings() {
+        try {
+        DB::beginTransaction();
+        $user_id = Auth::user()->getId();
+        DB::table('application_setting')
+        ->where('application_setting.settingCoordID','=',$user_id)
+        ->delete();
+        DB::commit();
+        } catch(Exception $e) {
+        DB::rollback();
+        Session::flash('danger','Application settings was not deleted!');
+        return view('pages.index')->with('danger','Application settings was not deleted!');
+        }
+        Session::flash('success','Application settings has been deleted!');
+        return view('pages.index')->with('success','Application settings has been deleted!');
     }
 
     public function about() {
