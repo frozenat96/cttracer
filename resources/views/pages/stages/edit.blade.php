@@ -81,13 +81,7 @@
                     <div class="form-row justify-content-start">
                         <div class="form-group col-md-6">     
                             <label for="minSchedApp">Minimum Panel Members Required for Schedule Approval<span class="text-danger">*</span></label>
-                            <select name="minimum_panel_members_for_schedule_approval" class="form-control" id="minSchedApp" autocomplete="Minimum Panel For Schedule Approval" style="width:100px;">     
-                                @foreach($data['pgroup'] as $key => $value)
-                                <option value="{{$key+1}}"  id="mps_{{$key+1}}" @if(!is_null(old('minimum_panel_members_for_schedule_approval')) && (($key+1) == old('minimum_panel_members_for_schedule_approval') )) selected @elseif($data['stage']->minSchedPanel==($key+1)) selected @endif>
-                                    {{$key+1}}
-                                </option>
-                                @endforeach   
-                            </select>    
+                          <input type="number" min="1" max="20" name="minimum_panel_members_for_schedule_approval" class="form-control" autocomplete="Minimum Panel For Schedule Approval" required="yes" style="width:100px;" value="{{!is_null(old('minimum_panel_members_for_schedule_approval')) ? old('minimum_panel_members_for_schedule_approval') : $data['stage']->minSchedPanel}}">
                         </div>
                     </div> 
                     <div class="form-row">

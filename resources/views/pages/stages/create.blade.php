@@ -80,19 +80,15 @@
                     <div class="form-row justify-content-start">
                         <div class="form-group col-md-6">     
                             <label for="minSchedApp">Minimum Panel Members Required for Schedule Approval<span class="text-danger">*</span></label>
-                            <select name="minimum_panel_members_for_schedule_approval" class="form-control" id="minSchedApp" autocomplete="Minimum Panel For Schedule Approval" style="width:100px;">     
-                                @foreach($data['pgroup'] as $key => $value)
-                                <option value="{{$key+1}}"  id="mps_{{$key+1}}" @if(!is_null(old('minimum_panel_members_for_schedule_approval')) && (($key+1) == old('minimum_panel_members_for_schedule_approval') )) selected @endif>
-                                    {{$key+1}}
-                                </option>
-                                @endforeach   
-                            </select>    
+                          <input type="number" min="1" max="20" name="minimum_panel_members_for_schedule_approval" class="form-control" autocomplete="Minimum Panel For Schedule Approval" required="yes" style="width:100px;" value="{{!is_null(old('minimum_panel_members_for_schedule_approval')) ? old('minimum_panel_members_for_schedule_approval') : '3'}}"> 
+                          
+                              
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6 my-1">          
                             <div class="custom-control custom-checkbox mr-sm-2">
-                                <input type="checkbox" class="custom-control-input" id="label1" name="EditGroupPanel" @if(!is_null(old('EditGroupPanel'))) checked @endif>
+                                <input type="checkbox" class="custom-control-input" id="label1" name="EditGroupPanel" @if(!is_null(old('EditGroupPanel'))&&old('EditGroupPanel')=='on') checked @endif>
                                 <label class="custom-control-label" for="label1" data-toggle="popover" data-content="The chair panel approval will be required to approve all schedule approval." data-placement="top">Require Chair Panel Approval</label>
                             </div>          
                         </div>

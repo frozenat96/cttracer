@@ -52,7 +52,7 @@ class GroupController extends Controller
         if(!is_null($q) && $q==1) {
             return view('pages.groups.index')->with('data',$groups)->with('success2',$msg);
         } elseif(!is_null($q) && $q==0) {
-            return view('pages.groups.index')->with('data',$groups)->with('error',$msg);
+            return view('pages.groups.index')->with('data',$groups)->withErrors($msg);
         }
         return view('pages.groups.index')->with('data',$groups);
     }
@@ -460,6 +460,9 @@ class GroupController extends Controller
             $project->save();
             if(in_array($request->input('group_status'),['Waiting for Schedule Approval']) && !in_array($request->input('panel_verdict'),['2','3','7'])) {
                 $pRes->resetSchedApp($id,'0',1);
+                DB::table('schedule')
+                ->where('schedule.schedGroupID','=',$id)
+                ->update(['schedStatus'=>'Not Ready']);
             } elseif(($request->input('group_status')=='Waiting for Project Approval') && in_array($request->input('panel_verdict'),['2','3'])) {
                 $pRes->resetProjApp($id,'0',1);
             } elseif(in_array($request->input('group_status'),['Ready for Defense','Waiting for Final Schedule']) && !in_array($request->input('panel_verdict'),['2','3','7'])) {

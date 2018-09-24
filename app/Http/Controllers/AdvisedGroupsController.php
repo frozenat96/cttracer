@@ -45,7 +45,7 @@ class AdvisedGroupsController extends Controller
         if(!is_null($q) && $q==1) {
             return view('pages.advised_groups.index')->with('data',$groups)->with('success2',$msg);
         } elseif(!is_null($q) && $q==0) {
-            return view('pages.advised_groups.index')->with('data',$groups)->with('error',$msg);
+            return view('pages.advised_groups.index')->with('data',$groups)->withErrors($msg);
         }
         return view('pages.advised_groups.index')->with('data',$groups);
     }

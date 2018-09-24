@@ -42,7 +42,7 @@ class AccountController extends Controller
         if(!is_null($q) && $q==1) {
             return view('pages.accounts.index')->with('data',$accounts)->with('success2',$msg);
         } elseif(!is_null($q) && $q==0) {
-            return view('pages.accounts.index')->with('data',$accounts)->with('error',$msg);
+            return view('pages.accounts.index')->with('data',$accounts)->withErrors($msg);
         }
         return view('pages.accounts.index')->with('data',$accounts);
     }
@@ -478,25 +478,22 @@ class AccountController extends Controller
                 return redirect()->back()->withErrors('Cannot delete capstone coordinator account.');
             } elseif(in_array($deleteAccount->accType,['1','2'])) {
                 //if the account to be deleted is a Panel Member account
-                $delete1 = DB::table('schedule_approval')
+                DB::table('schedule_approval')
                 ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
                 ->where('panel_group.panelAccID','=',$id)
                 ->delete();
 
-                $delete2 = DB::table('project_approval')
+                DB::table('project_approval')
                 ->join('panel_group','panel_group.panelGroupID','=','project_approval.projAppPanelGroupID')
                 ->where('panel_group.panelAccID','=',$id)
                 ->delete();
 
-                $delete3 = DB::table('panel_group')
+                DB::table('panel_group')
                 ->where('panel_group.panelAccID','=',$id)
                 ->delete();
-                if(!$delete1 || !$delete2 || !$delete3) {
-                    DB::rollback();
-                    return redirect()->action('AccountController@index', ['status' => 0,'statusMsg'=>['Deletion of account failed.','Rolled back changes']]);
-                }
+               
                 $this->deleteUpdateDependencies($id);
-                $delete4 = DB::table('account')->where('account.accID','=',$id)->delete();
+                DB::table('account')->where('account.accID','=',$id)->delete();
             } else {
                 $deleteAccount->delete();
                 DB::commit();  
@@ -511,7 +508,7 @@ class AccountController extends Controller
             DB::commit();
             return redirect()->action('AccountController@index', ['status' => 1,'statusMsg'=>['Account Information has been Deleted!']]);
         } catch (Exception $e) {
-            return dd($e);
+            //return dd($e);
             DB::rollback();
             return redirect()->action('AccountController@index', ['status' => 0,'statusMsg'=>['Deletion of account failed.','Rolled back changes.']]);
         } 

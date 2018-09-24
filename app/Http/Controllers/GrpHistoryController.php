@@ -30,7 +30,7 @@ class GrpHistoryController extends Controller
         if(!is_null($q) && $q==1) {
             return view('pages.group_history.index')->with('data',$data)->with('success2',$msg);
         } elseif(!is_null($q) && $q==0) {
-            return view('pages.group_history.index')->with('data',$data)->with('error',$msg);
+            return view('pages.group_history.index')->with('data',$data)->withErrors($msg);
         } 
         return view('pages.group_history.index')->with('data',$data);
     }

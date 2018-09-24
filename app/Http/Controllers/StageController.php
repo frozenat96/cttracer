@@ -41,7 +41,7 @@ class StageController extends Controller
         if(!is_null($q) && $q==1) {
             return view('pages.stages.index')->with('data',$data)->with('success2',$msg);
         } elseif(!is_null($q) && $q==0) {
-            return view('pages.stages.index')->with('data',$data)->with('error',$msg);
+            return view('pages.stages.index')->with('data',$data)->withErrors($msg);
         }
         return view('pages.stages.index')->withData($data);    
     }
@@ -147,7 +147,7 @@ class StageController extends Controller
           	//return dd($e);
             return redirect()->back()->withInput($request->all)->withErrors('Stage Information was not Created!');
         }
-        return redirect()->back()->withInput($request->all)->with('success','Stage Information was Created!');
+        return redirect()->back()->with('success','Stage Information was Created!');
     }
 
     /**
