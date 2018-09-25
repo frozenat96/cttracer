@@ -296,24 +296,24 @@ class ProjAppController extends Controller
         $stg = DB::table('stage')->where('stage.stagePanel','=',$stage->current($groupID))
         ->first();
         $apprvl = null;
-        if($proj->requireChairProj && $chairDisapproved) {
-            $apprvl = false;//chair is required and chair has disapproved, result: disapprove
-        } else if(($panelMembersApp + $chairPanelApp) >= $proj->minProjPanel) {
-            if($proj->requireChairProj && $chairPanelApp) {  
-        //chair required, the total chair and panel members who has approved is 
-        //greater or equal to minimum, result: approve 
-            $apprvl = true;              
-            } elseif(!$proj->requireChairProj) { //chair not required, minimum panel is met, result: approve 
-                $apprvl = true;
-            }
-        } elseif($panelDisapproved > ($pMembersTotal - $proj->minProjPanel)) {
-        //total disapproval is greater than the total panel required 
-        //less the minimum panel that is required
-        //if there are no panel members that had not made a decision, result: disapprove
-            if(!$pMembersWaiting) {
-                $apprvl = false;
-            }     
-        } 
+        if(!$pMembersWaiting) {
+            if($proj->requireChairProj && $chairDisapproved) {
+                $apprvl = false;//chair is required and chair has disapproved, result: disapprove
+            } else if(($panelMembersApp + $chairPanelApp) >= $proj->minProjPanel) {
+                if($proj->requireChairProj && $chairPanelApp) {  
+            //chair required, the total chair and panel members who has approved is 
+            //greater or equal to minimum, result: approve 
+                $apprvl = true;              
+                } elseif(!$proj->requireChairProj) { //chair not required, minimum panel is met, result: approve 
+                    $apprvl = true;
+                }
+            } elseif($panelDisapproved > ($pMembersTotal - $proj->minProjPanel)) {
+            //total disapproval is greater than the total panel required 
+            //less the minimum panel that is required
+            //if there are no panel members that had not made a decision, result: disapprove
+                $apprvl = false;   
+            } 
+        }
         if(!is_null($apprvl)) {
             if($apprvl==true) {
                 $this->approve_proj($group);
