@@ -1,6 +1,6 @@
 <div class="form-row card bx2 card1 jumbotron" style="padding:0;">
         <div class="col-md-12"> 
-            <table class="table table-responsive-sm table-responsive-md">
+            <table class="table table-responsive-sm table-responsive-md" style="margin-bottom:0;padding-bottom:0;">
                 <thead>
                     <tr class="">
                         <th>Approval Details</th>
@@ -52,10 +52,10 @@
                     </td>
                     <td>
                         @if($pmember->isApproved == 1)
-                            <span class='badge badge-pill badge-success'>  Approved 
+                            <span class='badge badge-pill badge-success'>Available 
                             </span>
                         @elseif($pmember->isApproved == 2)
-                            <span class='badge badge-pill badge-danger'>Disapproved
+                            <span class='badge badge-pill badge-danger'>Not Available
                             </span>
                         @else
                             <span class='badge badge-pill badge-warning'>Waiting
@@ -141,30 +141,34 @@
                     
                 </td> <!-- End column 5 -->
                 </tr> <!-- End Row 1 -->
+                <tr>
+                    <td colspan="100%;">
+                            <center>
+                                    <table class="table-sm">
+                                        <tr><td>     
+                        
+                                        {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus', 'method' => 'POST','class'=>'form1']) !!}
+                                        {{csrf_field()}}
+                                        <button  type="submit" class="btn btn-success btn-sm" name="opt" value="1" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Available</span></button>
+                                        </td>
+                                        <td>
+                                        <button  type="submit" class="btn btn-danger btn-sm" name="opt" value="0" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Not Available</span></button>
+                                        <input type="hidden" name="grp" value="{{$data1->groupID}}">
+                                        <input type="hidden" name="acc" value="{{$data1->accID}}">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        </td> 
+                                        <td> 
+                                            <input type="text" class="form-control" name="shortmsg" id="shortmsg" style="width:200px;border-radius:5px;color:black;height:30px;" maxlength="70" placeholder="Short message.." autocomplete="Short Comment">
+                                        </td>
+                                        {!!Form::close() !!}
+                                        </tr>
+                                        
+                                    </table>
+                                    </center>
+                    </td>
+                </tr>
             </tbody>
             </table>
-            <center>
-            <table class="table-sm table-responsive-sm">
-                <tr><td>     
-
-                {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus', 'method' => 'POST','class'=>'form1']) !!}
-                {{csrf_field()}}
-                <button  type="submit" class="btn btn-success btn-sm" name="opt" value="1" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Available</span></button>
-                </td>
-                <td>
-                <button  type="submit" class="btn btn-danger btn-sm" name="opt" value="0" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Not Available</span></button>
-                <input type="hidden" name="grp" value="{{$data1->groupID}}">
-                <input type="hidden" name="acc" value="{{$data1->accID}}">
-                <input type="hidden" name="_method" value="PUT">
-                </td> 
-                <td> 
-                    <label for="shortmsg" style="font-size:12px;">Short Message</label>
-                    <textarea class="form-control" name="shortmsg" id="shortmsg" style="width:120px;border-radius:5px;color:black;" maxlength="150" placeholder="Short message.." autocomplete="Short Comment"></textarea>
-                </td>
-                {!!Form::close() !!}
-                </tr>
-                
-            </table>
-            </center>
+            
         </div>  
     </div>

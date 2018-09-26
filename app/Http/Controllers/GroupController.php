@@ -12,6 +12,7 @@ use App\models\Schedule;
 use App\models\ScheduleApproval;
 use App\models\ProjectApproval;
 use App\models\AccessControl;
+use App\models\Stage;
 use DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
@@ -378,6 +379,14 @@ class GroupController extends Controller
             DB::table('schedule')
             ->where('schedule.schedGroupID','=',$id)
             ->update(['schedStatus'=>'Ready']);
+          	$stg25 = new Stage;
+          	DB::table('schedule_approval')
+            ->join('panel_group','panel_group.panelGroupID','=','schedule_approval.schedPanelGroupID')
+            ->join('account','account.accID','=','panel_group.panelAccID')
+            ->where('account.isActivePanel','=','1')
+            ->where('panel_group.panelCGroupID','=',$id)
+            ->where('panel_group.panelGroupType','=',$stg25->current($id))
+            ->update(['schedule_approval.isApproved'=>'1']);
         }
 
         if(!is_null($request->input('document_link'))) {

@@ -52,15 +52,7 @@ class SchedAppController extends Controller
         ->where('schedule_approval.isApproved','=','0')
         ->paginate(5); 
         //return $this->calcSchedStatus($sched[0]->panelCGroupID);
-          //return dd($sched);
-        $q = Input::get('status');
-        $msg = Input::get('statusMsg');
-
-        if(!is_null($q) && $q==1) {
-            return view('pages.approve_projects.index')->with('data',$data)->with('success2',$msg);
-        } elseif(!is_null($q) && $q==0) {
-            return view('pages.approve_projects.index')->with('data',$data)->withErrors($msg);
-        }
+      	//return dd($sched);
         return view('pages.approve_schedules.index')->with('data',$sched);
     }
 

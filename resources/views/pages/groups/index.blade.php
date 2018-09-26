@@ -7,7 +7,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <div class="jumbotron bg1">
+        <div class="jumbotron bg1" style="padding:20px;padding-top:30px;">
         @include('inc.messages')
         <div class="row">
             <div class="col-md-12">

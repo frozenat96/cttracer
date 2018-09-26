@@ -121,9 +121,9 @@
 
                                                 <option value="0" @if(!is_null(old('sched_app_{{$pmember->accID}}')) && old('sched_app_{{$pmember->accID}}') == '0') selected @elseif(($pmember->isApproved) == '0') selected @endif>Waiting</option>
 
-                                                <option value="1" @if(!is_null(old('sched_app_{{$pmember->accID}}')) && old('sched_app_{{$pmember->accID}}') == '1') selected @elseif(($pmember->isApproved) == '1') selected @endif>Approved</option>
+                                                <option value="1" @if(!is_null(old('sched_app_{{$pmember->accID}}')) && old('sched_app_{{$pmember->accID}}') == '1') selected @elseif(($pmember->isApproved) == '1') selected @endif>Available</option>
 
-                                                <option value="2" @if(!is_null(old('sched_app_{{$pmember->accID}}')) && old('sched_app_{{$pmember->accID}}') == '2') selected @elseif(($pmember->isApproved) == '2') selected @endif>Disapproved</option>
+                                                <option value="2" @if(!is_null(old('sched_app_{{$pmember->accID}}')) && old('sched_app_{{$pmember->accID}}') == '2') selected @elseif(($pmember->isApproved) == '2') selected @endif>Not Available</option>
                                         </select>
                                         </td>
                                         <td>

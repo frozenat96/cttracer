@@ -11,7 +11,7 @@
 <div class="row" id="app">
     <?php  $user = new App\User; $user = $user->current(); ?>
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <div class="jumbotron bg1">
+        <div class="jumbotron bg1" style="padding:20px;padding-top:30px;">
         @include('inc.messages')
         <h4><span class="alert bg2">PROJECT ARCHIVE</span></h4>
         <br class="my-4">

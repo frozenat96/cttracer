@@ -19,7 +19,7 @@
         
         </div>
 
-        <div class="jumbotron bx2">
+        <div class="jumbotron bx2" style="padding-top:50px;">
                 <h4 class="text-left"><span class="alert bg2">PROJECT VIEW</span><hr class="my-4"></h4>
         @if(isset($data) && count($data))
         <div class="row"> <!-- Group Information -->

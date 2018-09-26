@@ -83,7 +83,7 @@
                         <span data-html="true" 
                         class="btn btn-info btn-sm"
                         tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
-                        title="<center><b>Panel Member Approval</b></center>" 
+                        title="<center><b>Schedule Approval Information</b></center>" 
                         data-content="<div style='max-width:430px;'>
                         <table class='table-sm table-hover table-striped'>
                             <thead>
@@ -104,10 +104,10 @@
                                 </td>
                                 <td>
                                     @if($pmember->isApproved == 1)
-                                        <span class='badge badge-pill badge-success'>  Approved 
+                                        <span class='badge badge-pill badge-success'>Available 
                                         </span>
                                     @elseif($pmember->isApproved == 2)
-                                        <span class='badge badge-pill badge-danger'>Disapproved
+                                        <span class='badge badge-pill badge-danger'>Not Available
                                         </span>
                                     @else
                                         <span class='badge badge-pill badge-warning'>Waiting

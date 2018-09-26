@@ -19,7 +19,7 @@
 <?php $grpModel = new App\models\Group; $userModel = new App\User; $user1=$userModel->current();?>
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <div class="jumbotron bx2">
+        <div class="jumbotron bx2" style="padding-top:30px;">
         @include('inc.messages')
         <h4><span class="alert bg2">DASHBOARD</span></h4>
         <br class="my-4">
