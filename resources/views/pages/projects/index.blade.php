@@ -79,10 +79,10 @@
                         
                         @if($allowRevHist->status==true)
                         <td>
-                            <a class="btn btn-dark" href="/revision-history-search-results/{{$proj->groupName}}" target="_blank" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Revision History</a>
+                            <a class="btn btn-dark" href="/revision-history-search-results/{{$proj->groupName}}" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Revision History</a>
                         </td>
                         <td>
-                            <a class="btn btn-primary" href="/group-history-search-results?q={{$proj->groupName}}" target="_blank" data-content="View Group History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Group History</a>
+                            <a class="btn btn-primary" href="/group-history-search-results?q={{$proj->groupName}}" data-content="View Group History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View Group History</a>
                         </td>
                         @endif
                        

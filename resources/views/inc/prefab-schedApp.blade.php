@@ -1,4 +1,4 @@
-<div class="form-row card bx2 card1 jumbotron">
+<div class="form-row card bx2 card1 jumbotron" style="padding:0;">
         <div class="col-md-12"> 
             <table class="table table-responsive-sm table-responsive-md">
                 <thead>
@@ -7,7 +7,6 @@
                         <th>Group Details</th>
                         <th>Schedule Details</th>
                         <th>Schedule Status</th>
-                        <th>Options</th>
                     </tr>
                 </thead>
             <?php
@@ -32,7 +31,7 @@
             <span data-html="true" 
             class="btn btn-info btn-sm" tabindex="0"
             role="button" data-toggle="popover" data-trigger="focus" 
-            title="<center><b>Panel Member Approval</b></center>" 
+            title="<center><b>Schedule Approval Information</b></center>" 
             data-content="<div style='max-width:430px;'>
             <table class='table-sm table-hover table-striped'>
                 <thead>
@@ -139,30 +138,33 @@
                     </table>
                 </td> <!-- End column 4 -->
                 <td>
-                    <table class="table-sm">
-                    <tr><td>     
-
-                    {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus', 'method' => 'POST','class'=>'form1']) !!}
-                    {{csrf_field()}}
-                    <button  type="submit" class="btn btn-success btn-sm" name="opt" value="1" data-toggle="popover" data-content="Approve schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Approve</span></button>
-                    </td></tr>
-                    <tr><td>
-                    <button  type="submit" class="btn btn-danger btn-sm" name="opt" value="0" data-toggle="popover" data-content="Dispprove schedule" data-placement="top" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Disapprove</span></button>
-                    <input type="hidden" name="grp" value="{{$data1->groupID}}">
-                    <input type="hidden" name="acc" value="{{$data1->accID}}">
-                    <input type="hidden" name="_method" value="PUT">
-                    </td></tr> 
-                    <tr rowspan="2"><td> 
-                        <label for="shortmsg" style="font-size:12px;">Short Message</label>
-                        <textarea class="form-control" name="shortmsg" id="shortmsg" style="width:120px;border-radius:5px;color:black;" maxlength="150" placeholder="Short message.." autocomplete="Short Comment"></textarea>
-                    </td></tr>
-                    {!!Form::close() !!}
                     
-                    
-                    </table>
                 </td> <!-- End column 5 -->
                 </tr> <!-- End Row 1 -->
             </tbody>
             </table>
+            <center>
+            <table class="table-sm table-responsive-sm">
+                <tr><td>     
+
+                {!!Form::open(['action' => 'SchedAppController@schedApprovalStatus', 'method' => 'POST','class'=>'form1']) !!}
+                {{csrf_field()}}
+                <button  type="submit" class="btn btn-success btn-sm" name="opt" value="1" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-check"></i> Available</span></button>
+                </td>
+                <td>
+                <button  type="submit" class="btn btn-danger btn-sm" name="opt" value="0" onclick="return confirm('Are You Sure?')"><span><i class="fas fa-times"></i> Not Available</span></button>
+                <input type="hidden" name="grp" value="{{$data1->groupID}}">
+                <input type="hidden" name="acc" value="{{$data1->accID}}">
+                <input type="hidden" name="_method" value="PUT">
+                </td> 
+                <td> 
+                    <label for="shortmsg" style="font-size:12px;">Short Message</label>
+                    <textarea class="form-control" name="shortmsg" id="shortmsg" style="width:120px;border-radius:5px;color:black;" maxlength="150" placeholder="Short message.." autocomplete="Short Comment"></textarea>
+                </td>
+                {!!Form::close() !!}
+                </tr>
+                
+            </table>
+            </center>
         </div>  
     </div>

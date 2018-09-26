@@ -71,7 +71,7 @@
                             <td><small>{{$d->groupHProjType}}</small></td>
                             <td><textarea style="font-size:12px;" rows="2" cols="50" readonly>{{$d->groupHActivity}}</textarea></td>
                             <td>
-                                <a class="btn btn-dark" href="/revision-history-search-results/{{$d->groupHGroupName}}" target="_blank" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View</a>
+                                <a class="btn btn-dark" href="/revision-history-search-results/{{$d->groupHGroupName}}" data-content="View Revision History" data-toggle="popover" data-placement="top"><i class="far fa-eye"></i> View</a>
                             </td>
                             <td>
                                 <small>{{date_format(new Datetime($d->groupHTimestamp),"M-d-Y")}}</small><br><small>{{date_format(new Datetime($d->groupHTimestamp),"g:i A")}}</small>

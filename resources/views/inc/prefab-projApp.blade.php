@@ -1,4 +1,4 @@
-<div class="form-row card bx2 card1 jumbotron">
+<div class="form-row card bx2 card1 jumbotron" style="padding:0;">
         <div class="col-md-12"> 
             <table class="table table-responsive-sm table-responsive-md">
                 <thead>
@@ -30,7 +30,7 @@
             class="btn btn-info btn-sm" tabindex="0"
             role="button"
             data-toggle="popover" data-trigger="focus"
-            title="<center><b>Panel Approval</b></center>" 
+            title="<center><b>Document Approval Information</b></center>" 
             data-content="
             <table class='table-sm table-hover table-striped'>
                 <thead>

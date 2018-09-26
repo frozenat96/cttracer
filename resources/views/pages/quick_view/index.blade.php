@@ -13,7 +13,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <div class="jumbotron bg1">
+        <div class="jumbotron bg1" style="padding:20px;padding-top:30px;">
         <div class="row">
             <div class="col">@include('inc.messages')</div>
         </div>
@@ -84,7 +84,7 @@
             $model = new App\models\Group;
             ?>
              @foreach($data as $grp)
-                <div class="form-row card bx2 card1 jumbotron">
+                <div class="form-row card bx2 card1 jumbotron" style="padding:0;">
                     <div class="col-md-12"> 
                         <table class="table table-sm table-responsive-sm table-responsive-md">
                                 <thead>

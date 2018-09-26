@@ -92,6 +92,6 @@ class LoginController extends Controller
         Auth::logout();
         unset($_SESSION['user']);
         Session::flush();
-        return redirect('/login');
+        return redirect('https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://cttracer.epizy.com');
     }
 }

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-no-popover')
 
 @section('style')
     .list-group-item {
@@ -14,7 +14,7 @@
 <?php $grpModel = new App\models\Group; $userModel = new App\User; $user1=$userModel->current();?>
 <div class="row">
     <div class="col-md-12 justify-align-center" id="index_content1">
-        <div class="jumbotron bg1">
+        <div class="jumbotron bg1" style="padding:20px;padding-top:30px;">
         @include('inc.messages')
         <h4><span class="alert bg2">FINAL SCHEDULE LIST</span></h4>
         <br class="my-4">
@@ -53,7 +53,7 @@
             $model = new App\models\Group; 
             ?> 
                 @foreach($data as $sched)
-                <div class="form-row card bx2 card1 jumbotron">
+                <div class="form-row card bx2 card1 jumbotron" style="padding:0;">
                     <div class="col-md-12"> 
                         <table class="table table-responsive-sm">
                             <thead>
@@ -82,8 +82,7 @@
                             <tr><td>
                         <span data-html="true" 
                         class="btn btn-info btn-sm"
-                        data-toggle="popover" 
-                        data-trigger="focus" 
+                        tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
                         title="<center><b>Panel Member Approval</b></center>" 
                         data-content="<div style='max-width:430px;'>
                         <table class='table-sm table-hover table-striped'>
@@ -214,8 +213,13 @@
 
 @section('includes2')
 <script type="text/javascript">
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
 $(document).ready(function () {
-
+    $('.popover-dismiss').popover({
+    trigger: 'focus'
+    })
 });
 </script>
 @endsection

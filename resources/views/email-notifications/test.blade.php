@@ -53,8 +53,8 @@
         <input type="hidden" name="acc" value="{{$acc}}">
         <li><br></li>
             <li>
-            <button type="submit" name="opt" value="0" class="btn btn-danger" style="border-radius:3px;box-sizing:border-box;display:inline-block;font-size:14px;font-weight:700;height:32px;line-height:32px;padding:0 24px;text-align:center;text-decoration:none;text-transform:uppercase;vertical-align:middle;background-color:#f33333;color:#ffffff;cursor: pointer;" target="_blank" onclick="return confirm('Are you sure?')">☓ Disapprove</button>
-            <button type="submit" name="opt" value="1"class="btn btn-success" style="border-radius:3px;box-sizing:border-box;display:inline-block;font-size:14px;font-weight:700;height:32px;line-height:32px;padding:0 24px;text-align:center;text-decoration:none;text-transform:uppercase;vertical-align:middle;background-color:#4285f4;color:#ffffff;cursor: pointer;" target="_blank" onclick="return confirm('Are you sure?')">✓ Approve</button>
+            <button type="submit" name="opt" value="1"class="btn btn-success" style="border-radius:3px;box-sizing:border-box;display:inline-block;font-size:14px;font-weight:700;height:32px;line-height:32px;padding:0 24px;text-align:center;text-decoration:none;text-transform:uppercase;vertical-align:middle;background-color:#4285f4;color:#ffffff;cursor: pointer;" target="_blank" onclick="return confirm('Are you sure?')">✓ Available</button>
+            <button type="submit" name="opt" value="0" class="btn btn-danger" style="border-radius:3px;box-sizing:border-box;display:inline-block;font-size:14px;font-weight:700;height:32px;line-height:32px;padding:0 24px;text-align:center;text-decoration:none;text-transform:uppercase;vertical-align:middle;background-color:#f33333;color:#ffffff;cursor: pointer;" target="_blank" onclick="return confirm('Are you sure?')">☓ Not Available</button>
             </li>
         </ul>
         <input type="hidden" name="_method" value="PUT">
