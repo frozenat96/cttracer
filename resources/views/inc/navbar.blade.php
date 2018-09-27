@@ -2,7 +2,7 @@
   <div class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a href="/"><img src="{{asset('img/design/logo/logo.png')}}" style="width:100px;height:80px;"></a>
+            <a href="/"><img src="{{asset('img/design/logo/logo.png')}}" style="width:80px;height:80px;"></a>
           </li>
       </ul>
 
@@ -40,7 +40,7 @@
 <div class="panel-menu-sm" style="padding-top:20px;padding-bottom:20px;">
     <ul class="navbar-nav mr-auto text-center">
         <li class="nav-item active">
-          <img src="{{asset('img/design/logo/logo.png')}}" style="width:100px;height:80px;">
+          <img src="{{asset('img/design/logo/logo.png')}}" style="width:80px;height:80px;">
         </li>
     </ul>
 </div>

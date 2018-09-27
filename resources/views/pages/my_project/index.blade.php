@@ -237,11 +237,11 @@
                             </td>
                             <td>
                                 @if($pmembers->isApproved == 1)
-                                <span class="badge badge-success badge-pill">  Approved </span>
+                                <span class="badge badge-success badge-pill">Available</span>
                                 @elseif($pmembers->isApproved == 2)
-                                <span class="badge badge-danger badge-pill">  Disapproved </span>
+                                <span class="badge badge-danger badge-pill">Not Available</span>
                                 @else
-                                <span class="badge badge-secondary badge-pill">  Waiting </span>
+                                <span class="badge badge-secondary badge-pill">Waiting</span>
                                 @endif  
                             </td>
                             <td>

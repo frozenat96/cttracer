@@ -115,10 +115,10 @@ class SchedAppController extends Controller
         $approval = ScheduleApproval::find($q->schedAppID);
         if($request->input('opt')=='1') {
             $approval->isApproved = 1;
-            $msg = 'The schedule of group : ' . $q->groupName . ' was approved.';
+            $msg = 'The schedule request of group : ' . $q->groupName . ' was set to \'Available\'.';
         } else {
             $approval->isApproved = 2;
-            $msg = 'The schedule of group : ' . $q->groupName . ' was disapproved.';
+            $msg = 'The schedule request of group : ' . $q->groupName . ' was set to \'Not Available\'.';
         }
 
         $approval->schedAppMsg = !is_null($request->input('shortmsg')) ? $request->input('shortmsg') : '';

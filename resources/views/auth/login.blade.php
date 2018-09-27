@@ -19,7 +19,7 @@
             <div class="card-header bg-transparent">LOGIN</div>
                 <div class="card-body">
                     <div class="row justify-content-center">
-                        <img src="{{asset('img/design/logo/logo2.png')}}" style="width: 300px;height: 250px;" class="img-fluid">
+                        <img src="{{asset('img/design/logo/logo2.png')}}" style="width: 250px;height: 250px;" class="img-fluid">
                     </div>
                     <div class="row justify-content-center ">
                         <div class="btn-img"> 
