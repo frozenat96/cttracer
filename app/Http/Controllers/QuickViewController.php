@@ -44,7 +44,15 @@ class QuickViewController extends Controller
      */
     public function index()
     {
-        $groups = $this->getIndex();                
+        $data = $this->getIndex();      
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.quick_view.index')->with('data',$data)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.quick_view.index')->with('data',$data)->withErrors($msg);
+        }          
         return view('pages.quick_view.index')->with('data',$groups);
     }
 
@@ -100,7 +108,15 @@ class QuickViewController extends Controller
         $data->appends(array(
             'q' => Input::get('q')
         ));
-           
+
+        $q = Input::get('status');
+        $msg = Input::get('statusMsg');
+
+        if(!is_null($q) && $q==1) {
+            return view('pages.quick_view.index')->with('data',$data)->with('success2',$msg);
+        } elseif(!is_null($q) && $q==0) {
+            return view('pages.quick_view.index')->with('data',$data)->withErrors($msg);
+        }
         return view('pages.quick_view.index')->with('data',$data);
     }
     /**

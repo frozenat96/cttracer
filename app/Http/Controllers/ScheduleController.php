@@ -53,6 +53,7 @@ class ScheduleController extends Controller
         ->whereIn('group.groupStatus', ['Ready for Defense'])
         ->whereNotIn('project.projPVerdictNo',['2','3','7'])
         ->where('schedule.schedStatus','=','Ready')
+        ->where('schedule.schedDate','>=',Carbon::now())
         ->orderBy('schedule.schedDate')
         ->orderBy('schedule.schedTimeStart')
         ->paginate(5); 
@@ -221,21 +222,6 @@ class ScheduleController extends Controller
             $sc0->schedType = $request->input('schedule_type');
             $sc0->schedStatus = 'Not Ready';
 
-            /*
-            //Check if the schedule is conflicting with another group's schedule
-            $conflict = DB::table('schedule')
-            ->where('schedule.schedDate','=',$request->input('date'))
-            ->whereBetween('schedule.schedTimeStart', array($sc0->schedTimeStart, $sc0->schedTimeEnd))
-            ->where('schedule.schedTimeEnd', '>', $sc0->schedTimeStart)
-            ->where('schedule.schedTimeEnd', '<', $sc0->schedTimeEnd)
-            ->where('schedule.schedGroupID','!=',$request->input('grp'))
-            ->count();
-            if($conflict > 0) {
-                DB::rollback();
-                return redirect()->back()->withInput($request->all)->withErrors(['Schedule Information was not created.','The schedule is in conflict with other groups\' schedule.']);  
-            } 
-            */
-
             $stage = new Stage;
             $group = Group::find($id);
             $group->groupStatus = 'Waiting for Schedule Approval';
@@ -248,12 +234,13 @@ class ScheduleController extends Controller
             DB::commit();    
             } catch (Exception $e) {
                 DB::rollback();
-                return redirect()->back()->withInput($request->all)->withErrors('Schedule Information was not created.');       
+                return redirect()->action('QuickViewController@search', ['q'=>$group->groupName,'status' => 0,'statusMsg'=>'Schedule Information was not created.']);   
             }
             $data = DB::table('group')
             ->where('group.groupID','=',$group->groupID)
             ->first();  
-            return redirect("/quick-view-search-results?q={$group->groupName}")->withSuccess('Schedule Information was created successfully!');
+         
+            return redirect()->action('QuickViewController@search', ['q'=>$group->groupName,'status' => 1,'statusMsg'=>'Schedule Information was created successfully!']);
     }
 
 }

@@ -206,7 +206,8 @@ class MyProjController extends Controller
             $group = Group::find($proj->projGroupID);
             $proj->projDocumentLink = $request->input('document_link');
             $proj->save();
-            $group->groupStatus = 'Submitted to Content Adviser';
+            $group->groupStatus = 'Submitted to Content Adviser'; 
+            /*
             //if the group is submitting for schedule request -> reset schedule
             if(!in_array($proj->projPVerdictNo,['2','3','7'])) {
                 $sched = DB::table('schedule')
@@ -219,6 +220,7 @@ class MyProjController extends Controller
                 $sched->schedPlace = '';
                 $sched->save();
             }
+            */
 
             $notify = new Notification;
             $notify->NotifyAdviserOnSubmission($group);
