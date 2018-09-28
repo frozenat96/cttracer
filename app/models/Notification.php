@@ -93,6 +93,7 @@ class Notification extends Model
         $stage = new Stage;
         $panel = $this->getPanel($group);
         $panelEmailAll = $this->getPanelEmailAll($group);
+      	$send_execute = 0;
         if(count($panel)<=3) {
             foreach($panel as $p){
                 $x = User::find($p->panelAccID);

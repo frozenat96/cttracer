@@ -23,7 +23,7 @@
                                 <table class="table table-responsive-sm table-responsive-md">
                                 <tr>
                                     <td>
-                            <h4 class="text-left"><span class="alert bg2">CREATE GROUP FORM</span></h4>
+                            <h4 class="text-left"><span class="alert bg2">CREATE SCHEDULE FORM</span></h4>
                                     </td>
          
                                     <td class="text-right">

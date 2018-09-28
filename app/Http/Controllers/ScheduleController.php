@@ -227,20 +227,16 @@ class ScheduleController extends Controller
             $group->groupStatus = 'Waiting for Schedule Approval';
             $group->save(); 
             $notify = new Notification;
-            $notify->NotifyPanelOnSchedRequest($group);
-   
             $pRes->resetSchedApp($group->groupID,'0',1);
             $sc0->save(); 
+          	$notify->NotifyPanelOnSchedRequest($group);
             DB::commit();    
             } catch (Exception $e) {
                 DB::rollback();
                 return redirect()->action('QuickViewController@search', ['q'=>$group->groupName,'status' => 0,'statusMsg'=>'Schedule Information was not created.']);   
             }
-            $data = DB::table('group')
-            ->where('group.groupID','=',$group->groupID)
-            ->first();  
-         
-            return redirect()->action('QuickViewController@search', ['q'=>$group->groupName,'status' => 1,'statusMsg'=>'Schedule Information was created successfully!']);
+              return redirect()->action('QuickViewController@search', ['q'=>$group->groupName,'status' => 1,'statusMsg'=>'Schedule Information was created successfully!']);
+
     }
 
 }

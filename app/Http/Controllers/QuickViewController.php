@@ -53,7 +53,7 @@ class QuickViewController extends Controller
         } elseif(!is_null($q) && $q==0) {
             return view('pages.quick_view.index')->with('data',$data)->withErrors($msg);
         }          
-        return view('pages.quick_view.index')->with('data',$groups);
+        return view('pages.quick_view.index')->with('data',$data);
     }
 
     private function getIndex() {
