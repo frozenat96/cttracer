@@ -42,7 +42,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-12" id="acc">
                             <label for="document_link">Document Link</label>
-                            <input type="url" maxlength="150" class="form-control" name="document_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_link')) ? old('document_link') : $data['group']->projDocumentLink}}">
+                            <input type="url" maxlength="150" class="form-control" name="document_link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_link')) ? old('document_link') : ''}}">
                         </div>
                     </div>
                     <!-- options -->

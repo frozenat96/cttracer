@@ -32,7 +32,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-12" id="acc">
                             <label for="document_link">Document Link<span class="text-danger">* (required)</span></label>
-                            <input class="form-control" name="document_link" placeholder="Document Link" autocomplete="Document Link" required="yes" value="{{old('document_link')}}"> 
+                            <input class="form-control" name="document_link" placeholder="Document Link" autocomplete="Document Link" required="yes" value="{{!is_null(old('document_link')) ? old('document_link') : ''}}"> 
                         </div>
                     </div>
                     
